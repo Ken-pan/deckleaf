@@ -1,0 +1,29 @@
+/* App-specific identity. Keep the copied Broadser token source intact. */
+@import './brand-assets.css';
+:root {
+  --brand-ink: #055841;
+  --brand-mark-color: var(--a-11);
+}
+
+/* The default Forest palette is Deck Studio's quieter ink green. */
+[data-palette="forest"] {
+  --hue-a: 163;
+  --chroma-a: 0.4;
+  --l-a: -16%;
+  --a-9: var(--brand-ink);
+  --a-10: light-dark(#103c2f, #4c9276);
+  --a-11: light-dark(var(--brand-ink), #95cbb3);
+}
+
+.brand-mark {
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  background: var(--brand-mark-color);
+  mask: var(--brand-logo) center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand-mark { transition: background-color var(--dur-base); }
+}

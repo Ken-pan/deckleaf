@@ -1,0 +1,135 @@
+/* One timing vocabulary for the application; never inherited by document players. */
+@property --ui-surface-progress { syntax: '<number>'; inherits: true; initial-value: 1; }
+:root {
+  --ui-motion-feedback: 120ms;
+  --ui-motion-reveal: 180ms;
+  --ui-motion-exit: 140ms;
+  --ui-motion-surface: 240ms;
+  --ui-motion-layout: 260ms;
+  --ui-ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ui-ease-layout: cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Fixed track count allows grid interpolation. Closed panes are inert immediately. */
+.workspace { --ui-rail-width: 220px; --ui-panel-width: 304px; --ui-rail-height: 140px; }
+.workspace, .workspace.left-hidden, .workspace.right-hidden, .workspace.left-hidden.right-hidden {
+  grid-template-columns: var(--ui-rail-width) minmax(0, 1fr) var(--ui-panel-width);
+  transition: grid-template-columns var(--ui-motion-layout) var(--ui-ease-layout);
+}
+.workspace.left-hidden { grid-template-columns: 0px minmax(0, 1fr) var(--ui-panel-width); }
+.workspace.right-hidden { grid-template-columns: var(--ui-rail-width) minmax(0, 1fr) 0px; }
+.workspace.left-hidden.right-hidden { grid-template-columns: 0px minmax(0, 1fr) 0px; }
+.slide-rail, .property-panel { min-width: 0; overflow: hidden; transition: opacity var(--ui-motion-reveal) var(--ui-ease-out), translate var(--ui-motion-layout) var(--ui-ease-out), visibility 0s; }
+.workspace .slide-rail { grid-column: 1; }
+.stage-column { grid-column: 2; }
+.workspace .property-panel { grid-column: 3; }
+.workspace.left-hidden .slide-rail, .workspace.right-hidden .property-panel { display: flex; opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0s, var(--ui-motion-layout); }
+.workspace.left-hidden .slide-rail { translate: -8px 0; }
+.workspace.right-hidden .property-panel { translate: 8px 0; }
+.rail-content, .property-content { display: flex; flex-direction: column; min-height: 0; height: 100%; flex: 1; }
+.rail-content { width: calc(var(--ui-rail-width) - 1px); flex: none; }
+.property-content { width: calc(var(--ui-panel-width) - 1px); flex: none; }
+.panel-swap, .modal, .auto-layout-dialog, .notes-panel, .notice-toast, .busy-toast { animation: none; }
+.panel-tabs .panel-close { flex: none; }
+/* Focus composition settles in one layout pass; the canvas owns its FLIP. */
+[data-ui-reframing] :is(.workspace, .slide-rail, .property-panel) { transition: none !important; }
+
+/* Colour feedback is immediate enough for repeated editing; position stays direct. */
+.editor-app button:not(.resize-handle), .editor-app .layer-row,
+.modal button, .auto-layout-dialog button, .presentation-controls button, .character-library button {
+  transition: background-color var(--ui-motion-feedback) ease, color var(--ui-motion-feedback) ease, border-color var(--ui-motion-feedback) ease, opacity var(--ui-motion-feedback) ease, scale var(--ui-motion-feedback) var(--ui-ease-out);
+}
+:where(.editor-app, .modal, .auto-layout-dialog, [popover]) :is(.icon-btn, .text-btn):not(:disabled):active { transform: none; scale: 1; }
+.stage-canvas { transform-origin: center; }
+.thumb-image { transition: translate var(--ui-motion-reveal) var(--ui-ease-out), outline-color var(--ui-motion-feedback) ease, border-color var(--ui-motion-feedback) ease; }
+.slide-thumb.current .thumb-number { transition: color var(--ui-motion-feedback) ease; }
+.slide-thumb:hover .thumb-image { transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .slide-thumb:hover .thumb-image { translate: none; }
+  :is(.template-item, .library-item):hover > .canvas-wrap { translate: none; }
+  :is(.template-item, .library-item) > .canvas-wrap { transition: translate var(--ui-motion-reveal) var(--ui-ease-out), box-shadow var(--ui-motion-reveal) ease; }
+}
+
+/* Background markers sit behind text; tab markers sit along the divider. */
+[data-ui-indicator] { position: relative; isolation: isolate; }
+[data-ui-indicator]::before {
+  content: ''; position: absolute; pointer-events: none; z-index: -1;
+  left: 0; top: 0; translate: var(--ui-marker-x, 0px) var(--ui-marker-y, 0px); width: var(--ui-marker-w, 0px); height: var(--ui-marker-h, 0px);
+  opacity: var(--ui-marker-opacity, 0); border-radius: var(--r-control); background: var(--surface-raised);
+  box-shadow: 0 1px 3px var(--border-subtle);
+  transition: translate var(--ui-motion-reveal) var(--ui-ease-out), width var(--ui-motion-reveal) var(--ui-ease-out), opacity var(--ui-motion-feedback) ease;
+}
+.seg[data-ui-indicator] button[aria-pressed='true'] { background: transparent; box-shadow: none; }
+:is(.panel-tabs, .resource-tabs, .character-tabs)[data-ui-indicator]::before { top: auto; bottom: 0; translate: var(--ui-marker-x, 0px) 0; height: 2px; border-radius: 0; background: var(--accent); box-shadow: none; }
+:is(.panel-tabs, .resource-tabs, .character-tabs)[data-ui-indicator] button { border-bottom-color: transparent; }
+.modal::backdrop, .auto-layout-dialog::backdrop { opacity: var(--ui-surface-progress); animation: none; }
+.resource-filters { animation: none; }
+.resource-large-preview img { animation-duration: var(--ui-motion-reveal); animation-timing-function: var(--ui-ease-out); }
+.editor-tooltip { translate: 0 3px; transition: opacity var(--ui-motion-feedback) ease, translate var(--ui-motion-feedback) var(--ui-ease-out), visibility 0s var(--ui-motion-feedback); }
+.editor-tooltip.visible { translate: 0 0; transition-delay: 0s; }
+:is(.font-dropdown, .ui-action-menu, .ui-command-popover, .ui-popover-panel, .canvas-layer-picker) {
+  --ui-popover-offset: 4px;
+  opacity: 0; translate: 0 var(--ui-popover-offset);
+  transition: opacity var(--ui-motion-exit) ease, translate var(--ui-motion-exit) var(--ui-ease-out);
+  transition: opacity var(--ui-motion-exit) ease, translate var(--ui-motion-exit) var(--ui-ease-out), display var(--ui-motion-exit) allow-discrete, overlay var(--ui-motion-exit) allow-discrete;
+}
+:is(.font-dropdown, .ui-action-menu, .ui-command-popover, .ui-popover-panel, .canvas-layer-picker):popover-open {
+  opacity: 1; translate: 0 0; transition-duration: var(--ui-motion-reveal);
+}
+.ui-action-menu[data-ui-placement='above'], .ui-command-popover[data-ui-placement='above'], .ui-popover-panel[data-ui-placement='above'] { --ui-popover-offset: -4px; }
+:is(.font-dropdown, .ui-action-menu, .ui-command-popover, .ui-popover-panel, .canvas-layer-picker):not(:popover-open) { pointer-events: none; }
+@starting-style { :is(.font-dropdown, .ui-action-menu, .ui-command-popover, .ui-popover-panel, .canvas-layer-picker):popover-open { opacity: 0; translate: 0 var(--ui-popover-offset); } }
+.ui-action-menu-trigger svg:last-child { transition: rotate var(--ui-motion-reveal) var(--ui-ease-out); }
+.ui-action-menu-trigger:not(.icon-only) [aria-expanded='true'] svg:last-child { rotate: 180deg; }
+/* Selection chrome appears once, without animating the element or pointer handles. */
+.stage-canvas .selection-outline { animation: ui-selection-in var(--ui-motion-feedback) ease; }
+.stage-canvas .gesturing .selection-outline { animation: none; }
+@keyframes ui-selection-in { from { opacity: .35; } to { opacity: 1; } }
+.save-state { transition: color var(--ui-motion-feedback) ease; }
+.save-state[data-saving='true'] { color: var(--info-text); }
+.save-state[data-save-error='true'] { color: var(--danger-text); }
+.canvas-meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.font-trigger svg:last-child, .font-options summary svg { transform: none; transition: rotate var(--ui-motion-reveal) var(--ui-ease-out); }
+.font-trigger[aria-expanded='true'] svg:last-child, .font-options[open] summary svg { rotate: 180deg; }
+
+@media (min-width: 1800px) { .workspace { --ui-rail-width: 240px; --ui-panel-width: 320px; } }
+@media (min-width: 761px) and (max-width: 1100px) { .workspace { --ui-rail-width: 180px; --ui-panel-width: 280px; } }
+@media (max-width: 760px) {
+  .workspace { --ui-panel-width: min(304px, calc(100vw - 24px)); }
+  .workspace .slide-rail { height: var(--ui-rail-height); transition: height var(--ui-motion-layout) var(--ui-ease-layout), opacity var(--ui-motion-reveal) ease, visibility 0s; }
+  .workspace.left-hidden .slide-rail { height: 0; translate: none; border-top-width: 0; transition-delay: 0s, 0s, var(--ui-motion-layout); }
+  .rail-content { flex-direction: row; width: 100%; height: var(--ui-rail-height); align-items: stretch; }
+  .property-content { width: 100%; }
+  .workspace .property-panel { width: var(--ui-panel-width); bottom: calc(var(--ui-rail-height) + 8px); transition: translate var(--ui-motion-surface) var(--ui-ease-out), opacity var(--ui-motion-reveal) ease, bottom var(--ui-motion-layout) var(--ui-ease-layout), visibility 0s; }
+  .workspace.left-hidden .property-panel { bottom: 8px; }
+  .workspace.right-hidden .property-panel { translate: 16px 0; transition-delay: 0s, 0s, 0s, var(--ui-motion-surface); }
+}
+@media (max-width: 760px) and (max-height: 520px) {
+  .workspace { --ui-rail-height: 104px; }
+  .slide-list { padding-top: 8px; padding-bottom: 8px; }
+  .slide-thumb { width: 116px; }
+  .canvas-hint, .source-caption { display: none; }
+  .selection-context { top: 0; }
+  .canvas-stage:has(.selection-context) .canvas-meta { visibility: hidden; }
+}
+
+/* Both the OS preference and the editor preference remove spatial motion. */
+html[data-ui-motion='reduced'] { --ui-motion-feedback: 0ms; --ui-motion-reveal: 0ms; --ui-motion-exit: 0ms; --ui-motion-surface: 0ms; --ui-motion-layout: 0ms; }
+html[data-ui-motion='reduced'] :is(.editor-app, .modal, [popover], .editor-tooltip, .character-library),
+html[data-ui-motion='reduced'] :is(.editor-app, .modal, [popover], .editor-tooltip, .character-library) *,
+html[data-ui-motion='reduced'] :is(.editor-app, .modal, [popover], .editor-tooltip, .character-library)::before,
+html[data-ui-motion='reduced'] :is(.editor-app, .modal, [popover], .editor-tooltip, .character-library) *::before,
+html[data-ui-motion='reduced'] :is(.editor-app, .modal, [popover], .editor-tooltip, .character-library) *::after,
+html[data-ui-motion='reduced'] :is(.modal, .auto-layout-dialog)::backdrop {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important;
+}
+html[data-ui-motion='reduced'] :is(.presentation-controls, .presenter-notes),
+html[data-ui-motion='reduced'] .presentation-controls * { animation: none !important; transition: none !important; }
+html[data-ui-motion='reduced'] :is(.icon-btn, .text-btn):active { scale: 1; }
+html[data-ui-motion='reduced'] :is(.thumb-image, .editor-tooltip, .template-item > .canvas-wrap, .library-item > .canvas-wrap) { translate: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --ui-motion-feedback: 0ms; --ui-motion-reveal: 0ms; --ui-motion-exit: 0ms; --ui-motion-surface: 0ms; --ui-motion-layout: 0ms; }
+  :is(.icon-btn, .text-btn):active { scale: 1; }
+  :is(.thumb-image, .editor-tooltip, .template-item > .canvas-wrap, .library-item > .canvas-wrap) { translate: none; }
+}
+@media print { .stage-canvas, .panel-swap { opacity: 1 !important; translate: none !important; scale: 1 !important; } }

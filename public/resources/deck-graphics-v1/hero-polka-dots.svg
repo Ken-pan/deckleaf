@@ -1,0 +1,13 @@
+<!-- Hero · Polka dots — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/polka-dots.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="#26362c"><title>Hero · Polka dots</title><defs><pattern id="tile" width="40" height="40" patternUnits="userSpaceOnUse"><g transform="scale(2)">
+    
+    
+    
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="dots" fill="#26362c">
+            <circle id="Oval-377-Copy-9" cx="3" cy="3" r="3"></circle>
+            <circle id="Oval-377-Copy-14" cx="13" cy="13" r="3"></circle>
+        </g>
+    </g>
+</g></pattern></defs><rect width="1600" height="900" fill="url(#tile)" opacity="0.2"/></svg>

@@ -1,0 +1,111 @@
+/* Interaction chrome shares the cursor contract; document artwork is untouched. */
+:is(.icon-btn, .text-btn, .ui-button) { --feedback-rest: transparent; }
+.text-btn.primary { --feedback-rest: var(--action-solid-bg); }
+.text-btn.ghost { --feedback-rest: var(--field-surface); }
+.text-btn.danger { --feedback-rest: var(--action-danger-bg); }
+:is(.icon-btn.on, .text-btn.active, .icon-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']) { --feedback-rest: var(--state-selected); }
+.icon-btn[aria-pressed='mixed'] { --feedback-rest: var(--state-hover); }
+:root :is(.icon-btn, .text-btn, .ui-button):is(:disabled, [aria-disabled='true']):is(:hover, :active) {
+  background: var(--feedback-rest); box-shadow: none; scale: 1;
+}
+:root :is(.ui-action-menu, .ui-command-results, .canvas-layer-picker) button:is(:disabled, [aria-disabled='true']) { background: transparent; box-shadow: none; scale: 1; }
+:root .font-trigger:disabled:hover { background: var(--field-surface); border-color: var(--field-border); }
+:root :is(.ui-action-menu button, .ui-command-results > button, .canvas-layer-picker button):not(:disabled):not([aria-disabled='true']):active { background: var(--state-active); }
+:root .ui-action-menu button[data-tone='danger']:not(:disabled):active { background: var(--action-danger-bg-active); }
+/* The selected marker owns segmented fills, even when its button is hovered. */
+:root .editor-app .seg[data-ui-indicator] button[aria-pressed='true']:hover:not(:active) { background: transparent; }
+
+/* A layer is one surface; its name never adds a second rounded fill. */
+:root :is(.layer-row, .layer-group) :is(.layer-name, .layer-group-name):is(:hover, :active) { background: transparent; }
+:root :is(.layer-row, .layer-group):has(:is(.layer-name, .layer-group-name):active) { background: var(--state-active); }
+:root :is(.layer-row, .layer-group):has(:is(.layer-name, .layer-group-name):focus-visible) { outline: 2px solid var(--accent-line); outline-offset: -2px; }
+:root :is(.layer-row, .layer-group) :is(.layer-name, .layer-group-name):focus-visible { outline: none; }
+
+/* Feedback communicates state without moving targets or drawing a second edge. */
+:root :is(.editor-app, .modal, [popover], .brand-guide) :is(.text-btn, .icon-btn, .ui-button):active { transform: none; scale: 1; }
+:root :is(.editor-app, .modal, [popover], .brand-guide) button:not(:disabled):not([aria-disabled='true']):active { transition-duration: 0s; }
+:root :is(.editor-app, .modal, [popover], .brand-guide) :is(button, input, select, textarea):is(:disabled, [aria-disabled='true']) { transition: none; }
+:root :is(.editor-app, .modal, [popover], .brand-guide) button:is(:disabled, [aria-disabled='true']):not([aria-busy='true']) { opacity: 1; color: var(--text-disabled); }
+:root :is(.object-properties:disabled, .motion-panel fieldset:disabled, fieldset:disabled .layout-style-options, fieldset:disabled .seg) { opacity: 1; }
+/* Values still describe the current selection while editing is unavailable. */
+:root :is(.editor-app, .modal, [popover], .brand-guide) :is(input, select, textarea):is(:disabled, [aria-disabled='true']) { color: var(--text-secondary); }
+:root :is(.editor-app, .modal, [popover], .brand-guide) :is(input, select, textarea)[aria-disabled='true']:hover { border-color: var(--field-border); }
+:root .field-inline:has(input:disabled):hover { border-color: var(--field-border); }
+:root .font-trigger:not(:disabled):active { background: var(--state-active); border-color: var(--border-strong); }
+:root :is(.editor-app, .modal, [popover], .brand-guide) button[aria-busy='true'] { opacity: 1; }
+:root button[aria-disabled='true']:not([aria-busy='true']) { color: var(--text-disabled); }
+:root .text-btn:is(.primary, .danger):is(:disabled, [aria-disabled='true']):not([aria-busy='true']) { --feedback-rest: var(--field-surface); background: var(--field-surface); border-color: var(--field-border); color: var(--text-disabled); }
+:root :is(.icon-btn, .text-btn, .ui-filter-chip)[aria-pressed='true']:not(:disabled):not([aria-disabled='true']):active { background: var(--state-selected-active); }
+:root .import-drop:disabled:hover { background: var(--field-surface); }
+/* One indicator replaces an existing leading glyph; the action name stays visible. */
+.ui-button[aria-busy='true'] > .lucide-icon:first-of-type { display: none; }
+:root .spinner { animation-duration: 900ms; }
+:root .resource-skeleton > div { animation: none; }
+
+/* Scrollable choices keep the complete keyboard outline inside their row. */
+:root :is(.ui-command-results > button, .font-dropdown-list > button, .resource-preview-button, .layout-suggestion, .ai-preview):focus-visible { outline: 2px solid var(--accent-line); outline-offset: -2px; }
+:root .font-row:has(.font-choice:focus-visible) { outline: 2px solid var(--accent-line); outline-offset: -2px; background: var(--state-hover); }
+:root .font-row.chosen:has(.font-choice:focus-visible) { background: var(--state-selected); }
+:root .font-choice:focus-visible { outline: none; }
+:root .resource-preview-button:focus-visible .resource-thumb { outline: none; }
+:root :is(.transition-option, .transition-categories .ui-button, .motion-disclosure > summary):focus-visible { outline-color: var(--accent-line); }
+
+/* Tile choices have their own resting surface, shared with disabled/touch feedback. */
+.transition-option { --feedback-rest: var(--surface-chrome); --feedback-border: var(--border-subtle); }
+.layout-style-options > button { --feedback-rest: var(--surface-chrome); --feedback-border: var(--border-default); }
+:is(.transition-option, .layout-style-options > button)[aria-pressed='true'] { --feedback-rest: var(--state-selected); --feedback-border: var(--accent-line); }
+:root :is(.transition-option, .layout-style-options > button):disabled:is(:hover, :active) { background: var(--feedback-rest); border-color: var(--feedback-border); }
+:root :is(.transition-option, .layout-style-options > button):not(:disabled):active { background: var(--state-active); }
+:root :is(.transition-option, .layout-style-options > button)[aria-pressed='true']:not(:disabled):active { background: var(--state-selected-active); }
+
+/* Drag placeholders stay still, and insertion markers remain in the scrollport. */
+:root .slide-thumb:focus-visible { outline: 2px solid var(--accent-line); outline-offset: -2px; border-radius: var(--r-control); }
+:root .slide-thumb.dragging .thumb-image { translate: none; transition: none; }
+.slide-thumb.drop-before::before { top: 0; }
+.slide-thumb.drop-after::after { bottom: 0; }
+.pane-resizer.gesture-pane { background: var(--accent-line); }
+/* A held gesture owns feedback; cached chrome hover must not suggest a click. */
+:root:is([data-pointer-cursor], :has(.slide-thumb.dragging), :has(.canvas-stage.is-file-drop)) :is(.icon-btn, .text-btn, .ui-button):hover:not(:active) { background: var(--feedback-rest); }
+:root:is([data-pointer-cursor], :has(.slide-thumb.dragging), :has(.canvas-stage.is-file-drop)) .layer-row:not(.chosen):not(:has(:focus-visible)) { background: transparent; }
+:root:is([data-pointer-cursor], :has(.slide-thumb.dragging), :has(.canvas-stage.is-file-drop)) .resize-handle:not(.gesture-handle)::after { background: var(--surface-raised); }
+.canvas-stage.is-file-drop .hover-outline { display: none; }
+.canvas-stage.is-file-drop { box-shadow: inset 0 0 0 2px var(--accent-line); }
+.canvas-drop-feedback { position: absolute; inset: 16px 16px auto; z-index: 80; display: flex; justify-content: center; pointer-events: none; }
+.canvas-drop-feedback > span { padding: 8px 12px; border: 1px solid var(--accent-line); border-radius: var(--r-control); background: var(--surface-overlay); color: var(--text-primary); box-shadow: var(--shadow-sm); font: var(--ui-label)/var(--ui-line-body) var(--font-ui); }
+
+@media (hover: hover) and (pointer: fine) {
+  :root :is(.icon-btn, .text-btn, .ui-filter-chip)[aria-pressed='true']:not(:disabled):not(:active):hover { background: var(--state-selected-hover); }
+  :root :is(.transition-option, .layout-style-options > button)[aria-pressed='true']:not(:disabled):not(:active):hover { background: var(--state-selected-hover); }
+  /* Preview targets are quieter than persistent resource selections. */
+  .resource-tile:not(.selected):not(.picked) .resource-preview-button:not(:disabled):hover .resource-thumb { outline: 1px solid var(--border-strong); outline-offset: -1px; }
+}
+@media (hover: none) {
+  :root .icon-btn:hover:not(:active):not(:focus-visible):not(.on):not(.layer-state):not([aria-pressed='true']):not([aria-pressed='mixed']) { color: var(--text-secondary); }
+  :root :is(.transition-option, .layout-style-options > button):hover:not(:active) { background: var(--feedback-rest); border-color: var(--feedback-border); }
+  /* Touch retains pressed, selected and keyboard feedback without sticky hover. */
+  :root :is(.icon-btn, .text-btn, .ui-button):hover:not(:active) { background: var(--feedback-rest); }
+  :root .seg[data-ui-indicator] button:hover:not(:active) { background: transparent; }
+  :root .seg:not([data-ui-indicator]) button:hover:not([aria-pressed='true']):not(:active) { background: transparent; }
+  :root :is(.ui-action-menu button, .ui-command-results > button, .canvas-layer-picker button):hover:not(:active):not(:focus-visible):not([aria-pressed='true']) { background: transparent; }
+  :root .layer-row:not(.chosen):not(:has(:focus-visible)):not(:has(:active)) { background: transparent; }
+  :root .font-row:not(.chosen):not(:has(:focus-visible)):not(:has(:active)) { background: transparent; }
+  :root .font-dropdown-list > button:hover:not(.highlighted):not([aria-selected='true']):not(:active) { background: transparent; }
+  :root .resource-tile:not(.selected):not(.picked):not(:has(:focus-visible)) .resource-thumb { outline: none; }
+  :root .slide-thumb:not(.current):hover .thumb-image { border-color: var(--border-subtle); box-shadow: none; translate: none; }
+  :root .pane-resizer:not(.gesture-pane):not(:focus-visible) { background: transparent; }
+}
+@media (max-width: 760px) {
+  /* Slide order follows the horizontal mobile rail. */
+  .slide-thumb.drop-before::before, .slide-thumb.drop-after::after { top: 0; bottom: 0; width: 3px; height: auto; }
+  .slide-thumb.drop-before::before { left: 0; right: auto; }
+  .slide-thumb.drop-after::after { right: 0; left: auto; }
+}
+@media (forced-colors: active) {
+  :root :is(.editor-app, .modal, [popover], .brand-guide) :is(button, input, select, textarea):disabled:not([aria-busy='true']) { opacity: 1; color: GrayText; }
+  :root :is(.editor-app, .modal, [popover], .brand-guide) :focus-visible { outline-color: Highlight; }
+  :root :is(.icon-btn, .text-btn, .ui-filter-chip)[aria-pressed='true']:not(:focus-visible) { outline: 1px solid Highlight; outline-offset: -1px; }
+}
+
+.skip-link{position:fixed;top:12px;left:12px;z-index:2000;translate:0 -160%;padding:8px 12px;background:var(--surface-overlay);border:1px solid var(--border-default);border-radius:var(--r-control)}.skip-link:focus{translate:none;outline:2px solid var(--accent-line);outline-offset:2px}.property-panel:focus-visible{outline:2px solid var(--accent-line);outline-offset:-2px}
+
+:root .modal-body:focus-visible{outline:2px solid var(--accent-line);outline-offset:-2px}

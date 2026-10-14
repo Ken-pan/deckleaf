@@ -1,0 +1,2 @@
+<!-- Diagonal hatch — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="#26362c"><title>Diagonal hatch</title><defs><pattern id="tile" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M-4 4L4-4M0 28L28 0M24 32L32 24" stroke="#26362c" stroke-width="1.3" fill="none"/></pattern></defs><rect width="1600" height="900" fill="url(#tile)" opacity="0.2"/></svg>

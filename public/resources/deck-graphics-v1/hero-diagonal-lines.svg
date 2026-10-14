@@ -1,0 +1,13 @@
+<!-- Hero · Fine diagonals — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/diagonal-lines.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="#26362c"><title>Hero · Fine diagonals</title><defs><pattern id="tile" width="24" height="24" patternUnits="userSpaceOnUse"><g transform="scale(4)">
+    
+    
+    
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-3-Copy-2" fill="#26362c">
+            <polygon id="Rectangle-9" points="5 0 6 0 0 6 0 5"></polygon>
+            <polygon id="Rectangle-9-Copy" points="6 5 6 6 5 6"></polygon>
+        </g>
+    </g>
+</g></pattern></defs><rect width="1600" height="900" fill="url(#tile)" opacity="0.2"/></svg>

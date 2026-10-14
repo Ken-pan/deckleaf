@@ -1,0 +1,31 @@
+import type { SlideElement, TextRun, TextParagraph } from './model';
+import { fontStack } from './font-stack';
+import { scaledTextStyle as resizeTextStyle } from './text-sizing';
+export function createTypography(makeFontStack: (family: string) => string) {
+function runStyle(r: TextRun) {
+  return `font-family:${r.fontFamily ? makeFontStack(r.fontFamily) : 'inherit'};font-size:${r.fontSize ? r.fontSize + 'px' : 'inherit'};font-weight:${r.fontWeight ?? (r.bold === undefined ? 'inherit' : r.bold ? 700 : 400)};font-style:${r.italic === undefined ? 'inherit' : r.italic ? 'italic' : 'normal'};color:${r.color ?? 'inherit'};text-decoration:${r.underline === undefined ? 'inherit' : r.underline ? 'underline' : 'none'};letter-spacing:${r.letterSpacing === undefined ? 'inherit' : r.letterSpacing + 'px'};vertical-align:${r.baseline === 'super' ? 'super' : r.baseline === 'sub' ? 'sub' : 'baseline'};`;
+}
+function paragraphStyle(p: TextParagraph, e: SlideElement, index = e.paragraphs?.indexOf(p) ?? -1) {
+  const visible = p.runs.filter(r=>r.text.length);
+  const size = visible.length ? Math.max(...visible.map(r => r.fontSize ?? e.fontSize)) : e.fontSize;
+  const before = e.paragraphSpacingAtEdges === false && index === 0 ? 0 : p.spaceBefore;
+  const after = e.paragraphSpacingAtEdges === false && index === (e.paragraphs?.length ?? 0)-1 ? 0 : p.spaceAfter;
+  const end=p.endStyle?`--deck-end-content:'\\200b';--deck-end-size:${p.endStyle.fontSize??e.fontSize}px;--deck-end-font:${makeFontStack(p.endStyle.fontFamily??e.fontFamily)};`:'';
+  return `${end}font-size:${size}px;text-align:${p.align};line-height:${p.lineSpacing ? p.lineSpacing + 'px' : p.lineHeight ?? e.lineHeight};margin:0;padding-top:${before}px;padding-bottom:${after}px;margin-left:${p.indent}px;text-indent:${p.firstLineIndent}px;min-height:${p.lineSpacing ?? (p.lineHeight ?? e.lineHeight) * size}px;`;
+}
+function textBoxStyle(e: SlideElement) {
+  const p = e.padding ?? {left: 0, right: 0, top: 0, bottom: 0};
+  return `padding:${p.top}px ${p.right}px ${p.bottom}px ${p.left}px;display:flex;flex-direction:column;justify-content:${e.verticalAlign === 'middle' ? 'center' : e.verticalAlign === 'bottom' ? 'flex-end' : 'flex-start'};white-space:${e.textSizing === 'auto-width' || !e.wrap ? 'pre' : 'pre-wrap'};overflow:${e.clipText === false ? 'visible' : 'hidden'};`;
+}
+function textFlowStyle(e: SlideElement) {
+  return `width:100%;flex-shrink:0;${e.maxLines ? `display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:${e.maxLines};overflow:hidden;` : ''}`;
+}
+function imageStyle(e: SlideElement) {
+  const c = e.crop;
+  return c ? `position:absolute;max-width:none;width:${100 / (1 - c.left - c.right)}%;height:${100 / (1 - c.top - c.bottom)}%;left:${-c.left * 100 / (1 - c.left - c.right)}%;top:${-c.top * 100 / (1 - c.top - c.bottom)}%;object-fit:fill;` : `width:100%;height:100%;object-fit:${e.fit};`;
+}
+
+return {runStyle, paragraphStyle, textBoxStyle, textFlowStyle, imageStyle};
+}
+export const {runStyle, paragraphStyle, textBoxStyle, textFlowStyle, imageStyle} = createTypography(fontStack);
+export { resizeTextStyle as scaledTextStyle };

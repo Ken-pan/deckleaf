@@ -1,0 +1,16 @@
+{
+  "schema": "deck-studio/character-authoring/1",
+  "characters": [
+    {"id":"yun","label":"卷发圆镜","originalId":"person-01-thinking","identity":"短卷发、柔和圆脸、圆眼镜、成年身体比例；眼镜版本独立于身份。","masterVariantId":"yun-search-confused-shirt","identityRevision":1},
+    {"id":"an","label":"齐肩短发","originalId":"person-03-listening","identity":"齐肩侧分短发、柔和椭圆脸、成年身体比例；同一白色座椅。","masterVariantId":"an-search-confused-shirt","identityRevision":1},
+    {"id":"qiao","label":"短发轮椅","originalId":"person-04-participating","identity":"整齐侧分短发、柔和圆脸、成年身体比例；同一手动轮椅。","masterVariantId":"qiao-search-confused-shirt","identityRevision":1}
+  ],
+  "scenes": [{"id":"search","label":"搜索"},{"id":"form","label":"填表"},{"id":"recovery","label":"错误恢复"}],
+  "palette": {"skin":"#ffffff","clothes":"#2f5bff","hair":"#161616","accent":"#2f5bff"},
+  "autoMasks": {
+    "yun": {"headRect":[0.17,0.04,0.36,0.35],"defaultAccessory":"round-glasses","clothesBounds":{"maxX":0.49,"minY":0.26,"maxY":0.67},"handSeeds":{"search":[[0.22786458333333334,0.50390625],[0.380859375,0.345703125]],"form":[[0.24739583333333334,0.4755859375],[0.4557291666666667,0.32421875]],"recovery":[[0.22786458333333334,0.595703125],[0.3600260416666667,0.1904296875]]}},
+    "an": {"headRect":[0.17,0.04,0.415,0.35],"clothesBounds":{"maxX":0.49,"minY":0.26,"maxY":0.67},"handSeeds":{"search":[[0.419921875,0.4150390625],[0.41015625,0.5419921875]],"form":[[0.33984375,0.4990234375],[0.4856770833333333,0.349609375]],"recovery":[[0.3834635416666667,0.5478515625],[0.40234375,0.232421875]]}},
+    "qiao": {"headRect":[0.15,0.04,0.355,0.37],"clothesBounds":{"maxX":0.49,"minY":0.26,"maxY":0.67},"handSeeds":{"search":[[0.4322916666666667,0.373046875],[0.2701822916666667,0.5595703125]],"form":[[0.26953125,0.5244140625],[0.4837239583333333,0.353515625]],"recovery":[[0.2688802083333333,0.5556640625],[0.3587239583333333,0.2197265625]]}}
+  },
+  "variants": {}
+}

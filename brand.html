@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-palette="forest">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#055841" />
+    <script>
+      try {
+        const saved = JSON.parse(localStorage.getItem('deck-studio-settings') || '{}');
+        if (saved.theme === 'system') delete document.documentElement.dataset.theme;
+        else if (['light', 'dark'].includes(saved.theme)) document.documentElement.dataset.theme = saved.theme;
+        if (['indigo', 'ocean', 'violet', 'rose', 'paper', 'forest', 'graphite'].includes(saved.palette)) document.documentElement.dataset.palette = saved.palette;
+      } catch { /* Use the default ink green appearance. */ }
+    </script>
+    <title>Brand guidelines · Deckleaf</title>
+    <link rel="alternate icon" href="/favicon.ico?v=60dd18a86bab" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=60dd18a86bab" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png?v=60dd18a86bab" />
+  </head>
+  <body><div id="app"></div><script type="module" src="/src/brand-guide.ts"></script></body>
+</html>

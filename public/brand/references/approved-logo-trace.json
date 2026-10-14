@@ -1,0 +1,34 @@
+{
+  "source": "public/brand/references/approved-logo-source.png",
+  "sha256": "c13f7da15b77f9acbacdd841bc9e213f8c3b5b0a24f5ca535f5a188b654324bf",
+  "sourceSize": [
+    1254,
+    1254
+  ],
+  "bounds": [
+    308,
+    341,
+    947,
+    878
+  ],
+  "color": "#055841",
+  "method": "Cubic Bezier source trace; tangent card corners and rear cap regularized; transforms baked with SVGO",
+  "options": {
+    "threshold": 163,
+    "turdSize": 12,
+    "alphaMax": 1,
+    "optCurve": true,
+    "optTolerance": 0.2,
+    "blackOnWhite": true,
+    "color": "#055841"
+  },
+  "scale": 0.1375,
+  "offset": [
+    6,
+    13.012499999999996
+  ],
+  "svgBytes": 1403,
+  "contourCount": 2,
+  "cornerRadiusSourcePixels": 82,
+  "rearCapRadiusSourcePixels": 67
+}

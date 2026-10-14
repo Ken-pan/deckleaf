@@ -1,0 +1,28 @@
+import { PageLayoutSchema, type Deck, type Slide, type PageLayout } from './model';
+import type { Bounds } from './interactions';
+import type { Operation } from './operations';
+
+export type PageSize = Pick<Deck, 'width' | 'height'>;
+export function defaultPageLayout(page: PageSize): PageLayout {
+  const margin = Math.round(Math.min(page.width, page.height) * .08);
+  return {margins: {top: margin, right: margin, bottom: margin, left: margin}, columns: 1, gutter: Math.round(Math.min(page.width, page.height) * .03)};
+}
+export function pageLayout(page: PageSize, slide: Pick<Slide, 'layout'>): PageLayout { return slide.layout ?? defaultPageLayout(page); }
+export function contentBounds(page: PageSize, slide: Pick<Slide, 'layout'>): Bounds {
+  const {margins: m} = pageLayout(page, slide);
+  return {x: m.left, y: m.top, w: page.width - m.left - m.right, h: page.height - m.top - m.bottom};
+}
+export function columnBounds(page: PageSize, slide: Pick<Slide, 'layout'>): Bounds[] {
+  const box = contentBounds(page, slide), {columns, gutter} = pageLayout(page, slide);
+  const width = (box.w - (columns - 1) * gutter) / columns;
+  return Array.from({length: columns}, (_, i) => ({...box, x: box.x + i * (width + gutter), w: width}));
+}
+export function pageLayoutOperations(deck: Deck, slideId: string, value: PageLayout, all = false): Operation[] {
+  const parsed = PageLayoutSchema.safeParse(value);
+  if (!parsed.success) { const field=parsed.error.issues[0]?.path[0]; throw new Error(field==='columns'?'Use a whole number from 1 to 12 for columns.':field==='gutter'?'Use a nonnegative number for the column gap.':'Margins must be nonnegative and fit within the slide dimensions.'); }
+  const layout = parsed.data, m = layout.margins;
+  if (deck.width - m.left - m.right < 1 || deck.height - m.top - m.bottom < 1) throw new Error('Margins must leave at least 1 px of usable slide space.');
+  if (deck.width - m.left - m.right - (layout.columns - 1) * layout.gutter < layout.columns) throw new Error('The column gap is too large. Reduce the number of columns, the gap, or the side margins.');
+  if (!deck.slides.some(s => s.id === slideId)) throw new Error('The slide has changed. Reopen layout settings.');
+  return deck.slides.filter(s => (all || s.id === slideId) && JSON.stringify(s.layout) !== JSON.stringify(layout)).map(s => ({op: 'update_slide', slideId: s.id, patch: {layout}}));
+}

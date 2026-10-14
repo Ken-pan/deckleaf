@@ -1,0 +1,10 @@
+export type GraphicRecipe = {strength:number;scale:number;rotation:number};
+export type GraphicInfo = {family:string;familyLabel:string;category:string;description:string;useCases:string[];repeatable:boolean;focus:{x:number;y:number}};
+export const DEFAULT_GRAPHIC_RECIPE: Readonly<GraphicRecipe>;
+export const GRAPHIC_FAMILIES: ReadonlyArray<{id:string;label:string}>;
+export function normalizeGraphicRecipe(raw?:unknown):GraphicRecipe;
+export function graphicInfo(record:{id:string;title?:string;category?:string}):GraphicInfo;
+export function graphicSearchScore(item:{id:string;title:string;category?:string;tags?:string[]},query?:string):number;
+export function graphicFacets<T extends {id:string;title:string;category?:string;tags?:string[]}>(items:T[],query?:string,category?:string):{id:string;label:string;count:number}[];
+export function customizeGraphic(svg:string,color:string,raw?:unknown,repeatable?:boolean):string;
+export function graphicDetailSvg(svg:string,info:GraphicInfo,width?:number,height?:number):string;

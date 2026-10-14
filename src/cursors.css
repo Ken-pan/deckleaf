@@ -1,0 +1,17 @@
+/* Keep control affordances independent of document typography and theme. */
+:is(input, textarea):not(:disabled) { cursor: text; }
+:is(select, summary, input[type='color'], input[type='checkbox'], input[type='radio'], input[type='range'], input[type='file']):not(:disabled) { cursor: pointer; }
+input[type='number']::-webkit-inner-spin-button { cursor: pointer; }
+.slide-thumb[draggable='true'] { cursor: grab; }
+.slide-thumb.dragging { cursor: grabbing; }
+.slide-thumb .slide-render { cursor: inherit; }
+
+/* :disabled includes controls disabled by a fieldset, not just attributes. */
+:root :where(button, input, textarea, select, summary, [role='button'], [role='menuitem'], [role='option']):is(:disabled, [aria-disabled='true']),
+:root label:has(:is(input, textarea, select):disabled) { cursor: not-allowed; }
+input[type='number']:disabled::-webkit-inner-spin-button { cursor: not-allowed; }
+:root button[aria-busy='true'] { cursor: progress; }
+
+/* Only an active pointer gesture overrides descendants. Release restores each
+   control's own cursor, including disabled fields and editable text. */
+:root[data-pointer-cursor], :root[data-pointer-cursor] * { cursor: var(--pointer-cursor) !important; }

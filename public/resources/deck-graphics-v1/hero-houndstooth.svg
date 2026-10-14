@@ -1,0 +1,15 @@
+<!-- Hero · Houndstooth — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/houndstooth.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="#26362c"><title>Hero · Houndstooth</title><defs><pattern id="tile" width="48" height="48" patternUnits="userSpaceOnUse"><g transform="scale(2)">
+    
+    
+    
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="houndstooth" fill="#26362c">
+            <polygon id="Rectangle-20" points="1.99840144e-15 18 6 18 12 12 12 18 18 18 12 24 3.99680289e-15 24"></polygon>
+            <polygon id="Rectangle-20-Copy" points="24 18 24 24 18 24"></polygon>
+            <polygon id="Rectangle-20-Copy-2" points="24 1.77635684e-15 18 6 12 6 18 1.77635684e-15"></polygon>
+            <polygon id="Rectangle-20-Copy-3" points="12 -4.08562073e-14 12 6 0 18 1.99840144e-15 12 6 6 1.99840144e-15 6 1.99840144e-15 1.11022302e-15"></polygon>
+        </g>
+    </g>
+</g></pattern></defs><rect width="1600" height="900" fill="url(#tile)" opacity="0.2"/></svg>

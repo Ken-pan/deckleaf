@@ -1,0 +1,37 @@
+{
+  "@jridgewell/source-map@0.3.11": {
+    "file": "jridgewell-source-map-0.3.11.txt",
+    "sha256": "2fa1cac2718b38a4a7fa0025ce2e5c78cd8365d0688e9ef1c2d326db3c1c745c",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "buffer-from@1.1.2": {
+    "file": "buffer-from-1.1.2.txt",
+    "sha256": "933a508097de6e93471843c8eded84472d73c10aefa7c115f94f20440d85877e",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "commander@11.1.0": {
+    "file": "commander-11.1.0.txt",
+    "sha256": "71816f74edba4338a035d7b26f3016086a2f37e9e5b1439fa6fdd20c95183e14",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "source-map@0.6.1": {
+    "file": "source-map-0.6.1.txt",
+    "sha256": "2d91d8ed24ca8f36f5cc2b1ad53e9c129789ebf2ec5446198d9ffd6704816034",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "source-map-support@0.5.21": {
+    "file": "source-map-support-0.5.21.txt",
+    "sha256": "19853d04b9880970a7975f4ad8ef72ab543bfca1c8fc040624070c373ed5891f",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "terser@5.51.2": {
+    "file": "terser-5.51.2.txt",
+    "sha256": "4e73549092d26c515c17590e397079073a82827c83eefcdc30af28bdab1c43ab",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  },
+  "commander@2.20.3": {
+    "file": "commander-2.20.3.txt",
+    "sha256": "71816f74edba4338a035d7b26f3016086a2f37e9e5b1439fa6fdd20c95183e14",
+    "evidence": "License texts from the installed npm package at this exact version. Optional peer package may be absent after npm ci."
+  }
+}

@@ -1,0 +1,11 @@
+import {mount} from 'svelte';
+import CharacterPage from './components/CharacterPage.svelte';
+import './styles.css';
+import './motion.css';
+import './design-system.css';
+import './interactions.css';
+import './app-motion.css';
+import './components/ui/components.css';
+import './brand-system.css';
+import './typography.css';
+mount(CharacterPage,{target:document.getElementById('app')!});

@@ -1,0 +1,11 @@
+{
+  "characterId": "qiao",
+  "scene": "recovery",
+  "expression": "fatigued",
+  "outfit": "shirt",
+  "accessory": "none",
+  "tool": "built-in imagegen",
+  "reference": "png/qiao-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Input is the approved SEARCH identity master. Keep this exact character's hair silhouette, face shape, no glasses, eyes/nose proportions, garment cut and black/cobalt/white style. This is a new scene, never redesign the identity. Composition remains landscape 1536x1024, person on left, full body/chair/wheelchair visible, generous margins. Real transparent alpha outside subjects; all white face/ears/neck/hands/ankles and subject interiors OPAQUE white. Flat crisp near-black outlines and cobalt accents; no shading, glow, gradient, shadows, texture, text, letters, logos, decorative effects.\nIdentity: Neat short solid black side-part hair, no glasses, rounded face with two small oval black eyes and one simple curved nose. Adult seated in a simple manual wheelchair with large rear wheel and small caster; mature professional portrayal. Cobalt collared long-sleeve shirt, black trousers and black shoes. SAME distinct person throughout this pilot.\nScene RECOVERY: same person seated in same wheelchair, facing a blank browser panel with one large modest X error symbol in a small cobalt square and one simple curved retry arrow underneath. One hand rests lightly at temple, other hand lowered relaxed near lap/waist; exactly two natural hands. No magnifying glass or notebook. Fatigued but respectful expression: gently lowered eyelids, softly furrowed eyebrows, small neutral downturned closed mouth, slightly softened shoulders. No caricature, tears or anger. Keep face angle, head size and silhouette consistent with master.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-f601eb4b-158a-492e-a34f-e47d327706a5.png"
+}

@@ -1,0 +1,2366 @@
+{
+  "version": 2,
+  "defaultColor": "#26362c",
+  "description": "Transparent, recolorable deck backgrounds and editorial accents",
+  "items": [
+    {
+      "id": "fine-dots",
+      "title": "Fine dots",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "halftone",
+        "fine",
+        "subtle",
+        "background",
+        "网点",
+        "点阵",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "fine-dots.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Fine dots — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "0eca1168db13e568733a7c35df6bd70babc1b20257266386de6e89c06d31cec2",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "A quiet dot grid for slides with lots of text.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "offset-dots",
+      "title": "Offset dots",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "offset",
+        "halftone",
+        "background",
+        "网点",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "offset-dots.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Offset dots — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "34ff888517692364aa3c1e105b2300d1dc463ee0b2ba1600bd8ab72392370bca",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "Staggered dots for covers and section breaks.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "bold-dots",
+      "title": "Bold dots",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "pop",
+        "art",
+        "comic",
+        "bold",
+        "background",
+        "网点",
+        "波点",
+        "漫画"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "bold-dots.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Bold dots — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "6616fef00cf5c94af81a7afdfc7f82123363bfb186ff0f6c60883490ef3db33a",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "Larger dots for playful covers and bold contrasts.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "halftone-fade",
+      "title": "Halftone fade",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "halftone",
+        "fade",
+        "gradient",
+        "渐变",
+        "background",
+        "网点",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "halftone-fade.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Halftone fade — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "16d07d59da15e203d3d6b5283d1c45e1209e43801509d4e3f99b4c6b1ddf8386",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "Dots grow toward the right. Keep copy on the left.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.85,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "halftone-corner",
+      "title": "Halftone corner",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "halftone",
+        "corner",
+        "角落",
+        "background",
+        "网点",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "halftone-corner.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Halftone corner — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "324f6b67ef8c352db7c9ac08cd70509af1b4a24931544550fa280d15958a450b",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "A dotted corner that leaves the center clear.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "id": "halftone-wave",
+      "title": "Halftone wave",
+      "category": "pattern",
+      "tags": [
+        "dots",
+        "halftone",
+        "wave",
+        "波浪",
+        "background",
+        "网点",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "halftone-wave.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Halftone wave — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "98ce7999594bdfbe3ddb742e09032157231049820729b491a8e8c9b25a6f14ce",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "A dotted wave for section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.65
+      }
+    },
+    {
+      "id": "square-grid",
+      "title": "Square grid",
+      "category": "pattern",
+      "tags": [
+        "grid",
+        "square",
+        "graph",
+        "background",
+        "网格",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "square-grid.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Square grid — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "dea7bf977d3aac42401c09a1212ba468ed09c3ea09e56f167f4b3e2631f08ddf",
+      "family": "grids",
+      "familyLabel": "Grids",
+      "description": "A light square grid for process and research slides.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "dot-cross-grid",
+      "title": "Cross grid",
+      "category": "pattern",
+      "tags": [
+        "grid",
+        "cross",
+        "plus",
+        "technical",
+        "background",
+        "网格",
+        "十字"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "dot-cross-grid.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Cross grid — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "1b267e0f6f57e5d8afc1ddd61551cc1a489839b3c5c8efc841b02eee6117cc12",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "Small crosses for a precise, technical background.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "engineering-grid",
+      "title": "Engineering grid",
+      "category": "pattern",
+      "tags": [
+        "grid",
+        "engineering",
+        "graph",
+        "technical",
+        "blueprint",
+        "background",
+        "网格",
+        "工程"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "engineering-grid.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Engineering grid — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "63fba8decbc784b1357f08fae46c5c996edccebdb5f931a3d811d027739386ab",
+      "family": "grids",
+      "familyLabel": "Grids",
+      "description": "Major and minor grid lines for technical diagrams.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "diagonal-hatch",
+      "title": "Diagonal hatch",
+      "category": "pattern",
+      "tags": [
+        "diagonal",
+        "hatch",
+        "stripe",
+        "line",
+        "background",
+        "斜线",
+        "条纹"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "diagonal-hatch.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Diagonal hatch — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "0cb33ae6b19ef83a25e7632fa025868ba7210bf9e156ed22d4909d66ce32a427",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "Fine diagonal lines for diagrams and section breaks.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "crosshatch",
+      "title": "Crosshatch",
+      "category": "pattern",
+      "tags": [
+        "crosshatch",
+        "line",
+        "woven",
+        "background",
+        "交叉",
+        "纹理"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "crosshatch.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Crosshatch — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "6bd33f18e80f67cfb1469e1c9a6089bad41c654ac84a73fdef87a137a35082d7",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "Crossed lines with a soft woven feel.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "horizontal-rules",
+      "title": "Horizontal rules",
+      "category": "pattern",
+      "tags": [
+        "lines",
+        "ruled",
+        "notebook",
+        "background",
+        "横线",
+        "笔记"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "horizontal-rules.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Horizontal rules — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "44b4d862c8d1c5c6bc5b86174804d2139081acbe6aa29452d2e205daf20c09fc",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "Ruled lines for notes, timelines and written stories.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "contour-flow",
+      "title": "Contour flow",
+      "category": "pattern",
+      "tags": [
+        "contour",
+        "flow",
+        "topographic",
+        "lines",
+        "wave",
+        "background",
+        "等高线",
+        "波纹"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "contour-flow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Contour flow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "304f95cdc55cdb5c18c772bbc10a65ea9f0dac034ce455229a77f80bd48f1c79",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "Flowing contour lines for spacious section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "ripple-corner",
+      "title": "Corner ripples",
+      "category": "pattern",
+      "tags": [
+        "ripple",
+        "rings",
+        "circle",
+        "corner",
+        "background",
+        "波纹",
+        "圆环"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "ripple-corner.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Corner ripples — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "1b4d7e90aa5f9f08cfdcae89649acf808c3475f1c3d1cf0d0f6b75684e278fd1",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "Concentric rings anchored to a corner.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sine-waves",
+      "title": "Sine waves",
+      "category": "pattern",
+      "tags": [
+        "sine",
+        "wave",
+        "line",
+        "background",
+        "波浪",
+        "波纹"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "sine-waves.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sine waves — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "4726683b7ca5821d37d49331cd8d602dcb443820af01c7a03783f1a336ca3570",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "Repeating curves for a calm, flowing background.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "isometric-grid",
+      "title": "Isometric grid",
+      "category": "pattern",
+      "tags": [
+        "isometric",
+        "grid",
+        "triangle",
+        "technical",
+        "background",
+        "等距",
+        "网格"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "isometric-grid.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Isometric grid — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "33d675dfc0d567ac19624823678a1b8dc4bbae48ac55faaffacf30cd708f4230",
+      "family": "grids",
+      "familyLabel": "Grids",
+      "description": "An angled grid for systems and spatial diagrams.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "checkerboard",
+      "title": "Soft checkerboard",
+      "category": "pattern",
+      "tags": [
+        "checker",
+        "squares",
+        "checkerboard",
+        "background",
+        "棋盘",
+        "方格"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "checkerboard.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Soft checkerboard — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "5cd544c3156778478fcffb786d41d4b6ae8bedb325f415f4db7799db5fd2a4ca",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A soft checkerboard for editorial covers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "memphis-marks",
+      "title": "Memphis marks",
+      "category": "pattern",
+      "tags": [
+        "memphis",
+        "playful",
+        "geometric",
+        "confetti",
+        "background",
+        "孟菲斯",
+        "几何"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "memphis-marks.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Memphis marks — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "0153e121b7814f4fc45fe6e8e2b19ab9a9f0abda45b1bdb1a79a8eeca371e5ec",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "Small geometric marks for playful stories.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "paper-grain",
+      "title": "Paper grain",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "grain",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "paper-grain.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Paper grain — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "3b5d8a46fe616dbe1ec07376609a2afba1fadf20a9cb998b10ac057593686059",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "Fine specks that add a light paper feel.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sparse-speckles",
+      "title": "Sparse speckles",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "speckle",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "sparse-speckles.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sparse speckles — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "5780903267eef2407d7084701edfa4ed1b24da9d9f353e3feaf4f5b10a627ed6",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "A few scattered flecks for otherwise plain slides.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "riso-grain",
+      "title": "Riso grain",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "riso",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "riso-grain.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Riso grain — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "e031364381433318e15743e089f4bd01c6b936d328516c6c95593ab45474960f",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "Uneven print grain for editorial covers and collages.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "fiber-paper",
+      "title": "Paper fibers",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "fiber",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "fiber-paper.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Paper fibers — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "416f159d72cd02db54777aeea7ac4e6c45a6d04db1ff5465d622a996dc2cd611",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "Short fibers that suggest uncoated paper.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "etched-lines",
+      "title": "Etched lines",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "etched",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "etched-lines.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Etched lines — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "1ee0c1f6d56bb22670e7842f938b3ed62a7eda61ee39ae8a6d77751fc273ac25",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "Tiny irregular strokes for a subtle engraved texture.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "dust-flecks",
+      "title": "Dust flecks",
+      "category": "texture",
+      "tags": [
+        "texture",
+        "grain",
+        "paper",
+        "speckle",
+        "dust",
+        "background",
+        "纹理",
+        "颗粒",
+        "纸张"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "dust-flecks.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Dust flecks — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "7fa3e31aa6e429fcff24f0c2967d003d953e2f9aa1101a32a0f8ce99b67ad207",
+      "family": "paper",
+      "familyLabel": "Paper & grain",
+      "description": "Light dust marks for a tactile paper background.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "starburst",
+      "title": "Starburst",
+      "category": "accent",
+      "tags": [
+        "starburst",
+        "star",
+        "burst",
+        "badge",
+        "星芒",
+        "爆炸",
+        "贴纸"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "starburst.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Starburst — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "4803600ea7ca7c18f5503d256af92615da0d5ca666e03be36fd121fc245c9dc5",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "A bold burst for a title, number or announcement.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "asterisk",
+      "title": "Asterisk",
+      "category": "accent",
+      "tags": [
+        "asterisk",
+        "star",
+        "rays",
+        "spark",
+        "星芒",
+        "星号"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "asterisk.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Asterisk — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "ddcc1afd60a537870606674258d3a3161ec3a606dc03e94bef118cb3efcf4659",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "A simple asterisk for a footnote or a focal point.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sparkle",
+      "title": "Sparkle",
+      "category": "accent",
+      "tags": [
+        "sparkle",
+        "star",
+        "four",
+        "point",
+        "shine",
+        "闪光",
+        "星芒"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "sparkle.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sparkle — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "26f8f730c65d794f661f6c8e3e70996ff409cfdd44d2420efb36d686fa471943",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "A four-point sparkle for a small highlight.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sparkle-cluster",
+      "title": "Sparkle cluster",
+      "category": "accent",
+      "tags": [
+        "sparkle",
+        "cluster",
+        "stars",
+        "shine",
+        "星星",
+        "闪光"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "sparkle-cluster.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sparkle cluster — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "2f74240dfb62cf3e895f129bce2c40de3ecfd31541d647080d4c0479370bb174",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "A pair of sparkles for a reveal or a celebration.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sun-rays",
+      "title": "Sun rays",
+      "category": "accent",
+      "tags": [
+        "sun",
+        "rays",
+        "circle",
+        "radial",
+        "太阳",
+        "光芒"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "sun-rays.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sun rays — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "f87db9dccd9d766b6daa7266bd4acc021aba6eed4808800776c92486488206d7",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "Open rays for a radial idea or a focal point.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "orbit-rings",
+      "title": "Orbit rings",
+      "category": "accent",
+      "tags": [
+        "orbit",
+        "rings",
+        "circle",
+        "space",
+        "圆环",
+        "轨道"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "orbit-rings.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Orbit rings — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "d710280dcf7c6e2718599447f84f2f56882da734c986419e91b05dccfe45f11d",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "Overlapping rings for connections and movement.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "curved-arrow",
+      "title": "Curved arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "curved",
+        "annotation",
+        "hand",
+        "drawn",
+        "箭头",
+        "弯曲"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "curved-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Curved arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "e2f7c8423516b005f2d68c2cacc5e6dac8402a71b61608b738be23312cd00b2d",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "Point to evidence with a single curved stroke.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "loop-arrow",
+      "title": "Loop arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "loop",
+        "annotation",
+        "swirl",
+        "箭头",
+        "环绕"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "loop-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Loop arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "1ff03e018d2be95c3dccfaa5bfe5844ac44f6815a1d35fdda2cb95ac359bc5d9",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "A looping arrow for a surprising turn or iteration.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "straight-arrow",
+      "title": "Sketch arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "straight",
+        "right",
+        "annotation",
+        "箭头",
+        "手绘"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "straight-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sketch arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "bb2c0fbd766b0a690b97b0b29727e4d1a67e95b9a34f90a1a8ceb476e5da8f7a",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "A hand-drawn arrow for a direct connection.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "double-arrow",
+      "title": "Double arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "double",
+        "compare",
+        "annotation",
+        "双向",
+        "箭头"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "double-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Double arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "0eb5e91575576aaab631d6bc783110b362291f3c9cd880865a23d087e56202c8",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "Show a comparison or a two-way relationship.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "wavy-arrow",
+      "title": "Wavy arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "wave",
+        "annotation",
+        "playful",
+        "波浪",
+        "箭头"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "wavy-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Wavy arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "85324194d5e2bbaf64d520f799bc6c98ef11a757c9fe2c3c91a137bade00f748",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "A playful arrow for a less linear story.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "corner-arrow",
+      "title": "Corner arrow",
+      "category": "accent",
+      "tags": [
+        "arrow",
+        "corner",
+        "bend",
+        "annotation",
+        "转角",
+        "箭头"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "corner-arrow.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Corner arrow — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "a344a0fbe943c244899c9ca9275073fb2baccf8916e1b6457a76285bdba03df1",
+      "family": "arrows",
+      "familyLabel": "Arrows",
+      "description": "Connect steps around a corner.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sketch-circle",
+      "title": "Sketch circle",
+      "category": "accent",
+      "tags": [
+        "circle",
+        "ring",
+        "hand",
+        "drawn",
+        "annotation",
+        "highlight",
+        "圈画",
+        "圆圈",
+        "标注"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "sketch-circle.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sketch circle — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "f7cc385113a600464c9b78d8e442a07beb60642c0dd682fc0a1d67b200fd0d4b",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Circle a detail without hiding what is underneath.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "sketch-oval",
+      "title": "Sketch oval",
+      "category": "accent",
+      "tags": [
+        "oval",
+        "circle",
+        "annotation",
+        "highlight",
+        "椭圆",
+        "圈画"
+      ],
+      "width": 512,
+      "height": 220,
+      "background": false,
+      "file": "sketch-oval.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Sketch oval — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "3a291c6f9af2205e51b322f4d91e1e72a2063e10d2c6164f2209f21f79215e97",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Frame a short phrase or a horizontal detail.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "double-underline",
+      "title": "Double underline",
+      "category": "accent",
+      "tags": [
+        "underline",
+        "highlight",
+        "annotation",
+        "line",
+        "下划线",
+        "标注"
+      ],
+      "width": 1200,
+      "height": 170,
+      "background": false,
+      "file": "double-underline.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Double underline — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "9f28e0812d257311ed42aa9139e51c263c57833d0c18821c3ed52dfe4a5c4b91",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Underline a key phrase with two loose strokes.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "wavy-underline",
+      "title": "Wavy underline",
+      "category": "accent",
+      "tags": [
+        "underline",
+        "wavy",
+        "annotation",
+        "highlight",
+        "下划线",
+        "波浪"
+      ],
+      "width": 1200,
+      "height": 170,
+      "background": false,
+      "file": "wavy-underline.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Wavy underline — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "a6acccd5433859db51ff836ce7e376ac4465f0a77aff696d7a20d97ec9c2f286",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Add a playful emphasis below a key phrase.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "brush-highlight",
+      "title": "Brush highlight",
+      "category": "accent",
+      "tags": [
+        "brush",
+        "highlight",
+        "marker",
+        "brushstroke",
+        "荧光笔",
+        "高亮",
+        "笔刷"
+      ],
+      "width": 1200,
+      "height": 180,
+      "background": false,
+      "file": "brush-highlight.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Brush highlight — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "339a89d6d1f5c2e37f526b5ffe8304190c0508f1b0dfeacc86d8aa03735c9a08",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "A transparent brush mark to place behind text.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "torn-tape",
+      "title": "Torn tape",
+      "category": "accent",
+      "tags": [
+        "tape",
+        "torn",
+        "collage",
+        "paper",
+        "washi",
+        "胶带",
+        "拼贴"
+      ],
+      "width": 512,
+      "height": 190,
+      "background": false,
+      "file": "torn-tape.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Torn tape — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "425cfc73e184f055bdd5d32efd64efe2276d0092e665b168241ecf90ab279de6",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "A torn strip of tape for a photo or a collage.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "zigzag-divider",
+      "title": "Zigzag divider",
+      "category": "accent",
+      "tags": [
+        "divider",
+        "zigzag",
+        "line",
+        "锯齿",
+        "分割线"
+      ],
+      "width": 512,
+      "height": 160,
+      "background": false,
+      "file": "zigzag-divider.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Zigzag divider — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "cb349a4364b31d149b02f68038a5f128ffc34e1382afae0ccb6b64ec91c9940e",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Separate sections with a simple zigzag.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "dot-divider",
+      "title": "Dot divider",
+      "category": "accent",
+      "tags": [
+        "divider",
+        "dots",
+        "line",
+        "分割线",
+        "圆点"
+      ],
+      "width": 512,
+      "height": 120,
+      "background": false,
+      "file": "dot-divider.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Dot divider — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "72913a3845374545f3f21ba9e9f443407ac2684da6daba7b842535d25d7b6f95",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "A quiet dotted divider between ideas.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "corner-brackets",
+      "title": "Corner brackets",
+      "category": "accent",
+      "tags": [
+        "brackets",
+        "corners",
+        "frame",
+        "annotation",
+        "括号",
+        "边框"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "corner-brackets.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Corner brackets — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "757767b7efb4c9c017b0bf341beee8dd9d570a1bdef277ee7242ea42774a033c",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "Frame evidence with four open corners.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "organic-blob",
+      "title": "Organic blob",
+      "category": "accent",
+      "tags": [
+        "blob",
+        "organic",
+        "shape",
+        "backdrop",
+        "有机",
+        "色块",
+        "形状"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "organic-blob.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Organic blob — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "70a691cdd5d28eebdb262bf3008d43dce2ebef0863ed4a91a0f04a75dabb95f4",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A soft shape to place behind a short title.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "confetti-cluster",
+      "title": "Confetti cluster",
+      "category": "accent",
+      "tags": [
+        "confetti",
+        "celebration",
+        "doodle",
+        "彩纸",
+        "装饰"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "confetti-cluster.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Confetti cluster — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "781cfca366dabd76d39948a771b99bbbdf13e5e0370e7ee531d505f73204e91e",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A few loose marks for a celebration or a reveal.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "scribble",
+      "title": "Scribble",
+      "category": "accent",
+      "tags": [
+        "scribble",
+        "doodle",
+        "hand",
+        "drawn",
+        "annotation",
+        "涂鸦",
+        "手绘"
+      ],
+      "width": 512,
+      "height": 512,
+      "background": false,
+      "file": "scribble.svg",
+      "colorable": true,
+      "provider": "Deck Studio Graphics",
+      "creator": "Deck Studio",
+      "sourceUrl": "http://127.0.0.1:4310/resources/deck-graphics-v1/README.md",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "licenseNotice": "Scribble — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md.",
+      "sha256": "69a6e11d0ac0a3374dbbf4d19b67e9cf73cafaf6afa13e9736d6313d45b29cc0",
+      "family": "marks",
+      "familyLabel": "Marks",
+      "description": "An expressive hand-drawn mark for emphasis.",
+      "useCases": [
+        "Annotation",
+        "Emphasis"
+      ],
+      "repeatable": false,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-polka-dots",
+      "title": "Hero · Polka dots",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "polka-dots",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-polka-dots.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/polka-dots.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/polka-dots.svg",
+      "originalSha256": "f68eaca24c894de861bd33344849fe93ef7df17f050cc46488f99f5de47f2fa2",
+      "licenseNotice": "Hero · Polka dots — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/polka-dots.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "f89316b18d2ed51d92296cb967079c375c6dd84eeb042a5e7cdae2c579180e5a",
+      "family": "dots",
+      "familyLabel": "Dots",
+      "description": "A repeating dots background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-graph-paper",
+      "title": "Hero · Graph paper",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "graph-paper",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-graph-paper.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/graph-paper.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/graph-paper.svg",
+      "originalSha256": "53f2da15897435eb64e3381d147730954a3b3d4417e04ce444054f35cc92da7b",
+      "licenseNotice": "Hero · Graph paper — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/graph-paper.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "9e95db47a8d20264bd28ae8f4e7bb216d68c05aae151893f3cd4d0ca68190ab8",
+      "family": "grids",
+      "familyLabel": "Grids",
+      "description": "A repeating grids background for covers and section openers.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-diagonal-lines",
+      "title": "Hero · Fine diagonals",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "diagonal-lines",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-diagonal-lines.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/diagonal-lines.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/diagonal-lines.svg",
+      "originalSha256": "abcf617f2a2fad2281fefac41882d940a277bddcb075ff14a3ceade35307ada1",
+      "licenseNotice": "Hero · Fine diagonals — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/diagonal-lines.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "18ab516c1575767fffc7a9f332726c82f47d6a9685429bc1720a66bae2639666",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "A repeating lines & waves background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-hexagons",
+      "title": "Hero · Hexagons",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "hexagons",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-hexagons.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/hexagons.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/hexagons.svg",
+      "originalSha256": "5c3f5b92802ea742878bd2a83cb8e18bdac006b70baa82e59fafac371a0f97da",
+      "licenseNotice": "Hero · Hexagons — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/hexagons.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "fa25d9cc89203776f4e4f7bac8f122c92e5e15d52c24dea6de939e774411a103",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A repeating shapes background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-plus",
+      "title": "Hero · Plus marks",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "plus",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-plus.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/plus.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/plus.svg",
+      "originalSha256": "d38cbe92ede6b2ef0405c2aedaf449ad20afe2fe7d2b3f5c3a15d96e4fc96d17",
+      "licenseNotice": "Hero · Plus marks — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/plus.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "2060cb1193ec5b5fd93c8f4c580048e2a08840e027531450843bc3a9d14d7b2e",
+      "family": "grids",
+      "familyLabel": "Grids",
+      "description": "A repeating grids background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-wiggle",
+      "title": "Hero · Wiggles",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "wiggle",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-wiggle.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/wiggle.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/wiggle.svg",
+      "originalSha256": "aaef422fad63a423c8e30293aa2fc3ef27857147a4e77f0f1ad0e871156e42f0",
+      "licenseNotice": "Hero · Wiggles — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/wiggle.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "a308b4ce71e190fa4eefb468992038cc2e7eae03cdb48060661ee8f408673697",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "A repeating lines & waves background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-topography",
+      "title": "Hero · Topography",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "topography",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-topography.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/topography.svg",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/topography.svg",
+      "originalSha256": "af6475a72ad851b872a47162edcc838fb2bef3d2fc7651932f7d61dca28f37db",
+      "licenseNotice": "Hero · Topography — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/topography.svg. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "12096d31a182509017e29f6d987722a80c6e25b932eb2959bfcdf53c74683cac",
+      "family": "lines",
+      "familyLabel": "Lines & waves",
+      "description": "A repeating lines & waves background for covers and section openers.",
+      "useCases": [
+        "Content",
+        "Research"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-houndstooth",
+      "title": "Hero · Houndstooth",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "houndstooth",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-houndstooth.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/houndstooth.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/houndstooth.svg",
+      "originalSha256": "56e509c3461e64e07b7b0b034b503c8aac515858923be663f45ef433d5fd6ced",
+      "licenseNotice": "Hero · Houndstooth — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/houndstooth.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "ee88f08869d1fa1f654374b840823fa207a71bab652184acf0eb5180d78498eb",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A repeating shapes background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-intersecting-circles",
+      "title": "Hero · Intersecting circles",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "intersecting-circles",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-intersecting-circles.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/intersecting-circles.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/intersecting-circles.svg",
+      "originalSha256": "a67885c365e9499094adc76ad899d6574fd421462e3d48cf79e200ea0c7b8d58",
+      "licenseNotice": "Hero · Intersecting circles — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/intersecting-circles.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "aa54ee57596c0212c6ad991d5deacb3054367ce2ce00f0907f4f31f7ccac7a84",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A repeating shapes background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-4-point-stars",
+      "title": "Hero · Four-point stars",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "4-point-stars",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-4-point-stars.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/4-point-stars.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/4-point-stars.svg",
+      "originalSha256": "8afb7fe4a9447d4e6abe1d8beb3a5e507802e0d0849a596aa7aad302f4a7d893",
+      "licenseNotice": "Hero · Four-point stars — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/4-point-stars.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "774735ed7587139d3cd2f92d031c5f02b9901e0b18d7e30ee0a46d3a341f14d3",
+      "family": "stars",
+      "familyLabel": "Stars",
+      "description": "A repeating stars background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-brick-wall",
+      "title": "Hero · Brickwork",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "brick-wall",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-brick-wall.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/brick-wall.zip",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/brick-wall.svg",
+      "originalSha256": "ffb3a8c57e6e49c155e985ebd5f7429affbfadada60b413f815c626edb8fa169",
+      "licenseNotice": "Hero · Brickwork — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/brick-wall.zip. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "8670198195e5e0027498656d46c3f441ac01eaa6ff449a817debfd200e6f77fb",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A repeating shapes background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "hero-texture",
+      "title": "Hero · Cross texture",
+      "category": "pattern",
+      "tags": [
+        "hero",
+        "geometric",
+        "pattern",
+        "texture",
+        "background",
+        "图案",
+        "背景"
+      ],
+      "width": 1600,
+      "height": 900,
+      "background": true,
+      "file": "hero-texture.svg",
+      "colorable": true,
+      "provider": "Hero Patterns",
+      "creator": "Steve Schoger",
+      "sourceUrl": "https://github.com/sschoger/hero-patterns/blob/master/svg/texture.svg",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "attributionRequired": true,
+      "originalFile": "originals/texture.svg",
+      "originalSha256": "ee19df6d3582b6dc9777802294ddc5487807803e1c58bea8a0d427879bd3b1f8",
+      "licenseNotice": "Hero · Cross texture — Steve Schoger. CC BY 4.0. Source: https://github.com/sschoger/hero-patterns/blob/master/svg/texture.svg. Adapted by Deck Studio: repeated on a transparent 1600 × 900 canvas, recolorable ink, reduced opacity.",
+      "sha256": "eb022379bb80be9d082feedc13de57be93dd5ced984469a14d9e5e1377ce9d28",
+      "family": "shapes",
+      "familyLabel": "Shapes",
+      "description": "A repeating shapes background for covers and section openers.",
+      "useCases": [
+        "Cover",
+        "Section opener"
+      ],
+      "repeatable": true,
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ]
+}

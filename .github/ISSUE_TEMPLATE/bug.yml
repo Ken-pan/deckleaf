@@ -1,0 +1,24 @@
+name: Bug report
+description: Report a reproducible problem using fictional data.
+body:
+  - type: markdown
+    attributes:
+      value: Never include credentials, personal documents or exploit details. Use SECURITY.md for vulnerabilities.
+  - type: input
+    id: version
+    attributes:
+      label: Version, browser and operating system
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and a safe minimal example
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

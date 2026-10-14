@@ -1,0 +1,96 @@
+/* Motion panel visuals are loaded with their controls. */
+.motion-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.motion-presets button{display:flex;flex-direction:column;gap:8px;padding:10px 4px;font-size:var(--ui-meta);border-radius:var(--r-sm);background:var(--fill-subtle);border:1px solid transparent}
+.motion-presets button.active{border-color:var(--accent);color:var(--text-link);background:var(--state-selected)}
+.motion-glyph{display:flex;width:34px;height:22px;position:relative;align-items:center;justify-content:center}
+.motion-glyph i{position:absolute;width:20px;height:15px;border:1px solid currentColor;border-radius:2px}
+.motion-glyph i:first-child{opacity:.35;transform:translate(-5px,2px)}
+.motion-glyph i:last-child{background:var(--surface-chrome);transform:translate(4px,-2px)}
+.motion-glyph[data-effect=none] i:first-child{display:none}
+.motion-glyph[data-effect=zoom] i:last-child{transform:scale(.7)}
+.motion-glyph[data-effect=wipe] i:last-child{clip-path:inset(0 50% 0 0)}
+.motion-list{gap:8px}
+.motion-list button{text-align:left;justify-content:flex-start;gap:12px;min-height:36px;padding:6px;border-radius:var(--r-sm)}
+.motion-list button.active{background:var(--state-selected)}
+.motion-list span{font-size:var(--ui-meta);color:var(--text-tertiary);white-space:nowrap}
+.motion-list strong{font-size:var(--ui-meta);font-weight:var(--ui-weight-medium);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.motion-presets button{min-height:68px}
+.motion-glyph[data-category=depth]{perspective:80px}
+.motion-glyph[data-category=depth] i:last-child{transform:rotateY(-35deg) translateX(4px)}
+.motion-glyph[data-category=cinema] i:last-child{transform:rotate(-8deg) scale(.8)}
+.motion-glyph[data-category=space] i:last-child{transform:translate(9px,-3px)}
+.motion-glyph[data-effect=iris] i:last-child{clip-path:circle(42%)}
+.motion-glyph[data-effect=diamond] i:last-child{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.motion-glyph[data-effect=diagonal] i:last-child{clip-path:polygon(30% 0,100% 0,100% 100%,0 100%)}
+.motion-glyph[data-effect=split] i:last-child{clip-path:inset(0 20%)}
+.motion-glyph[data-effect=blinds] i:last-child{background:repeating-linear-gradient(0deg,currentColor 0 2px,transparent 2px 4px)}
+.motion-glyph[data-effect=mosaic] i:last-child,.motion-glyph[data-effect=pixels] i:last-child{background:repeating-conic-gradient(currentColor 0 25%,transparent 0 50%) 0 0/6px 6px}
+.motion-glyph[data-effect=ribbon] i:last-child{clip-path:polygon(0 0,20% 0,100% 80%,100% 100%,80% 100%,0 20%)}
+.motion-presets button{scroll-margin-top:190px}
+.motion-glyph[data-category=continuity] i:last-child{transform:translate(6px,-4px) scale(.7);border-radius:3px}
+/* Loaded with MotionPanel; other editor flows do not need these rules. */
+.transition-picker{display:flex;flex-direction:column;gap:12px;min-width:0}
+.transition-picker-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 8px;font-size:var(--ui-label);color:var(--text-secondary)}
+.transition-picker-heading strong{font-size:var(--ui-label);font-weight:var(--ui-weight-medium);color:var(--text-primary)}
+.transition-categories{display:flex;flex-wrap:wrap;gap:4px}
+.transition-categories .ui-button{min-width:0;min-height:30px;padding:0 8px;font-size:var(--ui-meta);color:var(--text-secondary);border:1px solid transparent;border-radius:var(--r-sm)}
+.transition-categories .ui-button[aria-pressed=true]{color:var(--text-primary);background:var(--state-selected);border-color:var(--border-default)}
+.transition-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,4.25rem),1fr));gap:8px}
+.transition-option{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;min-width:0;min-height:76px;padding:8px 4px;border:1px solid var(--border-subtle);border-radius:var(--r-sm);background:var(--surface-chrome);color:var(--text-secondary);text-align:center}
+.transition-option:hover{background:var(--state-hover);border-color:var(--border-default)}
+.transition-option[aria-pressed=true]{color:var(--text-link);background:var(--state-selected);border-color:var(--accent-line)}
+.transition-option:focus-visible,.transition-categories .ui-button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.transition-option-label{font-size:var(--ui-meta);font-weight:var(--ui-weight-medium);line-height:var(--ui-line-control);overflow-wrap:break-word}
+.transition-option-check{position:absolute;right:4px;top:4px;display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--accent);color:var(--text-on-accent)}
+.transition-smart-icon{flex:none;display:grid;place-items:center;width:72px;max-width:100%;height:40px;color:var(--text-link)}
+.transition-thumbnail{display:block;width:72px;max-width:100%;height:40px;flex:none;overflow:visible}
+.transition-thumb-from{fill:var(--fill-subtle);stroke:var(--text-tertiary);stroke-width:1}
+.transition-thumb-from path{fill:none}
+.transition-thumb-to{fill:var(--surface-chrome);stroke:currentColor;stroke-width:1.3;transform-box:fill-box;transform-origin:center}
+.transition-thumb-to path{fill:none}
+.transition-thumb-to circle{fill:currentColor;stroke:none}
+.transition-thumb-direction{fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.transition-option[data-effect=none] .transition-thumb-from,.transition-option[data-effect=none] .transition-thumb-direction{display:none}
+.transition-option[data-effect=none] .transition-thumb-to{transform:translate(-8px,7px)}
+.transition-option[data-effect=fade] .transition-thumb-to{fill:var(--state-selected);stroke-dasharray:2 2}
+.transition-option[data-effect=fade] .transition-thumb-direction{display:none}
+.transition-option[data-effect=slide] .transition-thumb-to{transform:translate(4px,7px)}
+.transition-option[data-effect=push] .transition-thumb-from{transform:translate(-4px,-7px)}
+.transition-option[data-effect=zoom] .transition-thumb-to{transform:scale(.72)}
+.transition-option[data-effect=wipe] .transition-thumb-to{clip-path:inset(0 40% 0 0)}
+.transition-option[data-effect=lift] .transition-thumb-direction{transform:translate(5px,40px) rotate(-90deg)}
+.transition-option[data-effect=cover] .transition-thumb-to{transform:translate(-7px,8px)}
+.transition-option[data-effect=parallax] .transition-thumb-from{transform:translate(-6px,0)}
+.transition-option[data-effect=diagonal-slide] .transition-thumb-to{transform:translate(3px,-2px) rotate(-6deg)}
+.transition-option[data-category=cinema] .transition-thumb-direction{display:none}
+.transition-option[data-effect=zoom-through] .transition-thumb-to{transform:scale(1.1)}
+.transition-option[data-effect=pullback] .transition-thumb-to{transform:scale(.65)}
+.transition-option[data-effect=soft-focus] .transition-thumb-from{filter:blur(1px)}
+.transition-option[data-effect=orbit] .transition-thumb-to{transform:rotate(-14deg)}
+.transition-option[data-category=mask] .transition-thumb-direction{display:none}
+.transition-option[data-effect=iris] .transition-thumb-to{clip-path:circle(48%)}
+.transition-option[data-effect=diamond] .transition-thumb-to{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.transition-option[data-effect=diagonal] .transition-thumb-to{clip-path:polygon(30% 0,100% 0,100% 100%,0 100%)}
+.transition-option[data-effect=split] .transition-thumb-to{clip-path:inset(0 22%)}
+.transition-option[data-effect=blinds] .transition-thumb-to{clip-path:polygon(0 0,100% 0,100% 20%,0 20%,0 35%,100% 35%,100% 60%,0 60%,0 75%,100% 75%,100% 100%,0 100%)}
+.transition-option[data-effect=mosaic] .transition-thumb-to{clip-path:polygon(0 0,100% 0,100% 40%,60% 40%,60% 100%,0 100%)}
+.transition-option[data-effect=pixels] .transition-thumb-to{clip-path:polygon(0 0,40% 0,40% 35%,75% 35%,75% 65%,100% 65%,100% 100%,0 100%)}
+.transition-option[data-effect=ribbon] .transition-thumb-to{clip-path:polygon(0 0,25% 0,100% 75%,100% 100%,75% 100%,0 25%)}
+.transition-option[data-category=depth] .transition-thumbnail{perspective:120px}
+.transition-option[data-effect=flip] .transition-thumb-to{transform:skewY(-12deg) scaleX(.65)}
+.transition-option[data-effect=cube] .transition-thumb-to{transform:skewY(12deg) scaleX(.8)}
+.transition-option[data-effect=stack] .transition-thumb-to{transform:translate(-5px,-2px) scale(.88)}
+.transition-option[data-effect=hinge] .transition-thumb-to{transform:skewX(-12deg) scaleY(.65)}
+@media(max-width:760px){.transition-categories .ui-button{min-height:44px;flex:1 0 auto}.transition-option{min-height:80px}}
+.motion-panel{padding:0;gap:0}.motion-scope{padding:12px;border-bottom:1px solid var(--border-subtle);flex:none}.motion-scope .seg{width:100%;min-width:0}.motion-scope .seg button{flex:1;min-width:0;padding:0 4px;font-size:var(--ui-meta);white-space:nowrap}.motion-panel-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}.motion-panel-body>.panel-section:last-child{border-bottom:0}.motion-panel .motion-context{display:flex;flex-direction:column;gap:4px;min-width:0}.motion-context h3{margin:0;font-size:var(--ui-label);font-weight:var(--ui-weight-semibold)}.motion-context>span{font-size:var(--ui-meta);color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.motion-panel .hint{margin:0;line-height:var(--ui-line-reading)}.motion-panel .motion-effect-description{font-size:var(--ui-meta)}.motion-panel .transition-preview{position:relative;top:auto;z-index:auto}.motion-timing{margin-top:4px}.motion-next-state{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--border-subtle)}.motion-disclosure{font-size:var(--ui-label);border-top:1px solid var(--border-subtle);padding-top:8px}.motion-disclosure>summary{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:32px;list-style:none;color:var(--text-secondary)}.motion-disclosure>summary>span{flex:1;min-width:0}.motion-disclosure-chevron{flex:none}.motion-disclosure[open]>summary>.motion-disclosure-chevron{rotate:180deg}.motion-disclosure>summary small{margin-left:0;color:var(--text-tertiary);font-size:var(--ui-meta);white-space:nowrap}.motion-disclosure>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-sm)}.motion-disclosure-body{display:flex;flex-direction:column;gap:8px;padding:8px 0 4px}.motion-disclosure-body>a{color:var(--text-link);font-size:var(--ui-meta);line-height:var(--ui-line-body);padding:6px 0;text-decoration:none}.motion-panel .motion-match-details{padding-bottom:0}.motion-panel .motion-match-details button{padding:8px;border-radius:var(--r-sm);min-height:36px}.motion-panel .motion-match-details button:hover{background:var(--state-hover)}.motion-panel .motion-match-details button.active{background:var(--state-selected)}.motion-panel .motion-match-details button>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.motion-panel .motion-match-warning{margin:0;padding:8px;border:1px solid var(--warning-border);border-radius:var(--r-sm);color:var(--warning-text);background:var(--warning-soft)}.motion-empty{font-size:var(--ui-label);line-height:var(--ui-line-reading);color:var(--text-secondary);margin:0}.motion-panel-footer{flex:none;border-top:1px solid var(--border-default);background:var(--surface-chrome);padding:12px;display:flex;flex-direction:column;gap:8px}.motion-panel-footer .full{width:100%;min-height:40px}.motion-panel .motion-cue-head{min-height:38px}.motion-panel .motion-cue-group>button:hover{background:var(--state-hover)}.motion-panel .motion-sequence h4{margin-top:0;margin-bottom:8px}.motion-panel .motion-sequence+.motion-sequence{margin-top:20px}
+@media(max-width:760px){.motion-scope .seg button,.motion-panel-footer .full{min-height:44px}.motion-disclosure>summary,.motion-disclosure-body>a{min-height:44px}.motion-disclosure-body>a{display:flex;align-items:center}.motion-panel .motion-match-details button,.motion-panel .motion-cue-group>button{min-height:44px}.motion-panel .motion-cue-head .ui-icon-button{min-width:44px;min-height:44px}}
+@media(max-width:760px){.motion-panel .motion-cue-head .icon-btn,.motion-panel .smart-preview-caption .icon-btn,.motion-panel .transition-preview-footer .icon-btn{min-width:44px;min-height:44px}.motion-panel-body .panel-section>.ui-button,.motion-next-state .ui-button{min-height:44px}}
+
+/* Keep timing and sequence controls aligned with Design properties. */
+.motion-panel-body .motion-controls{gap:0}
+.motion-context>span{white-space:normal;overflow-wrap:anywhere}
+.motion-pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:var(--ui-meta);color:var(--text-secondary);margin-block:8px}
+.motion-pagination .ui-button{min-width:36px;padding:8px}
+.motion-disclosure>summary{flex-wrap:wrap;gap:4px 8px}
+.motion-disclosure>summary small{white-space:normal;overflow-wrap:anywhere}
+@media(max-width:760px),(pointer:coarse){.motion-pagination .ui-button{min-width:44px;min-height:44px}}

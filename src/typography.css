@@ -1,0 +1,37 @@
+/* Application type roles. Document text, imported fonts and type specimens
+   remain authored by their own data; these rules only address editor chrome. */
+body { font-weight: var(--ui-weight-normal); }
+.text-btn, .ui-button { line-height: var(--ui-line-control); }
+.text-btn { height: auto; padding-block: 6px; }
+.ui-button[data-size='sm'] { height: auto; padding-block: 4px; }
+.ui-button[data-size='lg'] { height: auto; padding-block: 8px; }
+.seg button { height: auto; padding-block: 6px; }
+kbd { height: auto; min-height: 20px; padding-block: 2px; font-size: var(--ui-meta); line-height: var(--ui-line-control); letter-spacing: 0; }
+.topbar { height: auto; min-height: 56px; padding-block: 8px; }
+
+.modal .modal-head, .ui-dialog-header.modal-head { height: auto; padding-block: 16px; }
+.modal .modal-head h2, .ui-dialog-header h2 { line-height: var(--ui-line-title); letter-spacing: 0; }
+.field-inline { height: auto; min-height: max(36px, calc(1lh + 16px)); }
+.color-field { flex-wrap: wrap; row-gap: 8px; }
+.modal-body, .settings-body, .ai-panel { font-size: var(--ui-text); line-height: var(--ui-line-body); }
+:is(.modal-body, .settings-body, .ai-panel, .inspector-properties, .layer-browser) :is(strong, b):not(.slide-render *, .thumb-render *, .ui-empty-state *) { font-weight: var(--ui-weight-semibold); }
+.modal-body :is(h3, h4):not(.slide-render *, .thumb-render *, .ui-empty-state *) { font-size: var(--ui-text); font-weight: var(--ui-weight-semibold); line-height: var(--ui-line-body); }
+.ai-intro h3 { font-size: var(--ui-title); font-weight: var(--ui-weight-semibold); line-height: var(--ui-line-title); letter-spacing: 0; }
+.settings-body p, .ai-intro p, .ai-summary, .change-row, .dialog-intro,
+.ai-compose textarea, .notes-panel textarea, .text-content-editor textarea,
+.reference-summary p, .review-pair p, .brand-about-intro, .brand-about-footnote {
+  font-size: var(--ui-body); line-height: var(--ui-line-reading); font-weight: var(--ui-weight-normal);
+}
+.hint, .error, .field-label { line-height: var(--ui-line-body); }
+.field-label { font-weight: var(--ui-weight-normal); }
+.section-label, .rail-head { font-weight: var(--ui-weight-medium); }
+.font-options summary, .resource-credit summary { line-height: var(--ui-line-body); min-height: 32px; padding-block: 6px; }
+.resource-photo-credit { line-height: var(--ui-line-body); }
+.layer-row strong, .library-item strong, .resource-title { font-weight: var(--ui-weight-semibold); }
+.settings-layout nav { flex-shrink: 0; }
+.t-eyebrow, .t-label, .t-meta { font-size: var(--ui-meta); line-height: var(--ui-line-body); letter-spacing: 0; }
+
+@media (max-width: 760px) {
+  .topbar { min-height: 54px; }
+  .modal .modal-head { padding-block: 12px; }
+}

@@ -1,0 +1,42 @@
+{
+  "lucide": {
+    "url": "https://github.com/lucide-icons/lucide/blob/main/LICENSE",
+    "spdx": "ISC"
+  },
+  "tabler": {
+    "url": "https://github.com/tabler/tabler-icons/blob/master/LICENSE",
+    "spdx": "MIT"
+  },
+  "ph": {
+    "url": "https://github.com/phosphor-icons/core/blob/main/LICENSE",
+    "spdx": "MIT"
+  },
+  "heroicons": {
+    "url": "https://github.com/tailwindlabs/heroicons/blob/master/LICENSE",
+    "spdx": "MIT"
+  },
+  "bi": {
+    "url": "https://github.com/twbs/icons/blob/main/LICENSE",
+    "spdx": "MIT"
+  },
+  "material-symbols": {
+    "url": "https://github.com/google/material-design-icons/blob/master/LICENSE",
+    "spdx": "Apache-2.0"
+  },
+  "ri": {
+    "url": "https://github.com/cyberalien/RemixIcon/blob/master/License",
+    "spdx": "Apache-2.0"
+  },
+  "carbon": {
+    "url": "https://github.com/carbon-design-system/carbon/blob/main/LICENSE",
+    "spdx": "Apache-2.0"
+  },
+  "radix-icons": {
+    "url": "https://github.com/radix-ui/icons/blob/master/LICENSE",
+    "spdx": "MIT"
+  },
+  "iconoir": {
+    "url": "https://github.com/iconoir-icons/iconoir/blob/main/LICENSE",
+    "spdx": "MIT"
+  }
+}

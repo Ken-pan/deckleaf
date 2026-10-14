@@ -1,0 +1,2 @@
+/* Loaded with the print document before opening the native print dialog. */
+@media print{@page{size:16in 9in;margin:0}html,body,#app{height:auto;background:white;overflow:visible}.print-page{width:16in;height:9in;break-after:page;overflow:hidden}.print-page:last-child{break-after:auto}.print-pages .canvas-wrap{width:100%;height:100%}dialog,.busy-toast,.notice-toast{display:none!important}}

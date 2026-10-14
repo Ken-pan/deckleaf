@@ -1,0 +1,11 @@
+{
+  "characterId": "yun",
+  "scene": "search",
+  "expression": "confused",
+  "outfit": "hoodie",
+  "accessory": "round-glasses",
+  "tool": "built-in imagegen",
+  "reference": "png/yun-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit the supplied SEARCH character master. Change ONLY clothing style: replace the cobalt upper shirt/top with a clearly recognizable plain cobalt hoodie, hood resting BEHIND neck, no drawstring logos/text. Preserve hair silhouette, face shape, round glasses, coordinated gently confused eyebrows/eyes/mouth, body proportions, exact pose, hands, black trousers/shoes, wheelchair/chair and all scene props/panel. Do not put hood over hair. Same landscape1536x1024 placement and margins. Opaque white face/hands, near-black contours, flat cobalt clothing. Real transparent alpha outside. No texture, shading, gradient, glow, groundline, text or watermark. Keep the same 卷发圆镜 person and same scene.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-47614242-2bec-453d-acff-6bf9fc9d038a.png"
+}

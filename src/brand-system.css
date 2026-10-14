@@ -1,0 +1,87 @@
+/* Identity roles consume the selected palette; source artwork and slides stay independent. */
+@font-face {
+  font-family: 'Deck Studio Brand';
+  src: url('/fonts/manrope.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-brand: 'Deck Studio Brand', var(--font-ui);
+  --brand-ground: color-mix(in oklab, var(--surface-chrome) 90%, var(--accent-soft));
+  --brand-border: var(--border-subtle);
+  --brand-quiet: var(--text-secondary);
+  --brand-action: var(--text-link);
+}
+
+.brand-lockup { display: inline-flex; align-items: center; gap: 11px; color: var(--text-primary); flex: none; }
+.brand-type { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.brand-wordmark { font-family: var(--font-brand); font-size: 16px; font-weight: 650; letter-spacing: -.045em; line-height: 1.25; white-space: nowrap; }
+.brand-caption { font-family: var(--font-ui); font-size: var(--ui-label); color: var(--brand-quiet); line-height: var(--ui-line-body); letter-spacing: 0; }
+.brand-lockup--compact .brand-mark { width: 30px; height: 30px; }
+.brand-lockup--roomy { gap: 16px; }
+.brand-lockup--roomy .brand-mark { width: 48px; height: 48px; }
+.brand-lockup--roomy .brand-wordmark { font-size: 24px; }
+.brand-lockup--large { gap: 16px; }
+.brand-lockup--large .brand-mark { width: 64px; height: 64px; }
+.brand-lockup--large .brand-wordmark { font-size: 30px; }
+
+.topbar .brand-button, .document-library, .brand-about { --brand-mark-color: light-dark(#000000, #ffffff); }
+.topbar .brand-button { padding: 0; }
+.topbar .brand-button .brand-mark { width: 24px; height: 24px; }
+.topbar .brand-type { display: none; }
+.topbar .brand-button > .brand-lockup { display: inline-flex; }
+.save-state { display: flex; align-items: center; gap: 8px; font-size: var(--ui-meta); }
+.save-state::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .55; flex: none; }
+.save-state[data-saving='true']::before { background: var(--info); opacity: 1; }
+.save-state[data-save-error='true']::before { background: var(--danger); }
+
+
+.workspace-empty { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+.workspace-empty { max-width: 360px; padding: 32px 20px; }
+.workspace-empty .brand-lockup { flex-direction: column; gap: 20px; }
+.workspace-empty .brand-mark { width: 60px; height: 60px; }
+.workspace-empty .brand-wordmark { font-size: 26px; }
+.workspace-empty p { font-size: var(--ui-text); line-height: var(--ui-line-reading); color: var(--text-secondary); }
+.workspace-empty .text-btn { height: 40px; }
+.workspace-empty small { font-size: var(--ui-meta); }
+
+.brand-about { display: flex; flex-direction: column; align-items: flex-start; }
+.brand-about > .brand-lockup { padding: 8px 0 24px; }
+.brand-about-intro { font-size: var(--ui-text); line-height: var(--ui-line-reading); color: var(--text-secondary); max-width: 32em; margin: 0 0 24px; }
+.brand-facts { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 0 24px; padding: 24px 0; border-block: 1px solid var(--brand-border); }
+.brand-facts dt { font-size: var(--ui-meta); color: var(--text-secondary); margin-bottom: 8px; }
+.brand-facts dd { font-size: var(--ui-text); font-weight: var(--ui-weight-medium); margin: 0; }
+.brand-about-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.brand-about-footnote { font-size: var(--ui-label); line-height: var(--ui-line-reading); color: var(--text-secondary); padding-top: 24px; max-width: 34em; }
+.brand-appearance-intro { display: flex; gap: 12px; align-items: center; padding: 16px 16px; border-radius: 8px; background: var(--brand-ground); margin-bottom: 24px; }
+.brand-appearance-intro .brand-mark { width: 30px; height: 30px; }
+.brand-appearance-intro strong { display: block; font-size: var(--ui-text); font-weight: var(--ui-weight-medium); margin-bottom: 3px; }
+.brand-appearance-intro p { font-size: var(--ui-label); line-height: var(--ui-line-reading); color: var(--text-secondary); }
+
+.modal .dialog-subtitle { color: var(--text-secondary); }
+.notice-toast > svg { color: var(--info-text); }
+.busy-toast .spinner { border-top-color: var(--accent-line); }
+.ai-intro h3 { font-size: 18px; font-weight: var(--ui-weight-medium); letter-spacing: -.025em; }
+.ai-suggestions button { line-height: var(--ui-line-reading); }
+.ai-context { font-size: var(--ui-label); line-height: var(--ui-line-reading); color: var(--text-secondary); }
+.character-brand { text-decoration: none; }
+.character-page a.text-btn { display: inline-flex; align-items: center; gap: 8px; }
+
+@media (max-width: 1100px) {
+  .topbar .save-state { display: none; }
+}
+@media (max-width: 600px) { .character-brand .brand-wordmark { display: none; } }
+@media (max-width: 760px) {
+  .brand-lockup--compact .brand-mark { width: 28px; height: 28px; }
+  .topbar .brand-button { min-width: 32px; }
+  .brand-lockup--large .brand-mark { width: 54px; height: 54px; }
+  .brand-lockup--large .brand-wordmark { font-size: 27px; }
+  .brand-about > .brand-lockup { padding-bottom: 24px; }
+  .brand-facts { gap: 20px; }
+  .brand-about-actions .text-btn { min-height: 40px; }
+  .workspace-empty { max-width: 300px; padding: 20px 16px; gap: 16px; }
+  .workspace-empty .brand-mark { width: 50px; height: 50px; }
+  .brand-appearance-intro { padding: 12px; gap: 12px; }
+}

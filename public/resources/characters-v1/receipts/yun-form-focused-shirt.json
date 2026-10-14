@@ -1,0 +1,11 @@
+{
+  "characterId": "yun",
+  "scene": "form",
+  "expression": "focused",
+  "outfit": "shirt",
+  "accessory": "round-glasses",
+  "tool": "built-in imagegen",
+  "reference": "png/yun-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit/reference target: the supplied SEARCH master of this exact character. Keep the SAME hair silhouette, face shape, glasses state, eye/nose construction, adult body proportions and garment style. Do not redesign the person. Preserve landscape 1536x1024 proportions and clean flat near-black/cobalt/opaque-white editorial drawing. Real alpha outside all subjects, white interiors opaque. No gradients, glow, texture, shadows, groundline, text, letters, logos or watermark.\nIdentity: Short clearly curly black hair, thin round black glasses, softly rounded face with two small oval black eyes, one simple curved nose. Adult proportions matching the reference. Cobalt collared long-sleeve shirt, black trousers and black shoes. SAME distinct person throughout this pilot.\nChange the scene to FORM: the same character remains on the left standing. They hold a simple white card near torso and point at one black-outlined browser form panel on the right. Panel contains exactly three blank horizontal rounded field outlines and one small cobalt submit button with no text. Expression focused: both eyebrows level/slightly inward, gaze attentive, small neutral closed mouth. Hands natural, exactly two hands, no magnifying glass. Full feet/chair/wheelchair visible, generous transparent margins. Face is in the same angle as master; clothing solid cobalt, all skin white. One person only.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-c1a20883-cf10-4078-8f7b-5c326692317b.png"
+}

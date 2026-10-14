@@ -1,0 +1,38 @@
+<script lang="ts">
+  import {tablePresentation,tableCellStyle} from '../core/table-appearance';
+  import type {SlideElement} from '../core/model';
+  import type {DesignSystem} from '../core/design-system-schema';
+  let {element,system,style='',editable=false,managed=false,activeCell,selection,tabTarget,oncell}:{element:SlideElement;system?:DesignSystem;style?:string;editable?:boolean;managed?:boolean;activeCell?:{row:number;column:number};selection?:{top:number;bottom:number;left:number;right:number};tabTarget?:{row:number;column:number};oncell?:(row:number,column:number,node:HTMLElement)=>void}=$props();
+  const p=$derived(tablePresentation(element,system)),rows=$derived(element.cells??[]);
+  let focusedCell=$state({row:0,column:0});
+  const tabCell=$derived({row:Math.min(rows.length-1,tabTarget?.row??activeCell?.row??focusedCell.row),column:Math.min(p.widths.length-1,tabTarget?.column??activeCell?.column??focusedCell.column)});
+  function selected(row:number,column:number){return Boolean(editable&&selection&&row>=selection.top&&row<=selection.bottom&&column>=selection.left&&column<=selection.right);}
+  function css(row:number,column:number){return Object.entries(tableCellStyle(p,row,column)).map(([key,value])=>key.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())+':'+value).join(';');}
+  function key(event:KeyboardEvent,row:number,column:number){
+    if(!editable||managed||event.isComposing||event.altKey)return;
+    if(event.key==='Home'||event.key==='End'){
+      event.preventDefault();event.stopPropagation();
+      const r=event.metaKey||event.ctrlKey?(event.key==='Home'?0:rows.length-1):row,c=event.key==='Home'?0:p.widths.length-1;
+      (event.currentTarget as HTMLElement).closest('table')?.querySelector<HTMLElement>(`[data-table-row="${r}"][data-table-column="${c}"]`)?.focus();return;
+    }
+    if(event.metaKey||event.ctrlKey)return;
+    if(event.key==='Enter'||event.key==='F2'){event.preventDefault();event.stopPropagation();oncell?.(row,column,event.currentTarget as HTMLElement);return;}
+    if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
+    event.preventDefault();event.stopPropagation();
+    const r=Math.max(0,Math.min(rows.length-1,row+(event.key==='ArrowDown'?1:event.key==='ArrowUp'?-1:0))),c=Math.max(0,Math.min(p.widths.length-1,column+(event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:0)));
+    (event.currentTarget as HTMLElement).closest('table')?.querySelector<HTMLElement>(`[data-table-row="${r}"][data-table-column="${c}"]`)?.focus();
+  }
+</script>
+<table class="slide-table" class:cell-editable={editable} style={style} role={editable?'grid':undefined} aria-multiselectable={managed?true:undefined} aria-label={editable?`${element.name||'Table'} · Editable cells`:undefined}>
+  <colgroup>{#each p.widths as width}<col style:width={`${width*100}%`}/>{/each}</colgroup>
+  <tbody>{#each rows as row,i}<tr style:height={p.heights?`${p.heights[i]*100}%`:undefined}>{#each Array.from({length:p.widths.length},(_,j)=>j) as j}
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions a11y_no_static_element_interactions -->
+    <svelte:element this={p.headerRow&&i===0?'th':'td'} role={p.headerRow&&i===0?'columnheader':editable?'gridcell':'cell'} scope={p.headerRow&&i===0?'col':undefined} style={css(i,j)} data-table-row={i} data-table-column={j} aria-selected={managed?selected(i,j):undefined} class:selected-cell={selected(i,j)} class:active-cell={editable&&activeCell?.row===i&&activeCell?.column===j} tabindex={editable?(i===tabCell.row&&j===tabCell.column?0:-1):undefined} onfocus={()=>{if(editable)focusedCell={row:i,column:j};}} onkeydown={event=>key(event,i,j)} ondblclick={event=>{if(editable){event.stopPropagation();oncell?.(i,j,event.currentTarget as HTMLElement);}}}>{row[j]??''}</svelte:element>
+  {/each}</tr>{/each}</tbody>
+</table>
+<style>
+  .slide-table{width:100%;height:100%;border-collapse:collapse;table-layout:fixed;white-space:pre-wrap;font-variant-numeric:tabular-nums}.slide-table th,.slide-table td{overflow-wrap:anywhere}
+  .cell-editable .active-cell,.cell-editable :focus-visible{outline:calc(2px / var(--canvas-scale,1)) solid var(--canvas-selection);outline-offset:calc(-2px / var(--canvas-scale,1))}
+  .cell-editable .selected-cell{background-image:linear-gradient(color-mix(in srgb,var(--canvas-selection) 14%,transparent),color-mix(in srgb,var(--canvas-selection) 14%,transparent))!important;outline:calc(1px / var(--canvas-scale,1)) solid color-mix(in srgb,var(--canvas-selection) 45%,transparent);outline-offset:calc(-1px / var(--canvas-scale,1))}
+  @media(hover:hover) and (pointer:fine){.cell-editable th:hover,.cell-editable td:hover{outline:calc(1px / var(--canvas-scale,1)) solid color-mix(in srgb,var(--canvas-selection) 55%,transparent);outline-offset:calc(-1px / var(--canvas-scale,1))}}
+</style>

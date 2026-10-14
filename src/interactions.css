@@ -1,0 +1,59 @@
+/* Editor feedback extends the imported tokens without changing their source snapshot. */
+.canvas-stage{align-items:flex-start;justify-content:flex-start}
+.stage-canvas{margin:auto}
+.editor-app{--interaction-fast:var(--ui-motion-feedback);--interaction-base:var(--ui-motion-reveal)}
+.editor-app button:disabled{opacity:var(--state-disabled-opacity)}
+.object-properties{border:0;padding:0;margin:0;min-width:0}
+.locked-notice{margin:0;padding:12px 16px;border-bottom:1px solid var(--border-subtle);font-size:var(--ui-meta);color:var(--text-secondary);background:var(--fill-subtle)}
+.editor-app :is(.icon-btn.on,.text-btn.active,.seg button[aria-pressed=true]):not(:disabled):hover{background:var(--state-selected);color:var(--text-primary)}
+.editor-app .text-btn.primary:not(:disabled):active{background:var(--action-solid-bg-active)}
+.editor-app .text-btn.danger:not(:disabled):active{background:var(--action-danger-bg-active)}
+.editor-app :is(button,a):focus-visible{outline:2px solid var(--accent-line);outline-offset:2px}
+.field-inline:focus-within{border-color:var(--accent);box-shadow:none}
+.field-inline input:focus-visible{outline:none}
+/* Row feedback fills the surface; keep its rounded edges inside the scrollport. */
+.layer-row{position:relative;gap:2px;margin:0;box-shadow:none}
+.layer-row:is(:hover,:focus-within,.previewed):not(.chosen){background:var(--state-hover)}
+.layer-row.chosen{background:var(--state-selected)}
+.layer-row.chosen .layer-name{color:var(--text-primary)}
+.layer-name{min-height:32px;padding:0 4px;border-radius:var(--r-control)}
+.layer-hidden .layer-name{color:var(--text-tertiary)}
+.layer-row .icon-btn{opacity:.6}
+.layer-row:is(:hover,:focus-within,.chosen) .icon-btn,.layer-row .icon-btn.layer-state{opacity:1}
+.layer-row .icon-btn.layer-state{color:var(--text-link)}
+.selection-context{position:absolute;top:44px;left:24px;right:24px;display:flex;align-items:center;justify-content:flex-end;gap:4px;min-height:32px;pointer-events:none;color:var(--text-secondary);font-size:var(--ui-meta);z-index:25}
+.selection-context>span{min-width:0;max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-right:4px}
+.selection-context button:not(:where([popover] button)){pointer-events:auto;background:var(--surface-chrome);height:30px;font-size:var(--ui-meta);border:1px solid var(--border-default);box-shadow:0 1px 2px var(--border-subtle);white-space:nowrap;gap:4px}
+.slide-thumb:active .thumb-image{border-color:var(--accent)}
+.slide-thumb.current .thumb-image{outline-offset:-2px}
+.slide-thumb.current:hover .thumb-image{outline-color:var(--accent)}
+@media(hover:hover) and (pointer:fine){
+  .editor-app :is(input,textarea,select):not(:disabled):hover,.field-inline:not(:has(input:disabled)):hover{border-color:var(--border-strong)}
+  .field-inline:focus-within:hover{border-color:var(--accent)}
+  .layer-name:hover{color:var(--text-primary)}
+  .slide-thumb:not(.current):hover .thumb-image{box-shadow:0 0 0 1px var(--border-strong)}
+}
+@media(max-width:760px){
+  .selection-context{top:32px;left:12px;right:12px;gap:4px}
+  .selection-context>span{display:none}
+  .selection-context button:not(:where([popover] button)){min-height:36px;padding:0 8px}
+  .canvas-hint{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+}
+@media(max-width:1100px){.editor-app .topbar .save-state{display:none}}
+@media(pointer:coarse){
+  .stage-footer{height:44px}
+  .stage-footer :is(.icon-btn.small,.text-btn){min-width:36px;height:36px}
+  .property-panel .icon-btn,.layer-name{min-height:36px}
+  .layer-row .icon-btn{opacity:1;min-width:32px}
+  .rail-foot .text-btn{height:36px}
+  .editor-app :is(.icon-btn,.text-btn,.seg button,.panel-tabs button):not(:active):not(.on):not(.active):not(.primary):not(.ghost):not(.danger):not([aria-pressed=true]):hover{background:transparent}
+}
+@media(prefers-reduced-motion:reduce){.editor-app *{transition:none!important;scroll-behavior:auto!important}}
+
+.selection-context button:not(:where([popover] button))[aria-pressed=true]{background:var(--state-selected);border-color:var(--accent-line);color:var(--text-primary)}
+.inspector-content .icon-btn[aria-pressed=mixed]{position:relative;color:var(--text-primary);background:var(--state-hover)}
+.inspector-content .icon-btn[aria-pressed=mixed]::after{content:'';position:absolute;width:8px;height:2px;left:calc(50% - 4px);bottom:3px;background:var(--text-link);border-radius:1px}
+@media(max-width:760px){.selection-context{flex-wrap:wrap;align-content:start}.selection-context button:not(:where([popover] button)){padding:0 8px;gap:4px}.canvas-layer-picker button{min-height:40px}}
+
+/* Shared canvas settings use the same native popover surface. */
+.canvas-controls-popover{position:fixed;margin:0;max-height:calc(100dvh - 24px);overflow:auto;padding:0;background:var(--surface-overlay);color:var(--text-primary);border:1px solid var(--overlay-border);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);font:var(--ui-label)/var(--ui-line-body) var(--font-ui)}

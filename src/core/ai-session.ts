@@ -1,0 +1,9 @@
+import {z} from 'zod';
+export const AIHistorySchema=z.array(z.object({prompt:z.string().max(2000),summary:z.string().max(1200),status:z.enum(['applied','information','queued','discarded']),revision:z.number().int().min(0)}).strict()).max(8);
+export type AIHistory=z.infer<typeof AIHistorySchema>;
+export type AISession={prompt:string;scope:string;history:AIHistory};
+const prefix='deck-studio-ai-session:';const empty=():AISession=>({prompt:'',scope:'slide',history:[]});
+export function readAISession(id:string,storage:Pick<Storage,'getItem'>|undefined=undefined):AISession{try{const raw=JSON.parse((storage??globalThis.localStorage)?.getItem(prefix+id)??'null');if(!raw)return empty();return {prompt:typeof raw.prompt==='string'?raw.prompt.slice(0,10000):'',scope:['selection','slide','deck'].includes(raw.scope)?raw.scope:'slide',history:AIHistorySchema.parse(raw.history)};}catch{return empty();}}
+export function saveAISession(id:string,value:AISession,storage:Pick<Storage,'setItem'>|undefined=undefined){if(!id)return;try{(storage??globalThis.localStorage)?.setItem(prefix+id,JSON.stringify({prompt:value.prompt.slice(0,10000),scope:value.scope,history:AIHistorySchema.parse(value.history.slice(-8))}));}catch{/* Storage limits never block authoring. */}}
+export function appendAIHistory(history:AIHistory,prompt:string,summary:string,status:AIHistory[number]['status'],revision:number):AIHistory{return [...history,{prompt:prompt.slice(0,2000),summary:summary.slice(0,1200),status,revision}].slice(-8);}
+export function aiFollowups(history:AIHistory){return history.filter(t=>t.status!=='discarded').slice(-4).map(t=>({...t,summary:t.status==='queued'?`Requested action; completion must be checked by receipt. ${t.summary}`:t.summary}));}

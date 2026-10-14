@@ -1,0 +1,37 @@
+{
+  "retrieved": "2026-10-14",
+  "sources": [
+    {
+      "file": "CC0-1.0.txt",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt",
+      "bytes": 7048
+    },
+    {
+      "file": "CC-BY-4.0.txt",
+      "url": "https://creativecommons.org/licenses/by/4.0/legalcode.txt",
+      "bytes": 18657
+    },
+    {
+      "file": "nodable-entities.txt",
+      "url": "https://raw.githubusercontent.com/nodable/val-parsers/main/LICENSE",
+      "bytes": 1064
+    },
+    {
+      "file": "boolbase.txt",
+      "url": "https://raw.githubusercontent.com/fb55/boolbase/master/LICENSE",
+      "bytes": 751
+    }
+  ],
+  "declarations": [
+    {
+      "package": "is-reference",
+      "version": "3.0.3",
+      "evidence": "package.json and README.md, author Rich Harris, SPDX MIT; standard text supplied"
+    },
+    {
+      "package": "locate-character",
+      "version": "3.0.0",
+      "evidence": "package.json and README.md, author Rich Harris, SPDX MIT; standard text supplied"
+    }
+  ]
+}

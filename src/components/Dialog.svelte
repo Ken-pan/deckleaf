@@ -1,0 +1,64 @@
+<script lang="ts">
+  import { onMount, type Snippet } from 'svelte';
+  import { uiPresence, uiChange } from '../ui-motion';
+  import { DialogHeader } from './ui';
+  import { modalFocus, restoreFocus } from '../ui-focus';
+  import NotificationOutlet from './NotificationOutlet.svelte';
+  import { registerNotificationDialog } from '../notification-ui.svelte';
+  let {title, onclose, returnFocus, children, footer, subtitle, descriptionId, wide = false, resource = false, review = false, workspace = false, closeLabel = 'Close', element = $bindable(), class: className = ''}: {title: string; onclose: () => void; returnFocus?: () => HTMLElement | undefined; children: Snippet; footer?: Snippet; subtitle?: string; descriptionId?: string; wide?: boolean; resource?: boolean; review?: boolean; workspace?: boolean; closeLabel?: string; element?: HTMLDialogElement; class?: string} = $props();
+  const titleId = $props.id();
+  let heading = $state<HTMLHeadingElement>();
+  let body: HTMLDivElement;
+  let scrollable=$state(false);
+  let focusOrigin:HTMLElement|null=null;
+  let releaseFeedback: (() => void) | undefined;
+  function releaseModal(){if(element?.open){releaseFeedback?.();releaseFeedback=undefined;element.close();restoreFocus(returnFocus?.(),focusOrigin);}}
+  function modalPresence(node:HTMLElement,params:Parameters<typeof uiPresence>[1],options:Parameters<typeof uiPresence>[2]) {
+    const config=uiPresence(node,params,options);
+    if(typeof config!=='function')return config;
+    return (phase:{direction?:'in'|'out'}={})=>{
+      if(phase.direction==='out')releaseModal();
+      else if(element && !element.open){focusOrigin=document.activeElement as HTMLElement|null;element.showModal();releaseFeedback??=registerNotificationDialog(element);focusContent();}
+      return config(phase);
+    };
+  }
+  let previousTitle = '', focusFrame = 0;
+  function focusContent() {
+    cancelAnimationFrame(focusFrame);
+    focusFrame = requestAnimationFrame(() => {
+      if (!element?.open || element.dataset.uiLeaving === 'true') return;
+      (element.querySelector<HTMLElement>('[data-dialog-autofocus]') ?? heading)?.focus({preventScroll: true});
+    });
+  }
+  $effect(() => {
+    const next = title;
+    if (next === previousTitle || !body) return;
+    previousTitle = next;
+    body.scrollTop = 0;
+    if (element?.open) focusContent();
+  });
+  onMount(() => {
+    const current = element!, origin = document.activeElement as HTMLElement | null;focusOrigin=origin;
+    const measure=()=>scrollable=body.scrollHeight>body.clientHeight+1;
+    const resize=new ResizeObserver(measure), content=new MutationObserver(measure);
+    resize.observe(body);content.observe(body,{childList:true,subtree:true,characterData:true});
+    current.showModal(); releaseFeedback??=registerNotificationDialog(current); focusContent();measure();
+    return () => {
+      resize.disconnect();content.disconnect();cancelAnimationFrame(focusFrame); releaseFeedback?.();releaseFeedback=undefined; const wasOpen=current.open;current.close();
+      if(!wasOpen)return;
+      queueMicrotask(() => {
+        if (document.querySelector('dialog:modal')) return;
+        const requested = returnFocus?.();
+        restoreFocus(requested, origin);
+      });
+    };
+  });
+</script>
+<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} oncancel={(e) => { e.preventDefault(); onclose(); }}>
+  <DialogHeader {title} {subtitle} {titleId} {closeLabel} {onclose} bind:heading />
+  <!-- Scrollable dialog prose has a keyboard reading position. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <div tabindex={scrollable?0:undefined} role={scrollable?'region':undefined} aria-label={scrollable?`${title} content`:undefined} class="modal-body" class:dialog-workspace-body={workspace} bind:this={body} use:uiChange={title}><NotificationOutlet kind="feedback" owner={element}/>{@render children()}</div>
+  <NotificationOutlet kind="toast" owner={element}/>
+  {#if footer}{@render footer()}{/if}
+</dialog>

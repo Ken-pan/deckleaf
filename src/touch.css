@@ -1,0 +1,20 @@
+/* Coarse-pointer chrome loads on touch-capable devices; document type is untouched. */
+@media (any-pointer:coarse) {
+  .canvas-stage[data-canvas-touch] { touch-action:none; overscroll-behavior:contain; }
+  .editable .slide-element.editing { touch-action:pan-x pan-y pinch-zoom; }
+  :root :is(.editor-app,.modal,[popover],.presentation) :is(button:not(.resize-handle),input,select) { min-height:44px; }
+  :root :is(.editor-app,.modal,[popover],.presentation) button:not(.resize-handle) { min-width:44px; }
+  :root :is(.editor-app,.modal,[popover]) :is(input,select,textarea) { font-size:16px; }
+  .canvas-insert-dock .text-entry { min-width:44px; }
+  .canvas-meta a { display:inline-flex; align-items:center; min-height:44px; }
+  .slide-list { touch-action:pan-x pan-y; overscroll-behavior:contain; }
+  .slide-thumb { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  .inspector-view-tabs,.font-dropdown-sources,.seg { flex-wrap:wrap; }
+}
+@media (any-pointer:coarse) and (max-width:760px) {
+  .topbar-left { flex:1; max-width:none; }
+  .topbar-left .brand-button { width:44px; flex:none; padding:0; }
+  .topbar .document-name { flex:1; min-width:0; max-width:140px; padding-inline:4px; font-size:16px; }
+  .topbar-right { gap:0; }
+  .canvas-insert-dock { gap:4px; }
+}

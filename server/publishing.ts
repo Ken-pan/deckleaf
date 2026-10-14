@@ -1,0 +1,39 @@
+import {mkdir,readFile,writeFile,rename,readdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import {createHash} from 'node:crypto';
+import JSZip from 'jszip';
+import {z} from 'zod';
+import {DATA,readDeck} from './store';
+const id=z.string().uuid();
+const metadata=z.object({id,deckId:z.string(),revision:z.number().int(),title:z.string(),sha256:z.string(),bytes:z.number(),createdAt:z.string(),state:z.enum(['prepared','creating','uploading','processing','published','failed','unknown']),siteId:z.string().optional(),deployId:z.string().optional(),url:z.string().url().optional(),error:z.string().optional()});
+export type PublishDraft=z.infer<typeof metadata>;
+export class NetlifyPublisher {
+ private token='';private verified=false;private runs=new Map<string,Promise<PublishDraft>>();
+ constructor(private root=join(DATA,'publishing'),private transport:typeof fetch=fetch,private getDeck=readDeck,private environment:()=>string=()=>process.env.NETLIFY_AUTH_TOKEN||''){}
+ connection(){return {provider:'netlify',configured:Boolean(this.token||this.environment()),connected:this.verified||Boolean(this.environment()),source:this.token?'session':this.environment()?'environment':'none',mode:'dedicated-presentation-site'};}
+ private async api(path:string,init:RequestInit={}){const key=this.token||this.environment();if(!key)throw new Error('Connect Netlify to publish this presentation.');const response=await this.transport(`https://api.netlify.com/api/v1${path}`,{...init,headers:{...(init.headers||{}),Authorization:`Bearer ${key}`},signal:AbortSignal.timeout(60000),redirect:'error'});if(!response.ok){await response.body?.cancel();throw Object.assign(new Error(`Netlify could not complete this request (${response.status}). Check the connection and try again.`),{definite:response.status>=400&&response.status<500});}return response.json();}
+ async connect(token:string){if(typeof token!=='string'||token.length>1000)throw new Error('Enter a valid Netlify access token.');if(!token.trim()){this.token='';this.verified=false;return this.connection();}const previous=this.token;this.token=token.trim();try{await this.api('/user');this.verified=true;return this.connection();}catch(e){this.token=previous;throw e;}}
+ private directory(value:string){return join(this.root,id.parse(value));}
+ private async write(draft:PublishDraft){const dir=this.directory(draft.id);await mkdir(dir,{recursive:true});const target=join(dir,'metadata.json'),temp=join(dir,`${crypto.randomUUID()}.tmp`);await writeFile(temp,JSON.stringify(metadata.parse(draft)),{mode:0o600});await rename(temp,target);return draft;}
+ async read(value:string){return metadata.parse(JSON.parse(await readFile(join(this.directory(value),'metadata.json'),'utf8')));}
+ async prepare(deckId:string,revision:number,html:string){const deck=await this.getDeck(deckId);if(deck.revision!==revision)throw new Error('The document changed. Prepare a new website package.');if(typeof html!=='string'||!/^\s*<!doctype html/i.test(html)||Buffer.byteLength(html)>100_000_000)throw new Error('Choose a valid presentation HTML package smaller than 100 MB.');const sha256=createHash('sha256').update(html).digest('hex');let prior:PublishDraft|undefined;await mkdir(this.root,{recursive:true});for(const file of await readdir(this.root)){try{const existing=await this.read(file);if(existing.deckId===deckId&&existing.siteId&&existing.state==='published'&&(!prior||existing.revision>prior.revision))prior=existing;if(existing.deckId===deckId&&existing.revision===revision&&existing.sha256===sha256&&!['failed'].includes(existing.state))return existing;}catch{}}
+ const draft:PublishDraft={id:crypto.randomUUID(),deckId,revision,title:deck.title,sha256,bytes:Buffer.byteLength(html),createdAt:new Date().toISOString(),state:'prepared',...(prior?{siteId:prior.siteId,url:prior.url}:{})};await this.write(draft);await writeFile(join(this.directory(draft.id),'index.html'),html,{mode:0o600});return draft;}
+ async html(value:string){await this.read(value);return readFile(join(this.directory(value),'index.html'));}
+ async status(value:string){const draft=await this.read(value);if(['creating','uploading'].includes(draft.state)&&!this.runs.has(value))return this.write({...draft,state:'unknown',error:'Publication was interrupted. Check Netlify before starting another publication.'});if(!draft.deployId||draft.state==='published'||!this.connection().configured)return draft;const deploy=await this.api(`/deploys/${encodeURIComponent(draft.deployId)}`);if(deploy.state==='error')return this.write({...draft,state:'failed',error:'Netlify could not process this package. Check the deployment in Netlify.'});if(deploy.state!=='ready')return draft;const url=deploy.ssl_url||deploy.deploy_ssl_url||deploy.url;if(typeof url!=='string'||!/^https:\/\//.test(url))throw new Error('Netlify returned no secure publication URL. Check the deployment in Netlify.');return this.write({...draft,state:'published',url,error:undefined});}
+ async publish(value:string,confirmation:{deckId:string;revision:number;sha256:string}){
+  const previous=this.runs.get(value);if(previous)return previous;
+  const run=(async()=>{let draft=await this.read(value);if(draft.deckId!==confirmation.deckId||draft.revision!==confirmation.revision||draft.sha256!==confirmation.sha256)throw new Error('The website package changed. Review the current package before publishing.');const deck=await this.getDeck(draft.deckId);if(deck.revision!==draft.revision)throw new Error('The document changed. Prepare a new website package.');if(draft.state==='published')return draft;if(draft.deployId&&draft.state!=='failed')return this.status(value);if(draft.state==='failed')draft=await this.write({...draft,state:'prepared',deployId:undefined,error:undefined});if(['creating','uploading','unknown'].includes(draft.state))throw new Error('The previous publication has an unknown result. Check Netlify before starting another publication.');
+  if(!this.connection().configured)throw new Error('Connect Netlify to publish this presentation.');
+  try{
+    const html=await this.html(value);if(createHash('sha256').update(html).digest('hex')!==draft.sha256)throw new Error('The website package could not be verified. Prepare it again.');
+    // Only sites created for this exact package are updated. Existing product
+    // sites and arbitrary model-supplied site IDs are never deployment targets.
+    if(!draft.siteId){draft=await this.write({...draft,state:'creating'});const site=await this.api('/sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({force_ssl:true})});if(typeof site.id!=='string')throw new Error('Netlify did not return a site ID.');draft=await this.write({...draft,siteId:site.id,state:'prepared'});}
+    const zip=new JSZip();zip.file('index.html',html);zip.file('_headers','/*\n  Referrer-Policy: no-referrer\n  X-Content-Type-Options: nosniff\n');
+    const body=await zip.generateAsync({type:'uint8array',compression:'DEFLATE'});draft=await this.write({...draft,state:'uploading'});
+    const deploy=await this.api(`/sites/${encodeURIComponent(draft.siteId!)}/deploys`,{method:'POST',headers:{'Content-Type':'application/zip'},body:body as BodyInit});if(typeof deploy.id!=='string')throw new Error('Netlify did not return a deployment ID.');draft=await this.write({...draft,deployId:deploy.id,state:'processing'});return this.status(value);
+  }catch(error){const uncertain=['creating','uploading'].includes(draft.state)&&!(error as any).definite;await this.write({...draft,state:uncertain?'unknown':'failed',error:uncertain?'The publication result is unknown. Check Netlify before retrying.':(error as Error).message});throw error;}
+  })();this.runs.set(value,run);try{return await run;}finally{this.runs.delete(value);}
+ }
+}
+export const publishing=new NetlifyPublisher();

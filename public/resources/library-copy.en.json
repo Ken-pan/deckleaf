@@ -1,0 +1,645 @@
+{
+  "assets": {
+    "scene-01-guidance": {
+      "title": "Guided decisions",
+      "alt": "An adviser recommends product cards to a user beside a shopping cart.",
+      "suggestedUsage": "Recommendations, advisory services, and complex decisions"
+    },
+    "scene-02-search": {
+      "title": "Finding the key insight",
+      "alt": "A designer uses a magnifying glass to find a key detail in a card.",
+      "suggestedUsage": "Search, discovery, and problem identification"
+    },
+    "scene-03-compare": {
+      "title": "Comparing options",
+      "alt": "A user compares two design cards side by side.",
+      "suggestedUsage": "Product comparisons and design tradeoffs"
+    },
+    "scene-04-research": {
+      "title": "Listening to real needs",
+      "alt": "Two people speak face to face while one listens and takes notes.",
+      "suggestedUsage": "User interviews and qualitative research"
+    },
+    "scene-05-collaborate": {
+      "title": "Moving forward together",
+      "alt": "Two designers organize design cards on a whiteboard.",
+      "suggestedUsage": "Team collaboration and workshops"
+    },
+    "scene-06-organize": {
+      "title": "Making sense of complexity",
+      "alt": "A designer sorts loose cards into three folders.",
+      "suggestedUsage": "Information architecture and content organization"
+    },
+    "scene-07-insight": {
+      "title": "Evidence into insight",
+      "alt": "A designer points to key data on an analytics board.",
+      "suggestedUsage": "Data analysis and design validation"
+    },
+    "scene-08-launch": {
+      "title": "Bringing ideas to life",
+      "alt": "Two designers present a completed product interface.",
+      "suggestedUsage": "Prototyping, delivery, and launches"
+    },
+    "spot-01-search": {
+      "title": "Search",
+      "alt": "A magnifying glass highlights a blue detail on a card.",
+      "suggestedUsage": "Search features and empty states"
+    },
+    "spot-02-catalog": {
+      "title": "Catalog",
+      "alt": "A card is placed into a blue folder among three categories.",
+      "suggestedUsage": "Content management and resource categories"
+    },
+    "spot-03-workflow": {
+      "title": "Workflow",
+      "alt": "Three card nodes are connected by arrows.",
+      "suggestedUsage": "Process explanations and automation"
+    },
+    "spot-04-complete": {
+      "title": "Complete",
+      "alt": "A checklist card has a prominent blue check mark.",
+      "suggestedUsage": "Validation and completion states"
+    },
+    "pain-01-overload": {
+      "title": "Information overload",
+      "alt": "A user faces many content cards and hesitates over where to start.",
+      "suggestedUsage": "Dense content and unclear priorities"
+    },
+    "pain-02-no-results": {
+      "title": "Search without results",
+      "alt": "A user examines empty search results with a magnifying glass.",
+      "suggestedUsage": "No results and discovery failures"
+    },
+    "pain-03-uncertain-choice": {
+      "title": "Unclear choices",
+      "alt": "A user hesitates between three similar options.",
+      "suggestedUsage": "Comparison fatigue and missing decision criteria"
+    },
+    "pain-04-navigation": {
+      "title": "An unclear next step",
+      "alt": "A user stands beside signs pointing in three directions.",
+      "suggestedUsage": "Navigation and unclear next steps"
+    },
+    "pain-05-fragmented-tools": {
+      "title": "Switching between tools",
+      "alt": "A user handles one task across a computer, phone, and scattered files.",
+      "suggestedUsage": "Fragmented workflows and disconnected tools"
+    },
+    "pain-06-error-recovery": {
+      "title": "A task interrupted",
+      "alt": "A user faces an error window without a clear recovery path.",
+      "suggestedUsage": "Errors and interrupted saves"
+    },
+    "pain-07-long-form": {
+      "title": "A form that keeps going",
+      "alt": "A user holds a pen beside a long form with empty fields.",
+      "suggestedUsage": "Long forms and repeated input"
+    },
+    "pain-08-waiting": {
+      "title": "Waiting without progress",
+      "alt": "A user waits beside a task indicator and an hourglass.",
+      "suggestedUsage": "Loading feedback and uncertain wait times"
+    },
+    "pain-09-conflicting-feedback": {
+      "title": "Conflicting feedback",
+      "alt": "A designer receives two suggestions pointing in different directions.",
+      "suggestedUsage": "Conflicting stakeholder feedback"
+    },
+    "pain-10-handoff-gap": {
+      "title": "Context lost in handoff",
+      "alt": "Two colleagues hold incomplete materials with a gap between them.",
+      "suggestedUsage": "Design handoff and missing context"
+    },
+    "pain-11-readability": {
+      "title": "Content that is hard to read",
+      "alt": "A user with glasses leans toward a densely arranged card.",
+      "suggestedUsage": "Readability and crowded layouts"
+    },
+    "pain-12-trust": {
+      "title": "Recommendations without reasons",
+      "alt": "A user examines a recommendation card for supporting evidence.",
+      "suggestedUsage": "AI explanations and trust"
+    },
+    "person-01-thinking": {
+      "title": "A thoughtful user",
+      "alt": "A user with short curls holds a card and rests a hand on their chin.",
+      "suggestedUsage": "Problems and decisions"
+    },
+    "person-02-explaining": {
+      "title": "Explaining a design",
+      "alt": "A colleague with glasses holds a notebook and gestures while explaining.",
+      "suggestedUsage": "Design presentations and advice"
+    },
+    "person-03-listening": {
+      "title": "An attentive researcher",
+      "alt": "A researcher with shoulder-length hair listens and takes notes.",
+      "suggestedUsage": "Interviews and feedback"
+    },
+    "person-04-participating": {
+      "title": "Joining the discussion",
+      "alt": "A colleague using a wheelchair holds a notebook and joins a discussion.",
+      "suggestedUsage": "Collaboration and inclusive teams"
+    },
+    "work-01-plan": {
+      "title": "Setting priorities",
+      "alt": "A designer places a task card on a three-column planning board.",
+      "suggestedUsage": "Project planning and prioritization"
+    },
+    "work-02-prototype": {
+      "title": "An idea becomes a prototype",
+      "alt": "A designer assembles interface modules into phone and desktop prototypes.",
+      "suggestedUsage": "Prototyping and cross-device design"
+    },
+    "work-03-usability-test": {
+      "title": "Observing real tasks",
+      "alt": "A user works on a computer while a researcher observes and records.",
+      "suggestedUsage": "Usability tests and behavior research"
+    },
+    "work-04-iterate": {
+      "title": "Refining through feedback",
+      "alt": "A designer replaces an old design card with an improved one.",
+      "suggestedUsage": "Iteration and design development"
+    },
+    "work-05-review": {
+      "title": "Reviewing design and evidence",
+      "alt": "Two colleagues examine a design while one records feedback.",
+      "suggestedUsage": "Design reviews and evidence discussions"
+    },
+    "work-06-handoff": {
+      "title": "Passing on the full context",
+      "alt": "Two colleagues exchange an organized project folder.",
+      "suggestedUsage": "Handoff and documentation"
+    },
+    "state-01-onboarding": {
+      "title": "A clear place to start",
+      "alt": "A new user follows three clear step cards.",
+      "suggestedUsage": "Onboarding and tutorials"
+    },
+    "state-02-access": {
+      "title": "Access restricted",
+      "alt": "A user faces a locked content panel.",
+      "suggestedUsage": "Permissions and restricted content"
+    },
+    "state-03-import": {
+      "title": "Bringing content in",
+      "alt": "A user adds file cards to an open workspace.",
+      "suggestedUsage": "Imports and content migration"
+    },
+    "state-04-sync": {
+      "title": "Continuing across devices",
+      "alt": "A user syncs a task card between a computer and phone.",
+      "suggestedUsage": "Sync and cross-device continuity"
+    },
+    "state-05-offline": {
+      "title": "Connection interrupted",
+      "alt": "A user sees a broken connection symbol beside a device.",
+      "suggestedUsage": "Offline and network errors"
+    },
+    "state-06-notifications": {
+      "title": "Too many notifications",
+      "alt": "A user is distracted by many notification cards around a phone.",
+      "suggestedUsage": "Notification overload and focus"
+    },
+    "state-07-privacy": {
+      "title": "Choosing what to share",
+      "alt": "A user places selected materials beside a protective shield.",
+      "suggestedUsage": "Privacy and sharing controls"
+    },
+    "state-08-recovery": {
+      "title": "A path to recovery",
+      "alt": "A user follows an arrow to restore a file and continue.",
+      "suggestedUsage": "Error recovery and retry guidance"
+    },
+    "state-09-empty-workspace": {
+      "title": "Ready for the first item",
+      "alt": "A user holds the first card beside an empty workspace.",
+      "suggestedUsage": "Empty states and first use"
+    },
+    "state-10-delete": {
+      "title": "Checking before deleting",
+      "alt": "A user pauses with a card beside a wastebasket.",
+      "suggestedUsage": "Delete confirmation and original files"
+    },
+    "person-05-working": {
+      "title": "A focused designer",
+      "alt": "A designer works attentively at a computer.",
+      "suggestedUsage": "Design work and tools"
+    },
+    "person-06-recording": {
+      "title": "Taking notes",
+      "alt": "A colleague with glasses writes in a notebook.",
+      "suggestedUsage": "Research and review notes"
+    },
+    "person-07-questioning": {
+      "title": "A user with questions",
+      "alt": "A user opens their hands to express an unresolved question.",
+      "suggestedUsage": "Questions and missing information"
+    },
+    "person-08-approving": {
+      "title": "A satisfied user",
+      "alt": "A user holds a design card and gives a thumbs-up.",
+      "suggestedUsage": "Positive feedback and validation"
+    },
+    "spot-05-overload": {
+      "title": "Information overload",
+      "alt": "Five overlapping cards include one blue highlight.",
+      "suggestedUsage": "Content priority and cognitive load"
+    },
+    "spot-06-no-results": {
+      "title": "No search results",
+      "alt": "A magnifying glass examines an empty results tray.",
+      "suggestedUsage": "No results and no matches"
+    },
+    "spot-07-compare": {
+      "title": "Compare and choose",
+      "alt": "Two equal-sized cards show a blue circle and a black square.",
+      "suggestedUsage": "Comparisons and tradeoffs"
+    },
+    "spot-08-navigation": {
+      "title": "Unclear navigation",
+      "alt": "A sign points in three directions with one blue path.",
+      "suggestedUsage": "Navigation and next steps"
+    },
+    "spot-09-long-form": {
+      "title": "Long form",
+      "alt": "A long form has many empty fields and one completed entry.",
+      "suggestedUsage": "Repeated input and long forms"
+    },
+    "spot-10-waiting": {
+      "title": "Waiting and progress",
+      "alt": "A blue hourglass sits above a partially filled progress bar.",
+      "suggestedUsage": "Loading and processing"
+    },
+    "spot-11-error": {
+      "title": "Action failed",
+      "alt": "A blue circular error mark appears in an action window.",
+      "suggestedUsage": "Errors and task interruption"
+    },
+    "spot-12-retry": {
+      "title": "Retry and recover",
+      "alt": "A return arrow circles a card.",
+      "suggestedUsage": "Recovery and continuing a task"
+    },
+    "spot-13-handoff": {
+      "title": "Project handoff",
+      "alt": "An open blue folder contains three neatly arranged cards.",
+      "suggestedUsage": "Handoff and shared documentation"
+    },
+    "spot-14-sync": {
+      "title": "Sync across devices",
+      "alt": "A computer and phone share a blue module with two-way arrows.",
+      "suggestedUsage": "Sync and device continuity"
+    },
+    "spot-15-upload": {
+      "title": "Upload and import",
+      "alt": "A card floats above a blue tray beside an upward arrow.",
+      "suggestedUsage": "Uploads and imports"
+    },
+    "spot-16-offline": {
+      "title": "Connection lost",
+      "alt": "A wireless symbol is crossed by a blue line.",
+      "suggestedUsage": "Offline and connection failures"
+    },
+    "spot-17-access": {
+      "title": "Access permissions",
+      "alt": "A lock blocks a content card.",
+      "suggestedUsage": "Permissions and sign-in states"
+    },
+    "spot-18-privacy": {
+      "title": "Privacy and protection",
+      "alt": "A blue shield protects a selected card.",
+      "suggestedUsage": "Privacy and authorization"
+    },
+    "spot-19-notifications": {
+      "title": "Too many alerts",
+      "alt": "Three notification cards surround a bell.",
+      "suggestedUsage": "Notification and message overload"
+    },
+    "spot-20-priority": {
+      "title": "Priority",
+      "alt": "One of three task cards has a blue highlight.",
+      "suggestedUsage": "Planning and task priority"
+    },
+    "spot-22-test": {
+      "title": "Validate and test",
+      "alt": "A magnifying glass examines a card with a blue check.",
+      "suggestedUsage": "Usability tests and validation"
+    },
+    "spot-21-prototype": {
+      "title": "Interface prototype",
+      "alt": "Phone and desktop prototypes share a blue interface module.",
+      "suggestedUsage": "Prototyping and component design"
+    },
+    "spot-23-feedback": {
+      "title": "Comments and feedback",
+      "alt": "Two speech bubbles surround the same design card.",
+      "suggestedUsage": "Feedback and reviews"
+    },
+    "spot-24-delete": {
+      "title": "Confirm before deleting",
+      "alt": "A card pauses beside a wastebasket.",
+      "suggestedUsage": "Delete confirmation and original protection"
+    },
+    "pain-13-repeat-entry": {
+      "title": "Entering it all again",
+      "alt": "A user repeats information from a paper form on a computer.",
+      "suggestedUsage": "Repeated entry and form reuse"
+    },
+    "pain-14-unsaved": {
+      "title": "Work that was not saved",
+      "alt": "A user rests a hand on their forehead beside an unsaved document.",
+      "suggestedUsage": "Unsaved work and data loss"
+    },
+    "pain-15-version-conflict": {
+      "title": "Which version is current?",
+      "alt": "A user holds two different documents and hesitates over the version.",
+      "suggestedUsage": "Version conflicts and collaboration"
+    },
+    "pain-16-verification": {
+      "title": "Verification that keeps failing",
+      "alt": "A user holds a phone with an empty code field beside a locked sign-in screen.",
+      "suggestedUsage": "Verification and sign-in barriers"
+    },
+    "pain-17-support-loop": {
+      "title": "Passed between support channels",
+      "alt": "A user calls for help while arrows loop between automated and human support.",
+      "suggestedUsage": "Support loops and help requests"
+    },
+    "pain-18-small-target": {
+      "title": "Missing the tap target",
+      "alt": "A user taps the wrong target on a phone and looks confused.",
+      "suggestedUsage": "Mobile targets and accidental actions"
+    },
+    "person-09-frustrated": {
+      "title": "A frustrated user",
+      "alt": "A tired user sits with a hand on their forehead.",
+      "suggestedUsage": "Frustration and difficult tasks"
+    },
+    "person-10-seeking-help": {
+      "title": "Asking for help",
+      "alt": "A user holds a notebook and raises a hand.",
+      "suggestedUsage": "Help requests and support"
+    },
+    "pain-19-jargon": {
+      "title": "Instructions that are hard to understand",
+      "alt": "A user compares a manual with a card full of complex symbols.",
+      "suggestedUsage": "Jargon and unclear explanations"
+    },
+    "pain-20-hidden-cost": {
+      "title": "Unexpected costs at checkout",
+      "alt": "A user finds extra charges at the bottom of a receipt.",
+      "suggestedUsage": "Cost transparency and checkout"
+    },
+    "pain-21-interruption": {
+      "title": "Interrupted by pop-ups",
+      "alt": "Layered pop-ups cover a user’s task on a computer.",
+      "suggestedUsage": "Task interruption and intrusive dialogs"
+    },
+    "pain-22-incompatible": {
+      "title": "A file that will not open",
+      "alt": "A user holds a file that does not fit the destination app.",
+      "suggestedUsage": "File compatibility and import errors"
+    },
+    "pain-23-disabled": {
+      "title": "An unavailable action",
+      "alt": "A user faces a disabled button without knowing what is missing.",
+      "suggestedUsage": "Disabled actions and validation feedback"
+    },
+    "pain-24-cancel": {
+      "title": "An exit that is hard to find",
+      "alt": "A user with a membership card searches for a hidden exit.",
+      "suggestedUsage": "Cancellation and exit flows"
+    },
+    "person-11-presenting": {
+      "title": "Presenting a design clearly",
+      "alt": "A colleague points to a key detail on a design board.",
+      "suggestedUsage": "Presentations and design explanations"
+    },
+    "person-12-careful-phone": {
+      "title": "Using a phone with care",
+      "alt": "An older user with glasses examines a phone before acting.",
+      "suggestedUsage": "Mobile interaction and accessibility"
+    },
+    "spot-25-repeat-entry": {
+      "title": "Repeated entry",
+      "alt": "Two forms share blue fields linked by a curved arrow.",
+      "suggestedUsage": "Repeated forms and duplicated effort"
+    },
+    "spot-26-unsaved": {
+      "title": "Unsaved content",
+      "alt": "A save disk beside a card has a small cross.",
+      "suggestedUsage": "Unsaved work and draft recovery"
+    },
+    "spot-27-version-conflict": {
+      "title": "Version conflict",
+      "alt": "Overlapping cards have different blue content and a conflict mark.",
+      "suggestedUsage": "Versioning and collaboration conflicts"
+    },
+    "spot-28-session-expired": {
+      "title": "Session expired",
+      "alt": "An identity card has a blue avatar and a small clock.",
+      "suggestedUsage": "Session expiry and reauthentication"
+    },
+    "spot-29-invalid-input": {
+      "title": "Invalid input",
+      "alt": "A form field is highlighted in blue beside a warning triangle.",
+      "suggestedUsage": "Validation and required fields"
+    },
+    "spot-30-unsupported-file": {
+      "title": "Unsupported file",
+      "alt": "A folded file has a blue restriction mark.",
+      "suggestedUsage": "File formats and compatibility"
+    },
+    "spot-31-storage-full": {
+      "title": "Storage full",
+      "alt": "Three cards fill a box with a blue rim.",
+      "suggestedUsage": "Storage limits and blocked uploads"
+    },
+    "spot-32-timeout": {
+      "title": "Request timed out",
+      "alt": "A stopwatch with a blue button has a small cross.",
+      "suggestedUsage": "Timeouts and service responses"
+    },
+    "spot-33-broken-link": {
+      "title": "Broken link",
+      "alt": "Two chain links have a visible gap and a blue highlight.",
+      "suggestedUsage": "Unavailable pages and links"
+    },
+    "spot-34-filter-empty": {
+      "title": "No filtered results",
+      "alt": "An empty tray sits below a blue funnel.",
+      "suggestedUsage": "Filters and no matching data"
+    },
+    "spot-35-maintenance": {
+      "title": "System maintenance",
+      "alt": "A wrench stands in front of an interface window.",
+      "suggestedUsage": "Maintenance and service downtime"
+    },
+    "spot-36-support": {
+      "title": "Help and support",
+      "alt": "Headphones with blue earpieces sit beside a speech bubble.",
+      "suggestedUsage": "Support and help access"
+    },
+    "spot-37-pending-approval": {
+      "title": "Awaiting approval",
+      "alt": "A checklist has a small blue clock.",
+      "suggestedUsage": "Review and approval waits"
+    },
+    "spot-38-undo": {
+      "title": "Undo and go back",
+      "alt": "A curved left arrow sits beside a card.",
+      "suggestedUsage": "Undo and action recovery"
+    },
+    "spot-39-saved": {
+      "title": "Saved successfully",
+      "alt": "A blue disk has a check mark.",
+      "suggestedUsage": "Saved confirmation and draft protection"
+    },
+    "spot-40-empty-workspace": {
+      "title": "An empty workspace",
+      "alt": "An empty folder sits beside a blue plus sign.",
+      "suggestedUsage": "First use and creating the first item"
+    },
+    "usecase-01-ai-cocreate": {
+      "title": "AI co-creation",
+      "alt": "An adult revises a draft beside a laptop and a small processor tile.",
+      "suggestedUsage": "AI co-creation, draft editing, and human control"
+    },
+    "usecase-02-ai-verify": {
+      "title": "Verify AI sources",
+      "alt": "A user checks source documents next to an AI answer panel.",
+      "suggestedUsage": "AI sources, fact checking, and trust"
+    },
+    "usecase-03-payment-retry": {
+      "title": "Try another payment method",
+      "alt": "A shopper switches payment methods after a declined payment.",
+      "suggestedUsage": "Payment recovery and alternative payment methods"
+    },
+    "usecase-04-order-tracking": {
+      "title": "Track a delivery",
+      "alt": "A customer follows a parcel route from warehouse to home.",
+      "suggestedUsage": "Order tracking and delivery progress"
+    },
+    "usecase-05-returns": {
+      "title": "Return an order",
+      "alt": "A customer hands back a parcel under a return arrow.",
+      "suggestedUsage": "Returns, refunds, and after-sales service"
+    },
+    "usecase-06-budget": {
+      "title": "Plan a budget",
+      "alt": "A user compares expenses and a savings goal beside a coin jar.",
+      "suggestedUsage": "Personal budgets, spending, and savings goals"
+    },
+    "usecase-07-telehealth": {
+      "title": "Talk to a clinician remotely",
+      "alt": "A patient speaks with a clinician on a tablet from home.",
+      "suggestedUsage": "Remote consultations and health services"
+    },
+    "usecase-08-online-learning": {
+      "title": "Learn and take notes",
+      "alt": "A learner watches a lesson and writes in a notebook.",
+      "suggestedUsage": "Online courses and learning notes"
+    },
+    "usecase-09-trip-change": {
+      "title": "Change a travel plan",
+      "alt": "A traveler chooses a replacement ticket beside a suitcase.",
+      "suggestedUsage": "Travel changes, booking, and rescheduling"
+    },
+    "usecase-10-food-pickup": {
+      "title": "Pick up an order",
+      "alt": "A customer shows an order confirmation and collects a takeaway bag.",
+      "suggestedUsage": "Mobile ordering and food pickup"
+    },
+    "usecase-11-assistive-reading": {
+      "title": "Read with assistive tools",
+      "alt": "A headphone-wearing reader uses spoken text on a tablet.",
+      "suggestedUsage": "Assistive reading and spoken text"
+    },
+    "usecase-12-habit": {
+      "title": "Build a daily habit",
+      "alt": "A user marks completed habits beside a calendar.",
+      "suggestedUsage": "Daily habits, health goals, and routines"
+    },
+    "spot-41-ai-sources": {
+      "title": "Verify sources",
+      "alt": "A magnifying glass checks a source link on two cards.",
+      "suggestedUsage": "AI source verification and evidence sections"
+    },
+    "spot-42-order-route": {
+      "title": "Delivery progress",
+      "alt": "A parcel sits next to a route pin and a home.",
+      "suggestedUsage": "Delivery progress and order tracking"
+    },
+    "spot-43-return-parcel": {
+      "title": "Returns",
+      "alt": "A return arrow curves over a parcel and receipt.",
+      "suggestedUsage": "Returns, refunds, and after-sales sections"
+    },
+    "spot-44-booking-calendar": {
+      "title": "Booking calendar",
+      "alt": "A checked calendar cell sits beside a reschedule arrow.",
+      "suggestedUsage": "Booking, appointments, and rescheduling"
+    }
+  },
+  "themes": {
+    "人物": "People",
+    "用户困扰": "User challenges",
+    "工作流程": "Workflow",
+    "产品状态": "Product states",
+    "决策": "Decisions",
+    "发现": "Discovery",
+    "研究": "Research",
+    "协作": "Collaboration",
+    "整理": "Organization",
+    "交付": "Delivery",
+    "信息负担": "Information overload",
+    "搜索困扰": "Search challenges",
+    "决策困扰": "Decision challenges",
+    "导航困扰": "Navigation challenges",
+    "流程困扰": "Workflow challenges",
+    "操作负担": "Input effort",
+    "系统反馈": "System feedback",
+    "协作困扰": "Collaboration challenges",
+    "可读性": "Readability",
+    "信任与解释": "Trust and explanations",
+    "计划与执行": "Planning and execution",
+    "设计过程": "Design process",
+    "研究与验证": "Research and validation",
+    "团队协作": "Team collaboration",
+    "上手与引导": "Onboarding",
+    "权限与隐私": "Access and privacy",
+    "文件与同步": "Files and sync",
+    "数据与操作": "Data and actions",
+    "重复录入": "Repeated entry",
+    "数据丢失": "Data loss",
+    "版本冲突": "Version conflicts",
+    "登录困扰": "Sign-in challenges",
+    "求助困扰": "Support challenges",
+    "移动操作": "Mobile interaction",
+    "理解成本": "Comprehension",
+    "费用透明": "Cost transparency",
+    "任务中断": "Task interruption",
+    "格式兼容": "File compatibility",
+    "反馈缺失": "Missing feedback",
+    "退出困难": "Exit challenges",
+    "人工智能": "AI",
+    "电商服务": "Shopping",
+    "财务规划": "Finance",
+    "健康服务": "Health",
+    "在线学习": "Learning",
+    "旅行出行": "Travel",
+    "餐饮服务": "Food",
+    "包容与辅助": "Accessibility",
+    "预约安排": "Booking"
+  },
+  "characters": {
+    "yun": "Yun · Curly hair and glasses",
+    "an": "An · Shoulder-length hair",
+    "qiao": "Qiao · Short hair and wheelchair"
+  },
+  "scenes": {
+    "search": "Search",
+    "form": "Forms",
+    "recovery": "Error recovery"
+  }
+}

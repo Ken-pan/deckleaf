@@ -1,0 +1,6 @@
+import {workflows} from './workflows';
+import {googleOAuth} from './google-oauth';
+import {publishing} from './publishing';
+import {photoProviders} from './photo-providers';
+import type {WorkflowServices} from '../src/core/workflows';
+export const workflowServices=(googleSession=''):WorkflowServices=>({list:(deckId,input)=>workflows.page(deckId,input),request:(deck,action)=>workflows.request(deck,action),read:async id=>{const request=await workflows.read(id);if(request.action.kind==='publish'&&request.action.target==='web'&&request.result?.artifactId&&request.status==='waiting_for_user'){const draft=await publishing.status(request.result.artifactId);if(draft.state==='published'&&request.clientId)return workflows.resolve(id,request.clientId,'completed',{message:'Presentation website published',url:draft.url,artifactId:draft.id,provider:'netlify',state:'published'});}return request;},connections:async()=>({runtime:'local',google:{...await googleOAuth.status(googleSession),browserScoped:true},netlify:publishing.connection(),figma:{mode:'session-token-in-import-dialog'},ai:{configured:Boolean(process.env.OPENAI_API_KEY||process.env.DECK_AI_KEY),mode:'settings'},photos:photoProviders.status()})});

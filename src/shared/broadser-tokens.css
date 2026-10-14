@@ -1,0 +1,839 @@
+/* ============================================================
+   Superus design tokens
+   Four layers: ramps → semantic roles → ladders → compat aliases.
+   Components should only reference semantic tokens, never ramps.
+
+   Colour is authored in OKLCH (perceptually uniform: equal L steps
+   read as equal brightness steps across every hue) and every colour
+   role is declared once with light-dark(light, dark), so the two
+   themes are defined side by side and can never drift apart.
+   ============================================================ */
+
+:root {
+  color-scheme: light dark;                 /* follow the OS by default */
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }
+
+:root {
+
+  /* ============================================================
+     0. THEME PARAMETERS
+     Every neutral and accent colour below is drawn from these numbers, so a theme
+     (section 14, at the end of this file) is just these numbers: the neutral ramp's
+     hue and how much of its tint it keeps, the accent ramp's hue and how strong it
+     is, and the white the light theme's top planes use. Lightness is never a theme
+     parameter: the L steps carry contrast and hierarchy, so every theme keeps the
+     ratios measured for the default, in both appearances. The one exception is
+     Graphite's accent (section 14), which has no hue left to mark state with.
+     ============================================================ */
+  --hue-n: 268; --chroma-n: 1;
+  --hue-a: 272; --chroma-a: 1;
+  /* The accent's solid (steps 9 and 10) can sit a little lower for a hue that carries
+     more luminance at the same lightness, green above all, so white text on it keeps
+     4.5:1. Measured per theme; 0 for most. */
+  --l-a: 0%;
+  --surface-white: oklch(100% 0 0);
+
+  /* ============================================================
+     1. RAMPS  (primitives — do not use directly in components)
+
+     Every ramp has 12 steps and every step number means the same
+     thing in every ramp and in both themes. That fixed contract is
+     what makes theme switching mechanical instead of manual:
+
+       1   app / canvas background
+       2   subtle background
+       3   component background            (rest)
+       4   component background            (hover)
+       5   component background            (active / selected)
+       6   subtle border, separator
+       7   border, focus ring
+       8   strong border, hovered border
+       9   SOLID fill — the pure colour    (rest)
+       10  solid fill                      (hover)
+       11  low-contrast text  (≥4.5:1 on steps 1-3)
+       12  high-contrast text (≥12:1 on steps 1-3)
+
+     Lightness runs 1→12 dark-ward in light theme and light-ward in
+     dark theme; step 9 holds the same hue + chroma in both so brand
+     colour never shifts identity.
+     ============================================================ */
+
+  /* ---- neutral ramp — hue 268, chroma rises with depth ----
+     Steps 1-3 are spaced unevenly on purpose. 1→2 is a near-merge
+     (2.5pt): chrome and canvas are one quiet ground, told apart by a
+     hairline, not a fill. 2→3 is the widest step in the whole system
+     (6pt): that is the ground→content jump, and it is the only place
+     lightness is spent on hierarchy.                               */
+  --n-1:  light-dark(oklch(99.2% calc(0.002 * var(--chroma-n)) var(--hue-n)), oklch(12.5% calc(0.005 * var(--chroma-n)) var(--hue-n)));
+  --n-2:  light-dark(oklch(97.6% calc(0.004 * var(--chroma-n)) var(--hue-n)), oklch(15.0% calc(0.007 * var(--chroma-n)) var(--hue-n)));
+  --n-3:  light-dark(oklch(95.5% calc(0.006 * var(--chroma-n)) var(--hue-n)), oklch(21.0% calc(0.011 * var(--chroma-n)) var(--hue-n)));
+  --n-4:  light-dark(oklch(93.0% calc(0.008 * var(--chroma-n)) var(--hue-n)), oklch(24.5% calc(0.013 * var(--chroma-n)) var(--hue-n)));
+  --n-5:  light-dark(oklch(90.5% calc(0.010 * var(--chroma-n)) var(--hue-n)), oklch(28.0% calc(0.015 * var(--chroma-n)) var(--hue-n)));
+  --n-6:  light-dark(oklch(85.5% calc(0.012 * var(--chroma-n)) var(--hue-n)), oklch(32.5% calc(0.016 * var(--chroma-n)) var(--hue-n)));
+  --n-7:  light-dark(oklch(81.5% calc(0.014 * var(--chroma-n)) var(--hue-n)), oklch(38.0% calc(0.018 * var(--chroma-n)) var(--hue-n)));
+  --n-8:  light-dark(oklch(75.0% calc(0.018 * var(--chroma-n)) var(--hue-n)), oklch(47.0% calc(0.021 * var(--chroma-n)) var(--hue-n)));
+  --n-9:  light-dark(oklch(64.0% calc(0.020 * var(--chroma-n)) var(--hue-n)), oklch(53.5% calc(0.022 * var(--chroma-n)) var(--hue-n)));
+  --n-10: light-dark(oklch(59.5% calc(0.021 * var(--chroma-n)) var(--hue-n)), oklch(59.5% calc(0.022 * var(--chroma-n)) var(--hue-n)));
+  --n-11: light-dark(oklch(50.0% calc(0.021 * var(--chroma-n)) var(--hue-n)), oklch(76.5% calc(0.018 * var(--chroma-n)) var(--hue-n)));
+  --n-12: light-dark(oklch(24.0% calc(0.020 * var(--chroma-n)) var(--hue-n)), oklch(95.0% calc(0.008 * var(--chroma-n)) var(--hue-n)));
+
+  /* ---- accent ramp — indigo, hue 272. Step 9 is the brand. ---- */
+  --a-1:  light-dark(oklch(99.2% calc(0.006 * var(--chroma-a)) var(--hue-a)), oklch(19.0% calc(0.022 * var(--chroma-a)) var(--hue-a)));
+  --a-2:  light-dark(oklch(98.2% calc(0.014 * var(--chroma-a)) var(--hue-a)), oklch(22.4% calc(0.038 * var(--chroma-a)) var(--hue-a)));
+  --a-3:  light-dark(oklch(96.0% calc(0.030 * var(--chroma-a)) var(--hue-a)), oklch(27.5% calc(0.070 * var(--chroma-a)) var(--hue-a)));
+  --a-4:  light-dark(oklch(93.5% calc(0.050 * var(--chroma-a)) var(--hue-a)), oklch(31.5% calc(0.095 * var(--chroma-a)) var(--hue-a)));
+  --a-5:  light-dark(oklch(90.5% calc(0.070 * var(--chroma-a)) var(--hue-a)), oklch(35.5% calc(0.112 * var(--chroma-a)) var(--hue-a)));
+  --a-6:  light-dark(oklch(86.5% calc(0.090 * var(--chroma-a)) var(--hue-a)), oklch(40.5% calc(0.124 * var(--chroma-a)) var(--hue-a)));
+  --a-7:  light-dark(oklch(81.0% calc(0.112 * var(--chroma-a)) var(--hue-a)), oklch(45.0% calc(0.138 * var(--chroma-a)) var(--hue-a)));
+  --a-8:  light-dark(oklch(73.0% calc(0.146 * var(--chroma-a)) var(--hue-a)), oklch(50.5% calc(0.168 * var(--chroma-a)) var(--hue-a)));
+  --a-9:  light-dark(oklch(calc(56.0% + var(--l-a)) calc(0.200 * var(--chroma-a)) var(--hue-a)), oklch(calc(56.0% + var(--l-a)) calc(0.200 * var(--chroma-a)) var(--hue-a)));
+  --a-10: light-dark(oklch(calc(51.0% + var(--l-a)) calc(0.196 * var(--chroma-a)) var(--hue-a)), oklch(calc(62.0% + var(--l-a)) calc(0.192 * var(--chroma-a)) var(--hue-a)));
+  --a-11: light-dark(oklch(48.0% calc(0.188 * var(--chroma-a)) var(--hue-a)), oklch(80.0% calc(0.142 * var(--chroma-a)) var(--hue-a)));
+  --a-12: light-dark(oklch(30.0% calc(0.108 * var(--chroma-a)) var(--hue-a)), oklch(93.0% calc(0.050 * var(--chroma-a)) var(--hue-a)));
+
+  /* ---- status ramps (compressed: only the steps a status needs) ----
+     3 = soft surface · 6 = soft border · 9 = solid · 10 = solid hover
+     11 = text on a soft/neutral surface                             */
+  --g-3:  light-dark(oklch(95.6% 0.035 156), oklch(26.0% 0.052 156));
+  --g-6:  light-dark(oklch(86.0% 0.082 156), oklch(37.5% 0.082 156));
+  --g-9:  light-dark(oklch(64.5% 0.155 156), oklch(70.0% 0.152 156));
+  --g-10: light-dark(oklch(59.5% 0.150 156), oklch(75.0% 0.145 156));
+  --g-11: light-dark(oklch(50.0% 0.125 156), oklch(82.0% 0.130 156));
+
+  --y-3:  light-dark(oklch(97.0% 0.040 82), oklch(26.5% 0.048 82));
+  --y-6:  light-dark(oklch(89.5% 0.090 82), oklch(38.5% 0.078 82));
+  --y-9:  light-dark(oklch(80.5% 0.150 82), oklch(82.0% 0.150 82));
+  --y-10: light-dark(oklch(75.5% 0.148 82), oklch(87.0% 0.140 82));
+  --y-11: light-dark(oklch(52.0% 0.110 72), oklch(88.0% 0.120 82));
+
+  --r-3:  light-dark(oklch(96.2% 0.022 22), oklch(26.5% 0.060 22));
+  --r-6:  light-dark(oklch(88.0% 0.062 22), oklch(38.5% 0.098 22));
+  --r-9:  light-dark(oklch(60.0% 0.205 25), oklch(64.5% 0.198 25));
+  --r-10: light-dark(oklch(55.0% 0.200 25), oklch(70.0% 0.185 25));
+  --r-11: light-dark(oklch(52.0% 0.185 25), oklch(79.0% 0.145 22));
+
+  --p-9:  light-dark(oklch(64.0% 0.235 345), oklch(70.0% 0.225 345));  /* alignment guides */
+
+  /* ---- content tone ramps — the five card / connector colours ----
+     These label *content*, not state, so they stay recognisably the
+     same hue in both themes: pale wash in light, deep wash in dark.
+     3 = card fill · 6 = card border · 9 = solid (stroke, swatch)
+     11 = label text readable on step 3                             */
+  --tone-slate-3:  light-dark(oklch(95.8% calc(0.004 * var(--chroma-n)) var(--hue-n)), oklch(30.5% calc(0.012 * var(--chroma-n)) var(--hue-n)));
+  --tone-slate-6:  light-dark(oklch(87.5% calc(0.008 * var(--chroma-n)) var(--hue-n)), oklch(38.0% calc(0.014 * var(--chroma-n)) var(--hue-n)));
+  --tone-slate-9:  light-dark(oklch(62.0% calc(0.016 * var(--chroma-n)) var(--hue-n)), oklch(60.0% calc(0.020 * var(--chroma-n)) var(--hue-n)));
+  --tone-slate-11: light-dark(oklch(45.0% calc(0.016 * var(--chroma-n)) var(--hue-n)), oklch(78.0% calc(0.016 * var(--chroma-n)) var(--hue-n)));
+
+  --tone-blue-3:   light-dark(oklch(95.2% 0.030 264), oklch(31.0% 0.084 264));
+  --tone-blue-6:   light-dark(oklch(85.0% 0.078 264), oklch(40.0% 0.110 264));
+  --tone-blue-9:   light-dark(oklch(58.0% 0.185 264), oklch(64.0% 0.180 264));
+  --tone-blue-11:  light-dark(oklch(46.0% 0.165 264), oklch(82.0% 0.110 264));
+
+  --tone-teal-3:   light-dark(oklch(95.8% 0.032 186), oklch(30.5% 0.063 186));
+  --tone-teal-6:   light-dark(oklch(86.0% 0.072 186), oklch(39.0% 0.080 186));
+  --tone-teal-9:   light-dark(oklch(62.0% 0.118 186), oklch(70.0% 0.112 186));
+  --tone-teal-11:  light-dark(oklch(46.5% 0.092 186), oklch(84.0% 0.090 186));
+
+  --tone-amber-3:  light-dark(oklch(96.8% 0.042 84), oklch(31.0% 0.060 84));
+  --tone-amber-6:  light-dark(oklch(89.0% 0.092 84), oklch(40.0% 0.082 84));
+  --tone-amber-9:  light-dark(oklch(78.0% 0.148 76), oklch(80.0% 0.148 82));
+  --tone-amber-11: light-dark(oklch(49.0% 0.105 70), oklch(87.0% 0.115 84));
+
+  --tone-rose-3:   light-dark(oklch(95.8% 0.026 8), oklch(31.0% 0.074 8));
+  --tone-rose-6:   light-dark(oklch(87.5% 0.068 8), oklch(40.0% 0.100 8));
+  --tone-rose-9:   light-dark(oklch(63.0% 0.190 8), oklch(68.0% 0.180 8));
+  --tone-rose-11:  light-dark(oklch(49.0% 0.165 8), oklch(83.0% 0.110 8));
+
+  /* ---- alpha primitives ----
+     Translucent ink/light for anything that must sit on an unknown
+     background: cards over the grid, hover layers over any surface,
+     borders over both chrome and web pages.                        */
+  --alpha-1: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.035), oklch(100% 0 0 / 0.035));
+  --alpha-2: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.055), oklch(100% 0 0 / 0.055));
+  --alpha-3: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.085), oklch(100% 0 0 / 0.085));
+  --alpha-4: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.130), oklch(100% 0 0 / 0.130));
+  --alpha-5: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.200), oklch(100% 0 0 / 0.200));
+
+  /* ============================================================
+     2. LADDER — SURFACE / ELEVATION
+
+     One rule, identical in both themes:
+
+         canvas  <  chrome  <  content,
+         and content is the only plane that casts a shadow.
+
+     The canvas is VOID, not a reading surface — content sits on it
+     as separate objects — so it is the deepest plane in the app.
+     Measured against the field: Figma (+5.8pt dark / +3.0 light),
+     Excalidraw (+7.6pt dark) and tldraw (+0.6pt light) all place
+     chrome above the canvas. The one counter-example, VS Code Dark
+     Modern (-3.0pt), is a different case: there the canvas IS the
+     content, so its chrome has to sit below it.
+
+     Chrome takes the smallest step in the field — 2.5-3pt, half of
+     Figma's — because it only has to read as a frame, not announce
+     itself. Spending any more on it is spending it twice: every
+     point given to the bezel is a point taken off the one jump that
+     carries the hierarchy, canvas->content.
+
+     Light uses a pale canvas and quiet navigation rail; content stays white.
+     Dark keeps the same depth ladder. Hairlines separate resting surfaces;
+     shadows distinguish transient tools. The grid and frame fills sit below
+     the content rather than competing with it.
+     ============================================================ */
+  /* A quieter ground leaves the notes in front; the grid supplies orientation. */
+  --surface-sunken:  light-dark(color-mix(in oklch, var(--n-3) 50%, var(--n-4)), var(--n-1));
+  --surface-navigation: var(--n-2); /* navigation rail, separate from the workspace */
+  --surface-chrome:  light-dark(var(--surface-white), var(--n-2));  /* topbar, sidebar — in light, the frame is the content plane */
+  --surface-raised:  light-dark(var(--surface-white), var(--n-3));   /* cards, panels */
+  --surface-overlay: light-dark(var(--surface-white), var(--n-4));   /* popovers, toolbars, menus */
+  --surface-top:     light-dark(var(--surface-white), var(--n-5));   /* modals */
+  /* How much of a floating layer is its own colour vs. what shows through.
+     In dark the ladder separates by lightness, so a floating layer can give
+     up a quarter of itself and still read as the plane above. In light every
+     plane above the canvas is white and depth is carried by shadow alone —
+     so there the glass is almost opaque and the blur is only a garnish.
+     This one cannot use light-dark(): that function returns a COLOUR, and
+     color-mix() needs a real <percentage> here. It gets the three-state
+     treatment at the bottom of this file instead. */
+  --overlay-opacity: 92%;
+  --surface-base:    var(--surface-chrome);                     /* alias */
+
+  /* inverted surface — tooltips, scrims, "always opposite" chrome */
+  --surface-inverted: light-dark(var(--n-12), var(--n-12));
+  --text-on-inverted: light-dark(var(--n-1), var(--n-1));
+
+  /* content surface — a rendered web page. Deliberately NOT themed:
+     a page is real content, and recolouring it would be a lie.
+     See --page-veil for how dark mode tames it instead.            */
+  --surface-page: #ffffff;
+  --text-page:    #202124;
+
+  /* fills that sit *on* a surface (inputs, chips, wells, neutral buttons).
+     A fill is "one step off whatever it sits on", so in dark it is a light
+     layer, not a rung: the ladder puts chrome, cards, popovers and dialogs at
+     four different lightnesses, and an opaque n-4 read raised on chrome, vanished
+     into a popover (n-4 itself) and sank into every dialog (n-5) as a hole.
+     Light keeps the opaque rungs: there every plane above the canvas is white. */
+  --fill-subtle: light-dark(var(--n-3), oklch(100% 0 0 / 0.075));
+  --fill-strong: light-dark(var(--n-4), oklch(100% 0 0 / 0.115));
+
+  /* ============================================================
+     3. LADDER — STATE
+
+     State is an alpha layer, never a fixed colour, so the same token
+     works on chrome, on a coloured note and over a web page.
+     ============================================================ */
+  /* Transient feedback is neutral and restrained in both themes.
+     Press is stronger than hover; persistent selection retains its accent tint. */
+  --state-hover:    light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.055), oklch(100% 0 0 / 0.075));
+  --state-active:   light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.095), oklch(100% 0 0 / 0.120));   /* pressed */
+  --state-selected: color-mix(in oklch, var(--a-9) 14%, transparent);
+  --state-drop:     color-mix(in oklch, var(--a-9) 22%, transparent);
+  --state-selected-hover: color-mix(in oklch, var(--a-9) 20%, transparent);
+  --state-selected-active: color-mix(in oklch, var(--a-9) 26%, transparent);
+  --state-disabled-opacity: 0.45;
+
+  /* Hover and selection must not speak the same language. Hover is
+     NEUTRAL — a brighter edge and one notch more lift, saying "you
+     could act on this". Accent is reserved for states the user has
+     actually caused: selected, focused, connecting, drop target.
+     On a canvas the pointer sweeps over many cards, so an accent
+     hover would strobe the board with false selections.            */
+  --object-border:          var(--border-default);
+  --object-border-hover:    var(--border-strong);
+  --object-border-selected: var(--accent);
+
+  /* ============================================================
+     4. LADDER — TEXT EMPHASIS
+     Four rungs, deliberately no fifth. Measured against
+     --surface-raised, light / dark:
+       primary   16.5 / 13.8 : 1   the thing to read
+       secondary  6.0 /  7.7 : 1   supporting copy, inactive icons
+       tertiary   >=4.5 : 1       metadata, placeholders, hints, including dialogs
+                                  and the navigation plane (outline, Home sidebar).
+                                  Not on the canvas (4.1:1): text there is secondary.
+       disabled   2.2 /  2.5 : 1   unavailable (never meaning-bearing)
+     Step 9 of the accent sits at L 56% in both themes: the one
+     lightness where white label text clears 4.5:1 on the solid AND
+     the solid itself clears 3:1 against both a white card and a
+     dark one, so one brand colour serves fills and outlines alike.
+     ============================================================ */
+  --text-primary:   var(--n-12);
+  --text-secondary: var(--n-11);
+  --text-tertiary:  light-dark(oklch(54.5% calc(0.021 * var(--chroma-n)) var(--hue-n)), oklch(66.0% calc(0.020 * var(--chroma-n)) var(--hue-n)));
+  --text-disabled:  var(--n-8);
+  --text-inverse:   var(--text-on-inverted);
+  --text-on-accent: light-dark(oklch(100% 0 0), oklch(100% 0 0));
+  --text-link:      var(--a-11);
+
+  /* ============================================================
+     5. LADDER — BORDER
+     Alpha-based so one token reads correctly on every surface.
+     ============================================================ */
+  --border-subtle:  var(--alpha-1);   /* inner dividers, table rules */
+  --border-default: var(--alpha-3);   /* component outline */
+  --border-strong:  var(--alpha-4);   /* emphasised / hovered outline */
+  --border-accent:  var(--a-8);
+  /* A floating layer's own outline. In dark it can be the ordinary hairline,
+     because the layer is already a lighter plane than what it covers. In light
+     every plane above the canvas is white, so the border is doing the work the
+     lightness step used to do — and gets the firmer value. */
+  --overlay-border: var(--border-default);
+
+  /* ============================================================
+     6. LADDER — ACTION IMPORTANCE
+     Exactly four rungs of emphasis, one solid per view.
+       solid   → the single primary action
+       tonal   → secondary, still a real choice
+       outline → tertiary
+       ghost   → quiet / iconographic
+     ============================================================ */
+  --action-solid-bg:        var(--a-9);
+  --action-solid-bg-hover:  var(--accent-hover);
+  --action-solid-bg-active: var(--accent-active);
+  --action-solid-fg:        var(--text-on-accent);
+
+  --action-tonal-bg:        var(--a-3);
+  --action-tonal-bg-hover:  var(--a-4);
+  --action-tonal-fg:        var(--a-11);
+
+  --action-outline-border:  var(--border-default);
+  --action-outline-fg:      var(--text-primary);
+
+  --action-ghost-fg:        var(--text-secondary);
+  --action-ghost-fg-hover:  var(--text-primary);
+
+  /* White labels need a darker red than a status dot or border. */
+  --action-danger-bg:       oklch(56.0% 0.200 25);
+  --action-danger-bg-hover: oklch(51.0% 0.196 25);
+  --action-danger-bg-active: oklch(47.0% 0.185 25);
+  --action-danger-fg:       light-dark(oklch(100% 0 0), oklch(100% 0 0));
+
+  /* ============================================================
+     7. ACCENT + STATUS ROLES
+     ============================================================ */
+  --accent:        var(--a-9);
+  /* Solid actions keep white-label contrast in both appearances; a ramp's
+     brighter dark hover is for colour samples, not a white-label button. */
+  --accent-hover:  oklch(calc(51.0% + var(--l-a)) calc(0.196 * var(--chroma-a)) var(--hue-a));
+  --accent-active: oklch(calc(47.0% + var(--l-a)) calc(0.188 * var(--chroma-a)) var(--hue-a));
+  --accent-text:   var(--a-11);
+  --accent-soft:   var(--a-3);
+  --accent-border: var(--a-6);
+  --accent-ring:   color-mix(in oklch, var(--a-9) 45%, transparent);
+  /* The accent has three jobs, one token each. A FILL is --accent: white labels sit on
+     it, so it keeps the darker solid. TEXT and icons are --accent-text (4.5:1 on every
+     plane and on --state-selected). A LINE — a focus ring, a focused field's edge, a
+     selected outline in a dialog — is this: it needs 3:1 against the plane it sits on,
+     and the dark dialog plane (n-5) is light enough that the solid drops to 2.8-3.1:1
+     there in four themes (measured), so in dark the line takes one step up, as the
+     marquee does. On the canvas the solid clears 3.9:1, so selection outlines keep it. */
+  --accent-line:   light-dark(var(--a-9), var(--a-10));
+  /* The accent on the rendered page, which is white in both appearances (--surface-page):
+     the Live badge and its Done button, text selected in a page, a page's focus ring, the
+     page loading bar. It stays at the solid's mid lightness in both appearances, so it
+     reads on that white and on the app planes beside it. In every theme but Graphite it
+     is the accent itself; Graphite's accent turns to ink, which a white page can't take
+     in dark. White labels on it: --on-page-fg. */
+  --accent-on-page:        oklch(calc(56.0% + var(--l-a)) calc(0.200 * var(--chroma-a)) var(--hue-a));
+  --accent-on-page-hover:  oklch(calc(51.0% + var(--l-a)) calc(0.196 * var(--chroma-a)) var(--hue-a));
+  --accent-on-page-active: oklch(calc(47.0% + var(--l-a)) calc(0.188 * var(--chroma-a)) var(--hue-a));
+
+  --success: var(--g-9); --success-hover: var(--g-10); --success-text: var(--g-11);
+  --success-soft: var(--g-3); --success-border: var(--g-6);
+  --warning: var(--y-9); --warning-hover: var(--y-10); --warning-text: var(--y-11);
+  --warning-soft: var(--y-3); --warning-border: var(--y-6);
+  --danger:  var(--r-9); --danger-hover:  var(--r-10); --danger-text:  var(--r-11);
+  --danger-soft:  var(--r-3); --danger-border:  var(--r-6);
+  --info: var(--accent); --info-text: var(--accent-text); --info-soft: var(--accent-soft);
+
+  /* ============================================================
+     8. LADDER — CANVAS OBJECT SALIENCE
+     What the eye should reach first on the board, in order:
+       selected  >  hovered  >  related  >  rest  >  attenuated
+     ============================================================ */
+  --canvas-bg:       var(--surface-sunken);
+  --canvas-guide:    var(--p-9);
+
+  /* The grid is a paper texture, not a measuring instrument — it should
+     never announce itself. Dot POSITIONS are world-locked so panning
+     feels physical, but dot SIZE is screen-constant and the cascade
+     switches level as you zoom: two layers, one octave apart, crossfade
+     so the perceived spacing never leaves ~17-34px anywhere in the
+     8%-400% range (a single fixed grid swings 1.9-96px and has to be
+     switched off at the bottom). Because target = unit x step, every
+     power-of-two zoom stop — 25 / 50 / 100 / 200 / 400% — lands the
+     fade on exactly one layer at a clean 24px.
+     app.js writes --grid-sa/-sb/-aa/-ab/-x/-y onto #canvas-grid once per
+     camera move — a leaf element, so these six inherit into nothing. */
+  --canvas-grid-unit: 12;    /* world px — base cell of the cascade */
+  --canvas-grid-step: 2;     /* octave between levels */
+  --canvas-grid-target: 24;  /* screen px — spacing we steer toward */
+  --canvas-grid-dot: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.075), oklch(100% 0 0 / 0.055));
+  /* The board's other backgrounds (styles.css .canvas-grid[data-bg]). A line covers far
+     more of the canvas than a dot, so a rule sits lighter than a dot to read as quietly;
+     the heavier squared-paper line (every fourth square) is about twice the fine one.
+     Snap to grid makes each a little stronger, as it does the dots. */
+  --canvas-grid-line:  light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.05), oklch(100% 0 0 / 0.036));
+  --canvas-grid-major: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.1), oklch(100% 0 0 / 0.072));
+  --canvas-rule-line:  light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.075), oklch(100% 0 0 / 0.052));
+  --canvas-grid-line-snap:  light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.085), oklch(100% 0 0 / 0.06));
+  --canvas-grid-major-snap: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.15), oklch(100% 0 0 / 0.1));
+  --canvas-rule-line-snap:  light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.12), oklch(100% 0 0 / 0.08));
+  --canvas-dot-r: 0.85px;       /* solid radius, screen px */
+  --canvas-dot-feather: 1.8px;  /* falloff: a point of light, not a pixel */
+  --canvas-edge-fade: 40px;     /* texture sinks under the frame */
+
+  /* The canvas is a well cut into the bezel — chrome < canvas made
+     physical, so the two planes read as one object rather than two. */
+  --canvas-well: light-dark(oklch(40% calc(0.03 * var(--chroma-n)) var(--hue-n) / 0.17), oklch(0% 0 0 / 0.42));
+  --canvas-marquee-stroke: var(--accent-line);
+  --canvas-marquee-fill:   color-mix(in oklch, var(--a-9) 4%, transparent);
+
+  --object-ring-selected:   var(--state-selected);
+
+  --link-stroke:         light-dark(var(--n-9), var(--n-9));
+  --link-stroke-hover:   light-dark(var(--n-11), var(--n-11));
+  --link-stroke-related: var(--a-9);
+
+  /* Depth of field, not a dimmer. On a ground this deep an unveiled
+     white page is a searchlight, so peripheral cards sit back and snap
+     to full fidelity the moment they are hovered or selected — the card
+     you are working on is the sharp one. Focused reading surfaces
+     (Side Peek, expanded card) are never veiled at all.
+     The veil is the CANVAS colour, not black: at 10% it was invisible
+     (20.2:1 -> 16.2:1, measured), and pure black turns a page's own
+     colours to mud instead of sending it behind the board. 22% of the
+     ground lands an unfocused page at ~12:1 while the focused one keeps
+     the full 20:1 — which is what makes the card you are in the bright
+     one, for free.                                                   */
+  --page-veil: light-dark(oklch(93% calc(0.008 * var(--chroma-n)) var(--hue-n) / 0), oklch(12.5% calc(0.005 * var(--chroma-n)) var(--hue-n) / 0.22));
+
+  /* Frames are a region, not an object. A region is a large area, and
+     large areas need far less contrast to read than a thin line does —
+     so the region is drawn as a PLANE, not an outline. No border: the
+     fill alone delineates it, and it still loses to a card, which adds
+     a shadow and a hairline on top of its own fill.
+     The corner is smaller than a card's, not larger: the bigger the
+     shape, the less radius it needs before it starts reading as a
+     bubble rather than a region. */
+  --frame-fill:          light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.035), oklch(100% 0 0 / 0.035));
+  --frame-fill-selected: color-mix(in oklch, var(--a-9) 10%, transparent);
+
+  /* ============================================================
+     9. CONTENT TONES — semantic names for the five card colours
+     ============================================================ */
+  --note-dark-bg:  var(--tone-slate-3);  --note-dark-fg:  var(--tone-slate-11);  --note-dark-solid:  var(--tone-slate-9);
+  --note-blue-bg:  color-mix(in oklab, var(--tone-blue-3) 38%, var(--note-dark-bg));   --note-blue-fg:  var(--tone-blue-11);   --note-blue-solid:  var(--tone-blue-9);
+  --note-teal-bg:  color-mix(in oklab, var(--tone-teal-3) 38%, var(--note-dark-bg));   --note-teal-fg:  var(--tone-teal-11);   --note-teal-solid:  var(--tone-teal-9);
+  --note-amber-bg: color-mix(in oklab, var(--tone-amber-3) 38%, var(--note-dark-bg));  --note-amber-fg: var(--tone-amber-11);  --note-amber-solid: var(--tone-amber-9);
+  --note-rose-bg:  color-mix(in oklab, var(--tone-rose-3) 38%, var(--note-dark-bg));   --note-rose-fg:  var(--tone-rose-11);   --note-rose-solid: var(--tone-rose-9);
+  --note-dark-border:  var(--tone-slate-6);
+  --note-blue-border:  color-mix(in oklab, var(--tone-blue-6) 35%, var(--note-dark-border));
+  --note-teal-border:  color-mix(in oklab, var(--tone-teal-6) 35%, var(--note-dark-border));
+  --note-amber-border: color-mix(in oklab, var(--tone-amber-6) 35%, var(--note-dark-border));
+  --note-rose-border:  color-mix(in oklab, var(--tone-rose-6) 35%, var(--note-dark-border));
+  /* Content solid fills are lighter than action fills. Deep ink stays readable
+     on every tone; white is reserved for the darker solid action backgrounds. */
+  --text-on-content-solid: oklch(12% 0.01 268);
+  --note-dark-on-solid: var(--text-on-content-solid);
+  --note-blue-on-solid: var(--text-on-content-solid);
+  --note-teal-on-solid: var(--text-on-content-solid);
+  --note-amber-on-solid: var(--text-on-content-solid);
+  --note-rose-on-solid: var(--text-on-content-solid);
+  /* White in dark on the grey link stroke. Not --text-on-accent: the stroke isn't the accent,
+     and Graphite's dark accent takes dark text. */
+  --text-on-link-solid: light-dark(var(--text-on-content-solid), oklch(100% 0 0));
+
+  /* ============================================================
+     10. ELEVATION SHADOWS
+     Theme-aware depth for transient tools, dragging and modal dialogs.
+     ============================================================ */
+  /* Depth is reserved for transient surfaces. Borders are supplied once by
+     each component; shadows never smuggle in another outline or top bevel. */
+  --shadow-contact: light-dark(rgb(20 24 35 / 0.08), rgb(0 0 0 / 0.18));
+  --shadow-direct:  light-dark(rgb(20 24 35 / 0.10), rgb(0 0 0 / 0.22));
+  --shadow-ambient: light-dark(rgb(20 24 35 / 0.08), rgb(0 0 0 / 0.18));
+  --shadow-edge: transparent;
+  --elev-1: 0 1px 3px var(--shadow-contact);
+  --elev-2: 0 3px 10px var(--shadow-direct);
+  --elev-3: 0 4px 14px var(--shadow-direct);
+  --elev-4: 0 6px 20px var(--shadow-direct);
+  --elev-5: 0 12px 36px var(--shadow-ambient);
+  --hairline: inset 0 0 0 1px var(--border-default);
+  --top-edge: inset 0 0 0 transparent;
+  --shadow-sm: var(--elev-1);
+  --shadow-md: var(--elev-2);
+  --shadow-lg: var(--elev-3);
+  --shadow-card: var(--hairline);
+  --shadow-drag: var(--elev-3), var(--hairline);
+  --shadow-modal: var(--elev-5);
+  --shadow-popover: var(--elev-3);
+  --shadow-panel: var(--elev-3);
+  --shadow-comment: var(--elev-1);
+  --shadow-comment-active: var(--elev-2);
+  --shadow-map-root: var(--elev-2);
+  --scrim:        light-dark(oklch(30% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.22), oklch(0% 0 0 / 0.44));
+
+  --ring-selected: 0 0 0 4px var(--state-selected);
+  --field-focus-border: var(--accent-line);
+  --ring-focus:    0 0 0 2px color-mix(in oklch, var(--accent) 24%, transparent);
+
+  /* ============================================================
+     11. CARD CHROME
+
+     The compat aliases that used to live here are gone: styles.css now
+     names the plane it wants (sunken / chrome / raised / overlay / top),
+     the state it wants (hover / active / selected) and the fill it wants
+     (subtle / strong), so a component can no longer land on the wrong
+     plane by picking a shade. What is left below is a real hook, not a
+     bridge — a card's title bar sits ON the card's own plane, flush with
+     the body below it, so the card reads as one object; a hairline is all
+     that separates handle from content. The title bar used to sit a shade
+     below the body, which cut a hard grey band across the top of every
+     white page on the canvas.
+     ============================================================ */
+  --card-chrome: light-dark(var(--surface-white), var(--n-3));
+  /* selected barely lifts: the accent outline already says "chosen", so the
+     head only needs to stay flush instead of announcing the state twice */
+  --card-chrome-selected: light-dark(var(--n-2), var(--n-4));
+  /* the only seam between head and body */
+  --card-chrome-divider: var(--alpha-2);
+
+  /* A WEB card's title bar belongs to the page below it, not to the app
+     frame. On the app plane it happened to work in light (both white) and
+     cut a hard band across the top of every page in dark. So it takes the
+     page's own surface and ink, and rides under the same --page-veil as the
+     body: the two dim and undim together and cannot drift apart. Un-themed
+     for exactly the reason --surface-page is — the page is real content. */
+  --card-chrome-page:          var(--surface-page);
+  --card-chrome-page-selected: color-mix(in oklab, var(--surface-page), var(--text-page) 5%);
+  --card-chrome-page-divider:  color-mix(in oklab, var(--text-page), transparent 92%);
+  --card-chrome-page-ink:      color-mix(in oklab, var(--text-page), var(--surface-page) 38%);
+  --card-chrome-page-hover:    color-mix(in oklab, var(--text-page), transparent 93%);
+  --card-chrome-page-active:   color-mix(in oklab, var(--text-page), transparent 88%);
+  --grid-dot: var(--canvas-grid-dot);
+  --guide: var(--canvas-guide);
+
+
+  /* ============================================================
+     12. COMPONENT HOOKS
+     A short, closed list. Anything that needs a colour but is not
+     covered by a ladder gets a named hook here rather than a literal
+     in styles.css — so no component can go off-system.
+     ============================================================ */
+
+  /* ink placed ON a rendered web page (resize grips, collapse button) —
+     fixed, because the page underneath is fixed */
+  --on-page-ink:   oklch(20% 0.02 268 / 0.40);
+  --on-page-scrim: oklch(18% 0.01 268 / 0.72);
+  --on-page-scrim-hover: oklch(14% 0.01 268 / 0.86);
+  --on-page-fg:    oklch(100% 0 0);
+
+  /* page skeletons stand in for page content, so they follow the page */
+  --skeleton-base:  oklch(93.5% 0.003 268);
+  --skeleton-shine: oklch(97.0% 0.002 268);
+  --reader-bg:      oklch(98.5% 0.006 96);
+
+  /* zoomed-out (LOD) card cover — our summary, not the page: themed */
+  --lod-bg:   light-dark(var(--n-2), var(--n-4));
+  /* A web card zoomed out to a label is not showing the page any more, so the
+     label is app chrome: white where the app is white, dark where it is dark.
+     Nine page-white slabs on a dark board were the brightest thing on screen. */
+  --lod-page-bg:   light-dark(var(--surface-page), var(--n-4));
+  --lod-page-fg:   light-dark(var(--text-page), var(--text-primary));
+  --lod-page-meta: light-dark(var(--card-chrome-page-ink), var(--text-tertiary));
+  --lod-fg:   var(--text-primary);
+  --lod-meta: var(--text-tertiary);
+
+  /* canvas handles.
+     Connect anchors rest NEUTRAL and only go accent under the pointer.
+     Miro does the same; FigJam keeps them blue throughout. Neutral-at-rest
+     is the better fit here because this system already spends accent on
+     "the user caused this" — an anchor at rest is only an offer. */
+  --anchor-fill: var(--surface-raised);
+  --anchor-ring: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.42), oklch(100% 0 0 / 0.48));
+  /* Tree indent guides. A hairline weaker than a divider: it is a hint about
+     structure, not a rule that separates anything, and a list four levels deep
+     draws four of them on every row. */
+  --tree-guide: var(--alpha-2);
+
+  /* Canvas scrollbars. Alpha, not a fixed colour: the track runs along the edge
+     of the canvas but a thumb can end up over a white page card or a coloured
+     note, and one value has to read on all three. Quiet at rest — a scrollbar
+     is a position readout, not an invitation — and it firms up under the
+     pointer, where it becomes a control. */
+  --sb-thumb:        light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.20), oklch(100% 0 0 / 0.20));
+  --sb-thumb-hover:  light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.38), oklch(100% 0 0 / 0.38));
+  --sb-thumb-active: light-dark(oklch(20% calc(0.02 * var(--chroma-n)) var(--hue-n) / 0.52), oklch(100% 0 0 / 0.54));
+  --sb-ring:         light-dark(oklch(100% 0 0 / 0.55), oklch(0% 0 0 / 0.40)); /* the other polarity, for legibility over pages */
+
+  --handle-fill: var(--surface-raised);
+  --handle-ring: var(--accent);
+  --handle-halo: var(--alpha-4);
+
+  /* Minimap ink. The minimap is a <canvas>, so app.js reads these through a probe
+     element and draws with the result; they follow Appearance and Theme like any token.
+     Pages and boards are neutral, notes a pale accent, and the selection and the
+     camera's frame the full accent: the two things on the map that are yours. */
+  --minimap-frame:     var(--alpha-3);
+  --minimap-page:      light-dark(var(--n-7), var(--n-10));
+  --minimap-board:     light-dark(var(--n-8), var(--n-7));
+  --minimap-note:      light-dark(var(--a-8), var(--a-9));
+  --minimap-selection: light-dark(var(--a-9), var(--a-11));
+
+  /* The chosen segment of a segmented control (Settings, Appearance, layout,
+     Library tabs). It sits on a --fill-subtle track, so it has to be one step
+     above the track in both themes: white in light, a lighter layer in dark.
+     It used to be --surface-overlay, which in dark IS the track's colour, so the
+     choice was invisible everywhere a seg was used. */
+  --control-thumb: light-dark(oklch(100% 0 0), oklch(100% 0 0 / 0.13));
+  --control-thumb-shadow: var(--elev-1);
+
+  /* misc */
+  --avatar-gradient: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  --traffic-red: #ff5f57; --traffic-yellow: #febc2e; --traffic-green: #28c840;
+
+  /* ---------- typography primitives ---------- */
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Georgia", "Times New Roman", serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* UI scale: six rungs anchored at 13px. Writing and diagram content have
+     separate roles below, so their reading hierarchy never changes when a
+     toolbar or panel is tuned. Each UI rung pairs with its --ls- token. */
+  --fs-2xs: 10px;   /* badges, eyebrow labels */
+  --fs-xs: 11px;    /* meta, hints, kbd */
+  --fs-sm: 12px;    /* secondary UI, card chrome */
+  --fs-md: 13px;    /* base UI, list rows, inputs */
+  --fs-xl: 16px;    /* modal titles, reader view */
+  --fs-2xl: 20px;   /* section titles, empty-state heading */
+  /* Display rungs: the home page only. The app's chrome never goes above 2xl. */
+  --fs-3xl: 26px;   /* page section heading */
+  --fs-4xl: 36px;   /* document title */
+  --fs-hero: clamp(38px, 5vw, 60px);
+  /* The LOD title is no longer a fixed size — it is derived from the card it
+     sits in (see .lod-cover's --u in styles.css), so there is no display step
+     on the ladder any more. --ls-34 stays: it is the tracking that size band
+     wants, and the band is still centred on ~34px. */
+
+  --lh-tight: 1.2;
+  --lh-snug: 1.35;
+  --lh-base: 1.5;
+  --lh-relaxed: 1.65;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Inter needs tracking that moves with the size: open the small sizes
+     up, close the large ones in. There used to be a single --ls-tight
+     used everywhere, which made it the wrong value at every size but
+     one — it was a 17px value sitting on 13px body text while the
+     10-11px labels ran at `normal`. It is gone; each step below pairs
+     with the --fs- of the same number, and a rule that sets a font
+     size sets the matching letter-spacing beside it. --ls-12 is 0 by
+     design: that is where Inter's curve crosses zero, and Chrome
+     reports it back as `normal`.                                    */
+  --ls-10: 0.010em;    /* --fs-2xs   badges, eyebrows */
+  --ls-11: 0.005em;    /* --fs-xs    meta, hints, kbd */
+  --ls-12: 0em;        /* --fs-sm    card chrome */
+  --ls-13: -0.003em;   /* --fs-md    base UI */
+  --ls-16: -0.011em;   /* --fs-xl    modal titles */
+  --ls-20: -0.017em;   /* --fs-2xl   section titles */
+  --ls-26: -0.020em;   /* --fs-3xl */
+  --ls-34: -0.022em;   /* LOD titles, ~26-46px; --fs-4xl */
+  --ls-hero: -0.035em; /* --fs-hero */
+  --ls-caps: 0.06em;   /* all-caps labels keep their own, wider, value */
+
+  /* Authored content: preserve document density and map geometry. These
+     sizes scale with the board, unlike UI controls and their hit targets. */
+  --fs-note: 15px; --fs-note-title: var(--fs-note); --lh-note: 1.55;
+  --lh-note-title: 1.4; --ls-note-title: -0.01em;
+  --fs-shape: 14px; --ls-shape: -0.005em;
+  --fs-map-root: 18px; --ls-map-root: -0.015em;
+  --fs-map-branch: var(--fs-note); --fs-map-leaf: 13.5px;
+
+  /* ---------- spacing (4px grid) ---------- */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+
+  /* ---------- radii ----------
+     Concentric rule: a rounded box inside a rounded box takes
+         inner radius = outer radius − the gap between them.
+     Give both the same radius and the gap reads wider at the corners
+     than along the edges. Three nestings exist in this app, and the
+     scale is built so all three fall straight out of it:
+         popover / toolbar  r-lg 9  − sp-1 4px  →  item  r-sm 5
+         command palette    r-xl 12 −      5px  →  row   r-md 7
+         segmented control  r-sm 5  −      2px  →  item  r-xs 3
+     For a pair not on the scale, write the subtraction:
+         border-radius: calc(var(--r-lg) - var(--sp-2));
+
+     The compact 3 / 5 / 7 / 9 / 12px scale keeps these nestings exact.
+     App furniture uses the role aliases below. Circle and pill controls
+     keep their silhouette, and diagram shapes have separate geometry roles.
+     Screen-size controls inside the zoomable world multiply by --px; content
+     shapes scale with the board rather than adopting a toolbar corner. */
+  --r-xs: 3px; --r-sm: 5px; --r-md: 7px; --r-lg: 9px; --r-xl: 12px; --r-full: 999px;
+  /* App furniture by role. Nested controls use outer radius minus padding. */
+  --r-control: var(--r-sm); --r-field: var(--r-md);
+  --r-popover: var(--r-lg); --r-panel: var(--r-xl); --r-dialog: var(--r-xl);
+  /* Diagram silhouettes are content geometry, not app furniture. */
+  --r-shape: 10px; --r-map-root: 16px; --r-map-leaf: 8px;
+  /* --px is a length supplied by the canvas, so its multiplier is unitless. */
+  --source-chip-radius: 6; --r-source-chip: calc(var(--source-chip-radius) * 1px);
+
+  /* ---------- control sizes ---------- */
+  /* Controls (buttons, fields) and rows (list and menu items) are two ladders.
+     A control is a target; a row is a line of text with room around it. They
+     used to share one, which is why toolbars, sidebar rows and menu items were
+     each a private 24 / 28 / 32 in styles.css. */
+  --ctl-xs: 24px; --ctl-sm: 26px; --ctl-md: 30px; --ctl-lg: 36px; --ctl-xl: 44px;
+  /* A target that floats over the board or a page: the selection toolbars' buttons,
+     the expanded page's Back to board, Side Peek's address field. One step up from
+     --ctl-md, because there is no bar around it to make it easy to hit. */
+  --ctl-float: 34px;
+  --row-sm: 28px; --row-md: 32px;
+  /* --icon-xs is for micro glyphs only: a chevron or caret, a tab's ×, a checkmark in a
+     round check, a folder beside meta text. Anything you act on is --icon-md. */
+  --icon-xs: 12px; --icon-sm: 14px; --icon-md: 16px; --icon-lg: 18px;
+  /* Rendered icon stroke, in screen px, identical at every icon size.
+     The set is authored at stroke 3.2 on a 48 viewBox, so the same file
+     drawn at 12-18px rendered 0.80-1.20px — a 50% swing in optical
+     weight across one screen. `vector-effect: non-scaling-stroke` lifts
+     the stroke out of the viewBox scale so this number IS the result. */
+  --icon-stroke: 1.25;
+
+  /* ---------- motion ---------- */
+  --dur-instant: 80ms;
+  --dur-fast: 120ms;    /* hover, press, colour */
+  --dur-base: 180ms;    /* popovers, toolbars, small reveals */
+  --dur-slow: 280ms;    /* panels, camera moves */
+  --dur-lazy: 400ms;    /* card enter, flash */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);      /* standard: things arriving */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);           /* things leaving */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* camera / layout */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* playful pops */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);  /* arrivals that answer at once and settle long: a board loading, a page resolving */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);    /* surfaces that travel: a panel sliding in, a card opening to the window */
+  --dur-enter: 460ms;   /* the board's entrance, a level crossfade */
+  /* Shared surface choreography. Individual translate/scale preserve positioning
+     transforms on centered controls and never change authored canvas geometry. */
+  --motion-offset: 4px;
+  --motion-scale: 0.98;
+  --dur-feedback: 400ms;
+  --dur-pulse: 900ms;
+  --dur-loading: 1400ms;
+
+  /* ---------- z-index scale ---------- */
+  --z-presence: 8; --z-canvas-ui: 10; --z-toolbar: 20; --z-overlay: 25; --z-chrome: 30; --z-popover: 60; --z-modal: 80; --z-toast: 90; --z-tip: 100;
+}
+
+/* Non-colour tokens cannot ride light-dark(), so the few that differ per theme
+   get the same three states the rest of the system gets from that function:
+   bare :root is light, the media query covers "system", the stamp wins over it. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --overlay-opacity: 76%; } }
+:root[data-theme="dark"] { --overlay-opacity: 76%; }
+
+/* Higher contrast (macOS Accessibility ▸ Display ▸ Increase contrast). Every rung moves
+   toward the ink, but the four rungs stay four: secondary used to become primary, which
+   left labels and metadata nothing to tell them apart. Measured over all seven themes
+   and every plane, the canvas included: secondary 7.7 / 9.8:1 (AAA), tertiary 5.0 /
+   6.9:1, the accent line 4.9:1. Fills and edges firm up one step. */
+@media (prefers-contrast: more) {
+  :root {
+    --text-secondary: light-dark(oklch(40.0% calc(0.021 * var(--chroma-n)) var(--hue-n)), oklch(87.0% calc(0.012 * var(--chroma-n)) var(--hue-n)));
+    --text-tertiary:  var(--n-11);
+    --border-subtle:  var(--alpha-3);
+    --border-default: var(--alpha-4);
+    --border-strong:  var(--alpha-5);
+    --fill-subtle:    light-dark(var(--n-4), oklch(100% 0 0 / 0.11));
+    --fill-strong:    light-dark(var(--n-5), oklch(100% 0 0 / 0.16));
+    --accent-line:    light-dark(var(--a-10), var(--a-11));
+  }
+}
+
+/* Reduced motion: keep state changes, drop the choreography */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-instant: 0ms; --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; --dur-lazy: 0ms; --dur-enter: 0ms; }
+  /* …and the stagger with it: a staggered entrance with its motion removed is only a delay. */
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
+}
+
+/* ============================================================
+   14. THEMES
+   A theme is a palette for the whole app — chrome, canvas, cards, controls and
+   the accent — in both appearances: Appearance still chooses light or dark, the
+   theme chooses which light and which dark. Each one only moves the parameters
+   in section 0, so every rung keeps its lightness and every contrast measured for
+   the default still holds; Graphite alone also sets its accent's solid steps, to ink. Content keeps its own colours: the four note tones and
+   the status colours are the same in every theme (the slate note follows the
+   neutral, since it is the neutral note). Indigo is the default, written out so a
+   preview can reset to it; with no attribute the :root values above apply.
+
+   The accent sits at L 56% in every theme (a step lower for green and blue, which
+   carry more luminance at the same lightness: --l-a), which is what keeps white text
+   on it at 4.5:1 or better and its outline at 3:1 on the canvas, measured per theme in
+   both appearances. Chroma is scaled to
+   what each hue can show at that lightness inside sRGB, so no accent clips:
+   green and orange top out lower than violet and pink.
+
+   Set on <html> by app.js (applyPalette) before first paint; a theme preview sets
+   it on itself, which works because these blocks match any element. The Mac app's
+   System theme (its default) is not a palette of its own: it picks one of these from the Mac's
+   accent colour (app.js MAC_ACCENT_THEMES), so nothing here is computed at run time.
+   ============================================================ */
+[data-palette="indigo"]   { --hue-n: 268; --chroma-n: 1;   --hue-a: 272; --chroma-a: 1;    --l-a: 0%; --surface-white: oklch(100% 0 0); }
+/* Ocean: a cooler, bluer neutral and a clear blue. */
+[data-palette="ocean"]    { --hue-n: 245; --chroma-n: 1.1; --hue-a: 248; --chroma-a: 0.95; --l-a: -1%; --surface-white: oklch(100% 0 0); }
+/* Violet: a lilac-grey neutral and a violet accent. */
+[data-palette="violet"]   { --hue-n: 295; --chroma-n: 1.1; --hue-a: 300; --chroma-a: 1;    --l-a: 0%; --surface-white: oklch(100% 0 0); }
+/* Rose: a faintly warm neutral and a pink-magenta accent, kept well away from the
+   danger red (hue 25) so a destructive button never reads as the brand. */
+[data-palette="rose"]     { --hue-n: 350; --chroma-n: 0.7; --hue-a: 350; --chroma-a: 0.95; --l-a: 0%; --surface-white: oklch(100% 0 0); }
+/* Paper: warm neutrals for long reading — an ivory frame in light, a warm charcoal in
+   dark — with a sienna accent. The only theme whose white is not white. */
+[data-palette="paper"]    { --hue-n: 75;  --chroma-n: 1.8; --hue-a: 50;  --chroma-a: 0.75; --l-a: 0%; --surface-white: oklch(99.3% 0.007 85); }
+/* Forest: a green-grey neutral and a deep green accent. */
+[data-palette="forest"]   { --hue-n: 165; --chroma-n: 0.9; --hue-a: 158; --chroma-a: 0.7;  --l-a: -3%; --surface-white: oklch(100% 0 0); }
+/* Graphite: no tint at all — for boards where only the content should carry colour.
+   With the hue gone, a mid-grey accent was one more grey line: a selected note read like
+   its own border, and in dark the outline all but vanished (UI review, 2026-10-09). A
+   theme without hue can only mark state by lightness, so Graphite's accent is INK, as
+   monochrome systems do it: near-black in light, near-white in dark, with the text on it
+   turned over. Selection, focus and the one primary button then stand out, and "on"
+   icons are darker than "off" ones instead of the same grey. The one theme that moves
+   lightness; measured like the rest (tests/design-system.mjs). Marks on the white page
+   keep the mid grey (--accent-on-page), and the minimap's notes step back to neutral
+   greys so the selection stays the brightest thing on it. */
+[data-palette="graphite"] {
+  --hue-n: 268; --chroma-n: 0; --hue-a: 268; --chroma-a: 0; --l-a: 0%; --surface-white: oklch(100% 0 0);
+  --a-9:  light-dark(oklch(24% 0 0), oklch(93% 0 0));
+  --a-10: light-dark(oklch(34% 0 0), oklch(84% 0 0));
+  --a-11: light-dark(oklch(24% 0 0), oklch(93% 0 0));
+  --accent-hover:   light-dark(oklch(34% 0 0), oklch(84% 0 0));
+  --accent-active:  light-dark(oklch(40% 0 0), oklch(78% 0 0));
+  --text-on-accent: light-dark(oklch(100% 0 0), oklch(15% 0 0));
+  --minimap-note:   light-dark(var(--n-9), var(--n-11));
+}
+
+/* Pointer and automatic focus are editing states. Keyboard navigation retains
+   the component's accent ring; JS-free pages retain the same visible fallback.
+   Keyed on the focused element and a field's wrappers (focus.js), not on the root:
+   :root[data-focus-mode] made every pointer/keyboard switch restyle the whole document. */
+[data-focus-by="pointer"]:focus,
+[data-focus-within-by="pointer"]:focus-within {
+  --field-focus-border: var(--border-strong);
+  --ring-focus: none;
+}
+[data-focus-by="pointer"]:focus-visible:not(.card),
+.hb-shot:has(.hb-open[data-focus-by="pointer"]:focus-visible),
+.hl-row:has(.hl-open[data-focus-by="pointer"]:focus-visible),
+.th[data-focus-by="pointer"]:focus-visible .th-pic,
+.tpl[data-focus-by="pointer"]:focus-visible .tpl-preview {
+  outline: none !important;
+}

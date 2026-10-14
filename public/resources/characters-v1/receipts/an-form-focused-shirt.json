@@ -1,0 +1,11 @@
+{
+  "characterId": "an",
+  "scene": "form",
+  "expression": "focused",
+  "outfit": "shirt",
+  "accessory": "none",
+  "tool": "built-in imagegen",
+  "reference": "png/an-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit/reference target: the supplied SEARCH master of this exact character. Keep the SAME hair silhouette, face shape, glasses state, eye/nose construction, adult body proportions and garment style. Do not redesign the person. Preserve landscape 1536x1024 proportions and clean flat near-black/cobalt/opaque-white editorial drawing. Real alpha outside all subjects, white interiors opaque. No gradients, glow, texture, shadows, groundline, text, letters, logos or watermark.\nIdentity: Shoulder-length solid black bob with a gently side-parted outline, no glasses, softly oval face with two small oval black eyes and one simple curved nose. Adult proportions matching the reference. Cobalt crewneck long-sleeve top, black trousers and black shoes. SAME distinct person throughout this pilot.\nChange the scene to FORM: the same character remains on the left seated on the same simple white chair. They hold a simple white card near torso and point at one black-outlined browser form panel on the right. Panel contains exactly three blank horizontal rounded field outlines and one small cobalt submit button with no text. Expression focused: both eyebrows level/slightly inward, gaze attentive, small neutral closed mouth. Hands natural, exactly two hands, no magnifying glass. Full feet/chair/wheelchair visible, generous transparent margins. Face is in the same angle as master; clothing solid cobalt, all skin white. One person only.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-420073a0-1b49-49c4-80e2-825bf5219a17.png"
+}

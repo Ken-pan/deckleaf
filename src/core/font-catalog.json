@@ -1,0 +1,620 @@
+[
+  {
+    "id": "inter",
+    "family": "Inter",
+    "category": "sans",
+    "tags": "清晰、界面、正文",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/inter.css",
+    "license": "/fonts/Inter-OFL.txt",
+    "source": "https://rsms.me/inter/",
+    "version": "existing"
+  },
+  {
+    "id": "manrope",
+    "family": "Manrope",
+    "category": "sans",
+    "tags": "几何、现代、标题",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/manrope.css",
+    "license": "/fonts/Manrope-OFL.txt",
+    "source": "https://github.com/sharanda/manrope",
+    "version": "existing"
+  },
+  {
+    "id": "bodoni-moda",
+    "family": "Bodoni Moda",
+    "category": "serif",
+    "tags": "杂志、高对比、标题",
+    "chinese": false,
+    "weights": [
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/bodoni-moda.css",
+    "license": "/fonts/Bodoni-Moda-OFL.txt",
+    "source": "https://github.com/indestructible-type/Bodoni",
+    "version": "existing"
+  },
+  {
+    "id": "dm-sans",
+    "family": "DM Sans",
+    "label": "",
+    "category": "sans",
+    "tags": "现代、简洁、正文",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/dm-sans/font.css",
+    "license": "/fonts/dm-sans/OFL.txt",
+    "source": "https://fontsource.org/fonts/dm-sans",
+    "version": "5.3.0"
+  },
+  {
+    "id": "plus-jakarta-sans",
+    "family": "Plus Jakarta Sans",
+    "label": "",
+    "category": "sans",
+    "tags": "现代、几何、标题",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/plus-jakarta-sans/font.css",
+    "license": "/fonts/plus-jakarta-sans/OFL.txt",
+    "source": "https://fontsource.org/fonts/plus-jakarta-sans",
+    "version": "5.3.0"
+  },
+  {
+    "id": "space-grotesk",
+    "family": "Space Grotesk",
+    "label": "",
+    "category": "sans",
+    "tags": "科技、几何、标题",
+    "chinese": false,
+    "weights": [
+      300,
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/space-grotesk/font.css",
+    "license": "/fonts/space-grotesk/OFL.txt",
+    "source": "https://fontsource.org/fonts/space-grotesk",
+    "version": "5.3.0"
+  },
+  {
+    "id": "montserrat",
+    "family": "Montserrat",
+    "label": "",
+    "category": "sans",
+    "tags": "几何、品牌、标题",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/montserrat/font.css",
+    "license": "/fonts/montserrat/OFL.txt",
+    "source": "https://fontsource.org/fonts/montserrat",
+    "version": "5.3.0"
+  },
+  {
+    "id": "lato",
+    "family": "Lato",
+    "label": "",
+    "category": "sans",
+    "tags": "人文、正文、清晰",
+    "chinese": false,
+    "weights": [
+      100,
+      300,
+      400,
+      700,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/lato/font.css",
+    "license": "/fonts/lato/OFL.txt",
+    "source": "https://fontsource.org/fonts/lato",
+    "version": "5.3.0"
+  },
+  {
+    "id": "nunito-sans",
+    "family": "Nunito Sans",
+    "label": "",
+    "category": "sans",
+    "tags": "圆润、友好、正文",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/nunito-sans/font.css",
+    "license": "/fonts/nunito-sans/OFL.txt",
+    "source": "https://fontsource.org/fonts/nunito-sans",
+    "version": "5.3.0"
+  },
+  {
+    "id": "raleway",
+    "family": "Raleway",
+    "label": "",
+    "category": "sans",
+    "tags": "轻盈、品牌、标题",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/raleway/font.css",
+    "license": "/fonts/raleway/OFL.txt",
+    "source": "https://fontsource.org/fonts/raleway",
+    "version": "5.3.0"
+  },
+  {
+    "id": "work-sans",
+    "family": "Work Sans",
+    "label": "",
+    "category": "sans",
+    "tags": "清晰、正文、报告",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/work-sans/font.css",
+    "license": "/fonts/work-sans/OFL.txt",
+    "source": "https://fontsource.org/fonts/work-sans",
+    "version": "5.3.0"
+  },
+  {
+    "id": "source-sans-3",
+    "family": "Source Sans 3",
+    "label": "",
+    "category": "sans",
+    "tags": "思源黑体、西文、正文",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/source-sans-3/font.css",
+    "license": "/fonts/source-sans-3/OFL.txt",
+    "source": "https://fontsource.org/fonts/source-sans-3",
+    "version": "5.3.1"
+  },
+  {
+    "id": "lora",
+    "family": "Lora",
+    "label": "",
+    "category": "serif",
+    "tags": "书刊、正文、温暖",
+    "chinese": false,
+    "weights": [
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/lora/font.css",
+    "license": "/fonts/lora/OFL.txt",
+    "source": "https://fontsource.org/fonts/lora",
+    "version": "5.3.0"
+  },
+  {
+    "id": "playfair-display",
+    "family": "Playfair Display",
+    "label": "",
+    "category": "serif",
+    "tags": "优雅、杂志、标题",
+    "chinese": false,
+    "weights": [
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/playfair-display/font.css",
+    "license": "/fonts/playfair-display/OFL.txt",
+    "source": "https://fontsource.org/fonts/playfair-display",
+    "version": "5.3.0"
+  },
+  {
+    "id": "cormorant-garamond",
+    "family": "Cormorant Garamond",
+    "label": "",
+    "category": "serif",
+    "tags": "古典、优雅、标题",
+    "chinese": false,
+    "weights": [
+      300,
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/cormorant-garamond/font.css",
+    "license": "/fonts/cormorant-garamond/OFL.txt",
+    "source": "https://fontsource.org/fonts/cormorant-garamond",
+    "version": "5.3.0"
+  },
+  {
+    "id": "libre-baskerville",
+    "family": "Libre Baskerville",
+    "label": "",
+    "category": "serif",
+    "tags": "经典、书刊、正文",
+    "chinese": false,
+    "weights": [
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/libre-baskerville/font.css",
+    "license": "/fonts/libre-baskerville/OFL.txt",
+    "source": "https://fontsource.org/fonts/libre-baskerville",
+    "version": "5.3.0"
+  },
+  {
+    "id": "dm-serif-display",
+    "family": "DM Serif Display",
+    "label": "",
+    "category": "serif",
+    "tags": "杂志、高对比、标题",
+    "chinese": false,
+    "weights": [
+      400
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/dm-serif-display/font.css",
+    "license": "/fonts/dm-serif-display/OFL.txt",
+    "source": "https://fontsource.org/fonts/dm-serif-display",
+    "version": "5.3.0"
+  },
+  {
+    "id": "source-serif-4",
+    "family": "Source Serif 4",
+    "label": "",
+    "category": "serif",
+    "tags": "思源宋体、西文、正文",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/source-serif-4/font.css",
+    "license": "/fonts/source-serif-4/OFL.txt",
+    "source": "https://fontsource.org/fonts/source-serif-4",
+    "version": "5.3.1"
+  },
+  {
+    "id": "oswald",
+    "family": "Oswald",
+    "label": "",
+    "category": "display",
+    "tags": "窄体、海报、标题",
+    "chinese": false,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/oswald/font.css",
+    "license": "/fonts/oswald/OFL.txt",
+    "source": "https://fontsource.org/fonts/oswald",
+    "version": "5.3.0"
+  },
+  {
+    "id": "bebas-neue",
+    "family": "Bebas Neue",
+    "label": "",
+    "category": "display",
+    "tags": "窄体、大写、海报",
+    "chinese": false,
+    "weights": [
+      400
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/bebas-neue/font.css",
+    "license": "/fonts/bebas-neue/OFL.txt",
+    "source": "https://fontsource.org/fonts/bebas-neue",
+    "version": "5.3.0"
+  },
+  {
+    "id": "jetbrains-mono",
+    "family": "JetBrains Mono",
+    "label": "",
+    "category": "mono",
+    "tags": "代码、数字、技术",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/jetbrains-mono/font.css",
+    "license": "/fonts/jetbrains-mono/OFL.txt",
+    "source": "https://fontsource.org/fonts/jetbrains-mono",
+    "version": "5.3.0"
+  },
+  {
+    "id": "ibm-plex-mono",
+    "family": "IBM Plex Mono",
+    "label": "",
+    "category": "mono",
+    "tags": "代码、数字、技术",
+    "chinese": false,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "italic",
+      "normal"
+    ],
+    "css": "/fonts/ibm-plex-mono/font.css",
+    "license": "/fonts/ibm-plex-mono/OFL.txt",
+    "source": "https://fontsource.org/fonts/ibm-plex-mono",
+    "version": "5.3.0"
+  },
+  {
+    "id": "caveat",
+    "family": "Caveat",
+    "label": "",
+    "category": "handwriting",
+    "tags": "手写、轻松、注释",
+    "chinese": false,
+    "weights": [
+      400,
+      500,
+      600,
+      700
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/caveat/font.css",
+    "license": "/fonts/caveat/OFL.txt",
+    "source": "https://fontsource.org/fonts/caveat",
+    "version": "5.3.0"
+  },
+  {
+    "id": "noto-sans-sc",
+    "family": "Noto Sans SC",
+    "label": "思源黑体",
+    "category": "sans",
+    "tags": "思源黑体、中文、正文、简体",
+    "chinese": true,
+    "weights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/noto-sans-sc/font.css",
+    "license": "/fonts/noto-sans-sc/OFL.txt",
+    "source": "https://fontsource.org/fonts/noto-sans-sc",
+    "version": "5.3.1"
+  },
+  {
+    "id": "noto-serif-sc",
+    "family": "Noto Serif SC",
+    "label": "思源宋体",
+    "category": "serif",
+    "tags": "思源宋体、中文、书刊、简体",
+    "chinese": true,
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/noto-serif-sc/font.css",
+    "license": "/fonts/noto-serif-sc/OFL.txt",
+    "source": "https://fontsource.org/fonts/noto-serif-sc",
+    "version": "5.3.1"
+  },
+  {
+    "id": "ma-shan-zheng",
+    "family": "Ma Shan Zheng",
+    "label": "马善政楷书",
+    "category": "handwriting",
+    "tags": "马善政、中文、书法、手写",
+    "chinese": true,
+    "weights": [
+      400
+    ],
+    "styles": [
+      "normal"
+    ],
+    "css": "/fonts/ma-shan-zheng/font.css",
+    "license": "/fonts/ma-shan-zheng/OFL.txt",
+    "source": "https://fontsource.org/fonts/ma-shan-zheng",
+    "version": "5.3.1"
+  }
+]

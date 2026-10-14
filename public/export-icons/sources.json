@@ -1,0 +1,12 @@
+{
+  "purpose": "Broadser is a personal product by Ken Pan. Other export formats use generic presentation icons.",
+  "retrieved": "2026-10-13",
+  "assets": [
+    {
+      "file": "broadser.svg",
+      "owner": "Broadser",
+      "sha256": "b01efc6efe3f52e6fdead09eafdc8fbe68953899b5f2648e0c89d915d593d4a8",
+      "projectSource": "Broadser/assets/brand/logo.svg"
+    }
+  ]
+}

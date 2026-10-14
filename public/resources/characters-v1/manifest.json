@@ -1,0 +1,657 @@
+{
+  "schema": "deck-studio/characters/1",
+  "characters": [
+    {
+      "id": "yun",
+      "label": "卷发圆镜",
+      "identity": "短卷发、柔和圆脸、圆眼镜、成年身体比例；眼镜版本独立于身份。",
+      "originalId": "person-01-thinking",
+      "masterVariantId": "yun-search-confused-shirt",
+      "identityRevision": 1
+    },
+    {
+      "id": "an",
+      "label": "齐肩短发",
+      "identity": "齐肩侧分短发、柔和椭圆脸、成年身体比例；同一白色座椅。",
+      "originalId": "person-03-listening",
+      "masterVariantId": "an-search-confused-shirt",
+      "identityRevision": 1
+    },
+    {
+      "id": "qiao",
+      "label": "短发轮椅",
+      "identity": "整齐侧分短发、柔和圆脸、成年身体比例；同一手动轮椅。",
+      "originalId": "person-04-participating",
+      "masterVariantId": "qiao-search-confused-shirt",
+      "identityRevision": 1
+    }
+  ],
+  "scenes": [
+    {
+      "id": "search",
+      "label": "搜索"
+    },
+    {
+      "id": "form",
+      "label": "填表"
+    },
+    {
+      "id": "recovery",
+      "label": "错误恢复"
+    }
+  ],
+  "variants": [
+    {
+      "id": "an-form-focused-shirt",
+      "characterId": "an",
+      "sceneId": "form",
+      "expression": "focused",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/an-form-focused-shirt.png",
+      "sha256": "9f3cfe2d3c7e0681fee31728724b96c7ed557a5219f96545fce7c9f966207945",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-form-focused-shirt-skin.png",
+        "clothes": "masks/an-form-focused-shirt-clothes.png",
+        "hair": "masks/an-form-focused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "89618b68fd5203930aaa366a805b33723aa374b35f711b8cd6337089a24fc3ca",
+        "clothes": "9fef784cc7ca61225fbf936ac7508039bce067e425e4f1fa8bcc5305873003b2",
+        "hair": "2bc20cfe8d1816d2d8b7fa600e8a5535d6ab87ed9a266b076ed103deccfb7188"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#0157fe",
+        "hair": "#0f0f0f"
+      },
+      "approved": true
+    },
+    {
+      "id": "an-recovery-fatigued-shirt",
+      "characterId": "an",
+      "sceneId": "recovery",
+      "expression": "fatigued",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/an-recovery-fatigued-shirt.png",
+      "sha256": "8d3885c3e5fe9248261663ee9a160e6d10e47f12e990611c748b23b46b2cdec0",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-recovery-fatigued-shirt-skin.png",
+        "clothes": "masks/an-recovery-fatigued-shirt-clothes.png",
+        "hair": "masks/an-recovery-fatigued-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "059a9239bb5aa87aa682113f1ad9fb46fa737fc0dfd959f0519d943ce48cb64c",
+        "clothes": "25ce95cd9d5f71d4894eddb1242895a4a19d8734a402267181c815613663beaa",
+        "hair": "e817d818148c5ba9beaf43ba8e433c35fb5d8eef55970d4af612d9bb7c6aca02"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#005afe",
+        "hair": "#10100e"
+      },
+      "approved": true
+    },
+    {
+      "id": "an-search-confused-hoodie",
+      "characterId": "an",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "hoodie",
+      "accessory": "none",
+      "file": "png/an-search-confused-hoodie.png",
+      "sha256": "c153b132804c5d643db3cb17a848e9985c571344b9e261b791f908280b441037",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-search-confused-hoodie-skin.png",
+        "clothes": "masks/an-search-confused-hoodie-clothes.png",
+        "hair": "masks/an-search-confused-hoodie-hair.png"
+      },
+      "maskSha256": {
+        "skin": "61eae3fef764e019f01522f801f21d26429212d989559e9e38e8c1a5386bce16",
+        "clothes": "4773b48fe87958fdf1448e3a68e36a4e54ba8d0fe9e4057d598ef6cbe54a43f4",
+        "hair": "f225eaf3edafda69b54662deacdb3ee2ac19c29064772fef8f888e4a89eae3fa"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#015afd",
+        "hair": "#121211"
+      },
+      "approved": true
+    },
+    {
+      "id": "an-search-confused-shirt-round-glasses",
+      "characterId": "an",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/an-search-confused-shirt-round-glasses.png",
+      "sha256": "ba0ef64b061b03c8df46eda0660132b07c2d4c3fefd7f53ff2e996791696d60e",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-search-confused-shirt-round-glasses-skin.png",
+        "clothes": "masks/an-search-confused-shirt-round-glasses-clothes.png",
+        "hair": "masks/an-search-confused-shirt-round-glasses-hair.png"
+      },
+      "maskSha256": {
+        "skin": "2d730c598f05102d7a4128da3811940f0f5d4127ee860833b05df75e6f25df41",
+        "clothes": "de0cbbf9a6907a0eb5c9c7a10605641423a12cc06abc41c49b5235cf1681157a",
+        "hair": "5dda632ae5a623530c3218ac4a141c987ae324f29a7c1fd007cb913fe4438ef1"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefdfe",
+        "clothes": "#0b60fe",
+        "hair": "#131311"
+      },
+      "approved": true
+    },
+    {
+      "id": "an-search-confused-shirt",
+      "characterId": "an",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/an-search-confused-shirt.png",
+      "sha256": "52d4fc83a88f6f8521aca960d4b92b9761c13b5a4a93277a6d5af4a08f60b57a",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-search-confused-shirt-skin.png",
+        "clothes": "masks/an-search-confused-shirt-clothes.png",
+        "hair": "masks/an-search-confused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "23adb3867d7de2e82c409bf7330ca5095662b22e89246717f9bfad2b49ba6546",
+        "clothes": "59e7232f7f1ce6f7f1116cc312aaa88d8e562a3825f43022909cefe52cf97a7e",
+        "hair": "a0bf0a48c3117282da4b6c52a94bd237f154417c97a3e00372617f90e94d6b7f"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#125efd",
+        "hair": "#141413"
+      },
+      "approved": true
+    },
+    {
+      "id": "an-search-satisfied-shirt",
+      "characterId": "an",
+      "sceneId": "search",
+      "expression": "satisfied",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/an-search-satisfied-shirt.png",
+      "sha256": "0231b7f49782d818e7360ad16f04c3d031114326b2888fcf2d294c9b5bfd6395",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/an-search-satisfied-shirt-skin.png",
+        "clothes": "masks/an-search-satisfied-shirt-clothes.png",
+        "hair": "masks/an-search-satisfied-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "9c7383ecc59848eae232a84427686bd6afbb4b520400982777518daf87b56090",
+        "clothes": "ece4d1c31718ec1182ef061a30598bc9d432c33d20f551d3a2c6379c0927b000",
+        "hair": "cb1352a36439594aee6605baeb01057477678654ee8aa430cca61c3828440e01"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#055bfe",
+        "hair": "#121210"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-form-focused-shirt",
+      "characterId": "qiao",
+      "sceneId": "form",
+      "expression": "focused",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/qiao-form-focused-shirt.png",
+      "sha256": "6022291a3319af289d2c99fe370a52c26bac5cecbec14083b4d45b5f90b37874",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-form-focused-shirt-skin.png",
+        "clothes": "masks/qiao-form-focused-shirt-clothes.png",
+        "hair": "masks/qiao-form-focused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "e0ab37e9bcdb4aade0f31f9538a9899e0eb8c17005978194ad36c6f6b3934c22",
+        "clothes": "7e86da4ab462173eb2903388b3f3bc0b94a968eafb0ad50fe405bebb6e958f56",
+        "hair": "faa2c8fcbf638b4bb19a2fde1e2850153b50c6e9faf299c2b04c98bc5f8a5026"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#0054fe",
+        "hair": "#0d0d0c"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-recovery-fatigued-shirt",
+      "characterId": "qiao",
+      "sceneId": "recovery",
+      "expression": "fatigued",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/qiao-recovery-fatigued-shirt.png",
+      "sha256": "2caf77c992f07efdeacb8fa7c52a6aa34f6cf46e6a3a57383937497093cc40c3",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-recovery-fatigued-shirt-skin.png",
+        "clothes": "masks/qiao-recovery-fatigued-shirt-clothes.png",
+        "hair": "masks/qiao-recovery-fatigued-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "b52f3c433dae6fd0ef775d64373c8ba71fad6c23fc8765d4e9d5cc608eaa07c9",
+        "clothes": "bc15bebd416ca1644791707b3a276171367b1b66cabeed3e277ed5329145b4e1",
+        "hair": "1f988b5e75c00ce1626272fc5e2e8d717da61189f6458501c49e2af21cfe220a"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#0158fe",
+        "hair": "#0f0f0f"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-search-confused-hoodie",
+      "characterId": "qiao",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "hoodie",
+      "accessory": "none",
+      "file": "png/qiao-search-confused-hoodie.png",
+      "sha256": "d5e1a0c57ffebde487bcf48076d212fbfa1db649e09092995116936a8a4f640c",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-search-confused-hoodie-skin.png",
+        "clothes": "masks/qiao-search-confused-hoodie-clothes.png",
+        "hair": "masks/qiao-search-confused-hoodie-hair.png"
+      },
+      "maskSha256": {
+        "skin": "fe3e2acdc2939108290ec73d4f084cb6e417bfc4c7cb0cb76399f446c037f16a",
+        "clothes": "c3b312e936de66176f746d06a9b0cbe2ae85fafe63a8cdfcbddbfad6e801f8c8",
+        "hair": "8a852489e71825a7f26a0ab6a3a80b33d7cffdb9660386cbbff26f85b9ce9fd8"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#0d5afe",
+        "hair": "#0f0f0f"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-search-confused-shirt-round-glasses",
+      "characterId": "qiao",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/qiao-search-confused-shirt-round-glasses.png",
+      "sha256": "dfbec411010aa95627ec96016114c985b3666b0f71e7e3b33ac1d3241cc0304b",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-search-confused-shirt-round-glasses-skin.png",
+        "clothes": "masks/qiao-search-confused-shirt-round-glasses-clothes.png",
+        "hair": "masks/qiao-search-confused-shirt-round-glasses-hair.png"
+      },
+      "maskSha256": {
+        "skin": "f8bb7a3bfe97d6b313331e56504f87a76a55d27dcbff5fbecc5bdc9563e7491a",
+        "clothes": "00e796fb9e39e365ebbb50e19eaa2b40f536f345aa2f94ea966ce1321207d50a",
+        "hair": "93d61c6c4e7d9747c1966ddff7b7656feffe8ba5a2d70983cb5d6656345d932c"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefdfe",
+        "clothes": "#095efe",
+        "hair": "#111111"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-search-confused-shirt",
+      "characterId": "qiao",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/qiao-search-confused-shirt.png",
+      "sha256": "3a7a946c97a8a1b2565634d506f7e62759bdc05c89db7fff9be6b2cd89c621d6",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-search-confused-shirt-skin.png",
+        "clothes": "masks/qiao-search-confused-shirt-clothes.png",
+        "hair": "masks/qiao-search-confused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "3e19499d348e7a74451d9870c282b78c0f8686f5f5553ceae23a683a935a4e88",
+        "clothes": "8197088c0c45c72308912100f845745e52b73ff92156dcc1ad46ac631bd91659",
+        "hair": "cdf32c3de6dd9fb74aeb8c0279d6afea62407dbe8eee011f2c20821dc43ee074"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#185afd",
+        "hair": "#141414"
+      },
+      "approved": true
+    },
+    {
+      "id": "qiao-search-satisfied-shirt",
+      "characterId": "qiao",
+      "sceneId": "search",
+      "expression": "satisfied",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/qiao-search-satisfied-shirt.png",
+      "sha256": "6c0fc558a001be036e98d1020c025cddc6db042f9b790c3a570205e40d07d1cf",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/qiao-search-satisfied-shirt-skin.png",
+        "clothes": "masks/qiao-search-satisfied-shirt-clothes.png",
+        "hair": "masks/qiao-search-satisfied-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "87e57c3b411b47fd08da1b52707a5cb243583e4c6c2824459cbf4c811543e150",
+        "clothes": "86f7e74ec51f88ca4e23d8415f9fed33ad3f249e6548dcf722e52487153f55e2",
+        "hair": "88a6edeefb261471ca65f4b3699cc0ca2be50e62e162e088ae7d2b8a62d6a384"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#085dfe",
+        "hair": "#111110"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-form-focused-shirt",
+      "characterId": "yun",
+      "sceneId": "form",
+      "expression": "focused",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/yun-form-focused-shirt.png",
+      "sha256": "cde15ed1e64824263dbca7731736976071bacf3a7bcde06a5dc41b36431a21d5",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-form-focused-shirt-skin.png",
+        "clothes": "masks/yun-form-focused-shirt-clothes.png",
+        "hair": "masks/yun-form-focused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "81829aded222d16179a4171fcf76d9dcc9cbb74605066f076cba6ab024b7f115",
+        "clothes": "7a49807415a841cf065e8b83a220dcd31fe0ba52799f034fefad2dcf32d76fe9",
+        "hair": "03889b2b9cdb19c7861d25e76505c513b51e407d3bf6eb66f4238b7fe2c2b98f"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fdfdfe",
+        "clothes": "#0051fd",
+        "hair": "#0a0a08"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-recovery-fatigued-shirt",
+      "characterId": "yun",
+      "sceneId": "recovery",
+      "expression": "fatigued",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/yun-recovery-fatigued-shirt.png",
+      "sha256": "04189c51ac36d96df5b2a8bc6fa4e7510b04e0bbbc74dc601c34df56eacb655d",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-recovery-fatigued-shirt-skin.png",
+        "clothes": "masks/yun-recovery-fatigued-shirt-clothes.png",
+        "hair": "masks/yun-recovery-fatigued-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "9887c2530e817dd06ce6658ddaf3a003b397633554c4775ee97a7028c01cd7d1",
+        "clothes": "5bbb98b9218731e78ec19fd7facf5e46e79fd8a6bf5b7718356333e5bf97a83f",
+        "hair": "de96129956c463761fedd57e4beedea4eaad6d90cee9ac43c76526a36b73bc37"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fdfdfe",
+        "clothes": "#075afd",
+        "hair": "#0e0e0e"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-search-confused-hoodie",
+      "characterId": "yun",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "hoodie",
+      "accessory": "round-glasses",
+      "file": "png/yun-search-confused-hoodie.png",
+      "sha256": "f40f8e9f3d97c5bc0d71f22f91eec375dc8ff5f8016a6b3fa21f8401ae4613d6",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-search-confused-hoodie-skin.png",
+        "clothes": "masks/yun-search-confused-hoodie-clothes.png",
+        "hair": "masks/yun-search-confused-hoodie-hair.png"
+      },
+      "maskSha256": {
+        "skin": "b0a798ba78d14178ffdf5e4de7644652913ecc0c1f196368591f66af0396c1dd",
+        "clothes": "8e84d575cf36aca0e0134b44d9ebe48303fae99ac849b60f226613663fee48a6",
+        "hair": "fb08f157a71d8da546fdc581f7cc9dd4c49bd7e862ec48f482837e8686af43f8"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefdfe",
+        "clothes": "#0953fd",
+        "hair": "#111111"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-search-confused-shirt-none",
+      "characterId": "yun",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "none",
+      "file": "png/yun-search-confused-shirt-none.png",
+      "sha256": "655a53271a546ed81210a754e781e7928930b0656a948b78b57c56081d3e2cea",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-search-confused-shirt-none-skin.png",
+        "clothes": "masks/yun-search-confused-shirt-none-clothes.png",
+        "hair": "masks/yun-search-confused-shirt-none-hair.png"
+      },
+      "maskSha256": {
+        "skin": "72c64f187bc1e74be061c91cc810207c62ed65330e0752f1632a4117f7c0dce3",
+        "clothes": "3b0d952bc4d862085fa5fe2d26f18d9fc84d7f33f4d76eb44de39e5d42b63cb8",
+        "hair": "f2faed374987210b85ad51164325c52f0327c0417acd447f119c83b29fd46883"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fefefe",
+        "clothes": "#0154fd",
+        "hair": "#0e0e0d"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-search-confused-shirt",
+      "characterId": "yun",
+      "sceneId": "search",
+      "expression": "confused",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/yun-search-confused-shirt.png",
+      "sha256": "f92a08fbeb3947d48015b9cb23d4e97878d78142d12d723b59e4c674d3b6bfb0",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-search-confused-shirt-skin.png",
+        "clothes": "masks/yun-search-confused-shirt-clothes.png",
+        "hair": "masks/yun-search-confused-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "dbcdb58abfab6a82a18fbd3597b2a079983344170b5d133edc5bc8f6d3aafbbd",
+        "clothes": "01d39d08adc0da49d3217ffbd91a962166fae55f01d9c78be6e274ed4c255efa",
+        "hair": "3004da001174ff3ca16b81affc6e6e84037d7ef97923d0f4b37a1c933190a783"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fdfdfe",
+        "clothes": "#1956fd",
+        "hair": "#121212"
+      },
+      "approved": true
+    },
+    {
+      "id": "yun-search-satisfied-shirt",
+      "characterId": "yun",
+      "sceneId": "search",
+      "expression": "satisfied",
+      "outfit": "shirt",
+      "accessory": "round-glasses",
+      "file": "png/yun-search-satisfied-shirt.png",
+      "sha256": "adb33ddec28cb180b7b27242c4a3c37c34a70e468072f060ca23c4d8003328d4",
+      "width": 1536,
+      "height": 1024,
+      "masks": {
+        "skin": "masks/yun-search-satisfied-shirt-skin.png",
+        "clothes": "masks/yun-search-satisfied-shirt-clothes.png",
+        "hair": "masks/yun-search-satisfied-shirt-hair.png"
+      },
+      "maskSha256": {
+        "skin": "f527d423bda26662face6c4b887e9e503056916de4a88a0c60e64fd4f33024b5",
+        "clothes": "c7b9ae57a15d69eca1bc0a2c4aa9fd3bc6bba3be3f694b3726c3055e1595bfd3",
+        "hair": "6b0aa056aa16856ba4a9c0c5c110a01425ec66b59ede9a1fcb8ac569cfc00fcd"
+      },
+      "palette": {
+        "skin": "#ffffff",
+        "clothes": "#2f5bff",
+        "hair": "#161616",
+        "accent": "#2f5bff"
+      },
+      "calibration": {
+        "skin": "#fdfdfe",
+        "clothes": "#0456fe",
+        "hair": "#0f0f0e"
+      },
+      "approved": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+import { mount } from 'svelte';
+import BrandGuide from './components/BrandGuide.svelte';
+import './styles.css';
+import './motion.css';
+import './design-system.css';
+import './components/ui/components.css';
+import './brand-system.css';
+import './brand-guide.css';
+import './typography.css';
+import './feedback.css';
+mount(BrandGuide, { target: document.getElementById('app')! });

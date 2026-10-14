@@ -1,0 +1,11 @@
+{
+  "characterId": "an",
+  "scene": "search",
+  "expression": "confused",
+  "outfit": "shirt",
+  "accessory": "round-glasses",
+  "tool": "built-in imagegen",
+  "reference": "png/an-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit the supplied exact SEARCH master. Change ONLY eyewear: add thin round black glasses, aligned naturally to the existing oval eyes and nose; keep the same eyes, eyebrows, nose, mouth, face shape and head silhouette. Preserve the exact gently confused expression, hair, outfit, body proportions, pose, both hands, all scene props and search panel, wheelchair/chair, placement, canvas dimensions and margins. Identity must remain the same 齐肩短发 person. Flat near-black/cobalt/opaque-white editorial PNG, real alpha transparency outside subjects. No texture, gradients, glow, shadows, new objects, text or watermark.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-b11ac077-0653-4d54-ac01-bf0f13e3d62f.png"
+}

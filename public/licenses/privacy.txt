@@ -1,0 +1,20 @@
+# Data and privacy
+
+Deckleaf is a personal open-source project maintained by Ken Pan. This describes version 0.1.0, released on 14 October 2026. Ken Pan operates the official demonstration at https://deckleaf-kens-toolbox.netlify.app, hosted by Netlify. For a privacy question, use https://github.com/Ken-pan/deckleaf/issues without personal data; request a private contact route before sharing sensitive details. Other hosts must identify their own operator and practices.
+
+Local editing requires no account. The Node edition stores documents, history and imported originals in `.data` on your computer. The browser edition stores documents and history in IndexedDB; settings, recovery drafts and preferences also use browser storage. Export a Deck JSON backup before clearing site data. Use the document library to delete documents; deleting a working document does not erase separately retained imported originals or your exported backups. Remove the corresponding local copies yourself when you no longer need them.
+
+| Optional action | What leaves the device |
+| --- | --- |
+| AI connection, model listing or proposal generation | Credentials to your selected provider; selected document context, prompts and relevant tool results. Proposal requests are optional. Provider retention depends on that provider and account settings; `store:false` is not a promise of zero logging |
+| Open photo search or image import | Search terms, requested resource IDs and normal connection information to the configured photo proxy and source/CDN |
+| Server-configured Unsplash/Pexels search | Search terms to that provider. Developer credentials remain on the local server; the browser edition has no developer-key input |
+| Online fonts | Font search/download requests to the font source; ordinary editing uses bundled/local fonts |
+| Figma or Google source import/export | The selected source identifiers, tokens and requested files to the respective service; cloud changes require an explicit export/publish action |
+| Prototype, remote image or presentation sharing | Requests to the referenced host; remote embeds may use their own cookies and collect viewer information |
+
+There is no project analytics SDK or automatic document upload in this source release. The official demo has no document backend and its optional photo-search proxy is disabled. Netlify/CDN access logs can still include IP addresses and request paths. Hosting processing is subject to [Netlify’s privacy policy](https://www.netlify.com/privacy/). This project has no application access-log database and cannot independently verify or promise Netlify’s log retention. A self-hosting operator controls their retention and deletion, and must document these before offering a public service. The repository cannot delete a third-party provider's logs or independently verify its retention.
+
+AI credentials stay in session memory or server environment configuration, not in documents or Git. Some OAuth/API workflows use local user configuration outside the repository. Don't publish those files. Before sharing a Deck file, review source URLs, speaker notes, hidden slides, image metadata, embedded fonts and reference renders: they can contain personal or confidential material.
+
+For source-project questions use this repository's issue tracker without personal documents or credentials. For a privacy request about a hosted copy, contact that copy's operator. This project has no commercial support or retention SLA.

@@ -1,0 +1,1025 @@
+[
+  {
+    "id": "an-form-focused-shirt",
+    "counts": {
+      "skin": 32497,
+      "clothes": 55786,
+      "hair": 35874
+    },
+    "skinComponents": [
+      {
+        "count": 24623,
+        "cx": 510,
+        "cy": 222,
+        "bounds": [
+          397,
+          89,
+          597,
+          344
+        ]
+      },
+      {
+        "count": 3463,
+        "cx": 512,
+        "cy": 516,
+        "bounds": [
+          474,
+          483,
+          557,
+          546
+        ]
+      },
+      {
+        "count": 4411,
+        "cx": 749,
+        "cy": 357,
+        "bounds": [
+          699,
+          305,
+          813,
+          406
+        ]
+      }
+    ],
+    "transparentPixels": 1004918
+  },
+  {
+    "id": "an-recovery-fatigued-shirt",
+    "counts": {
+      "skin": 29204,
+      "clothes": 68657,
+      "hair": 30810
+    },
+    "skinComponents": [
+      {
+        "count": 23311,
+        "cx": 512,
+        "cy": 228,
+        "bounds": [
+          403,
+          98,
+          597,
+          344
+        ]
+      },
+      {
+        "count": 3061,
+        "cx": 624,
+        "cy": 244,
+        "bounds": [
+          599,
+          175,
+          657,
+          300
+        ]
+      },
+      {
+        "count": 2832,
+        "cx": 581,
+        "cy": 558,
+        "bounds": [
+          536,
+          538,
+          630,
+          589
+        ]
+      }
+    ],
+    "transparentPixels": 1023015
+  },
+  {
+    "id": "an-search-confused-hoodie",
+    "counts": {
+      "skin": 29181,
+      "clothes": 61718,
+      "hair": 33923
+    },
+    "skinComponents": [
+      {
+        "count": 23465,
+        "cx": 511,
+        "cy": 218,
+        "bounds": [
+          397,
+          89,
+          597,
+          349
+        ]
+      },
+      {
+        "count": 3650,
+        "cx": 643,
+        "cy": 416,
+        "bounds": [
+          602,
+          370,
+          684,
+          464
+        ]
+      },
+      {
+        "count": 2066,
+        "cx": 620,
+        "cy": 551,
+        "bounds": [
+          584,
+          526,
+          651,
+          581
+        ]
+      }
+    ],
+    "transparentPixels": 1041220
+  },
+  {
+    "id": "an-search-confused-shirt-round-glasses",
+    "counts": {
+      "skin": 29600,
+      "clothes": 60146,
+      "hair": 32139
+    },
+    "skinComponents": [
+      {
+        "count": 4875,
+        "cx": 521,
+        "cy": 143,
+        "bounds": [
+          450,
+          88,
+          581,
+          195
+        ]
+      },
+      {
+        "count": 1084,
+        "cx": 575,
+        "cy": 170,
+        "bounds": [
+          555,
+          146,
+          595,
+          191
+        ]
+      },
+      {
+        "count": 1410,
+        "cx": 512,
+        "cy": 190,
+        "bounds": [
+          490,
+          167,
+          536,
+          213
+        ]
+      },
+      {
+        "count": 15887,
+        "cx": 501,
+        "cy": 256,
+        "bounds": [
+          398,
+          176,
+          597,
+          344
+        ]
+      },
+      {
+        "count": 4257,
+        "cx": 638,
+        "cy": 421,
+        "bounds": [
+          588,
+          370,
+          684,
+          476
+        ]
+      },
+      {
+        "count": 2087,
+        "cx": 619,
+        "cy": 551,
+        "bounds": [
+          583,
+          526,
+          651,
+          582
+        ]
+      }
+    ],
+    "transparentPixels": 1041417
+  },
+  {
+    "id": "an-search-confused-shirt",
+    "counts": {
+      "skin": 30940,
+      "clothes": 60354,
+      "hair": 31768
+    },
+    "skinComponents": [
+      {
+        "count": 24557,
+        "cx": 510,
+        "cy": 222,
+        "bounds": [
+          398,
+          89,
+          597,
+          344
+        ]
+      },
+      {
+        "count": 4287,
+        "cx": 638,
+        "cy": 421,
+        "bounds": [
+          588,
+          370,
+          684,
+          476
+        ]
+      },
+      {
+        "count": 2096,
+        "cx": 619,
+        "cy": 551,
+        "bounds": [
+          583,
+          526,
+          651,
+          581
+        ]
+      }
+    ],
+    "transparentPixels": 1043895
+  },
+  {
+    "id": "an-search-satisfied-shirt",
+    "counts": {
+      "skin": 30475,
+      "clothes": 60160,
+      "hair": 31665
+    },
+    "skinComponents": [
+      {
+        "count": 24209,
+        "cx": 510,
+        "cy": 223,
+        "bounds": [
+          398,
+          90,
+          597,
+          344
+        ]
+      },
+      {
+        "count": 4221,
+        "cx": 638,
+        "cy": 422,
+        "bounds": [
+          588,
+          370,
+          684,
+          476
+        ]
+      },
+      {
+        "count": 2045,
+        "cx": 620,
+        "cy": 551,
+        "bounds": [
+          583,
+          526,
+          651,
+          582
+        ]
+      }
+    ],
+    "transparentPixels": 1043319
+  },
+  {
+    "id": "qiao-form-focused-shirt",
+    "counts": {
+      "skin": 35443,
+      "clothes": 61295,
+      "hair": 18415
+    },
+    "skinComponents": [
+      {
+        "count": 26621,
+        "cx": 419,
+        "cy": 237,
+        "bounds": [
+          303,
+          117,
+          513,
+          370
+        ]
+      },
+      {
+        "count": 4944,
+        "cx": 413,
+        "cy": 531,
+        "bounds": [
+          369,
+          493,
+          461,
+          565
+        ]
+      },
+      {
+        "count": 3878,
+        "cx": 741,
+        "cy": 367,
+        "bounds": [
+          695,
+          314,
+          813,
+          418
+        ]
+      }
+    ],
+    "transparentPixels": 885684
+  },
+  {
+    "id": "qiao-recovery-fatigued-shirt",
+    "counts": {
+      "skin": 34436,
+      "clothes": 77383,
+      "hair": 18464
+    },
+    "skinComponents": [
+      {
+        "count": 25049,
+        "cx": 431,
+        "cy": 242,
+        "bounds": [
+          315,
+          128,
+          521,
+          371
+        ]
+      },
+      {
+        "count": 5114,
+        "cx": 427,
+        "cy": 577,
+        "bounds": [
+          370,
+          541,
+          490,
+          624
+        ]
+      },
+      {
+        "count": 4273,
+        "cx": 552,
+        "cy": 245,
+        "bounds": [
+          511,
+          158,
+          593,
+          308
+        ]
+      }
+    ],
+    "transparentPixels": 906903
+  },
+  {
+    "id": "qiao-search-confused-hoodie",
+    "counts": {
+      "skin": 36192,
+      "clothes": 73102,
+      "hair": 18378
+    },
+    "skinComponents": [
+      {
+        "count": 27085,
+        "cx": 419,
+        "cy": 238,
+        "bounds": [
+          303,
+          115,
+          513,
+          370
+        ]
+      },
+      {
+        "count": 4434,
+        "cx": 654,
+        "cy": 380,
+        "bounds": [
+          614,
+          328,
+          695,
+          433
+        ]
+      },
+      {
+        "count": 4673,
+        "cx": 430,
+        "cy": 575,
+        "bounds": [
+          378,
+          541,
+          487,
+          620
+        ]
+      }
+    ],
+    "transparentPixels": 902910
+  },
+  {
+    "id": "qiao-search-confused-shirt-round-glasses",
+    "counts": {
+      "skin": 34926,
+      "clothes": 73110,
+      "hair": 18796
+    },
+    "skinComponents": [
+      {
+        "count": 6582,
+        "cx": 412,
+        "cy": 167,
+        "bounds": [
+          337,
+          116,
+          486,
+          228
+        ]
+      },
+      {
+        "count": 1380,
+        "cx": 481,
+        "cy": 189,
+        "bounds": [
+          456,
+          163,
+          503,
+          214
+        ]
+      },
+      {
+        "count": 1785,
+        "cx": 406,
+        "cy": 222,
+        "bounds": [
+          381,
+          194,
+          434,
+          247
+        ]
+      },
+      {
+        "count": 15477,
+        "cx": 417,
+        "cy": 277,
+        "bounds": [
+          303,
+          199,
+          513,
+          373
+        ]
+      },
+      {
+        "count": 4522,
+        "cx": 654,
+        "cy": 380,
+        "bounds": [
+          614,
+          328,
+          696,
+          435
+        ]
+      },
+      {
+        "count": 5180,
+        "cx": 425,
+        "cy": 573,
+        "bounds": [
+          368,
+          538,
+          488,
+          620
+        ]
+      }
+    ],
+    "transparentPixels": 902432
+  },
+  {
+    "id": "qiao-search-confused-shirt",
+    "counts": {
+      "skin": 36872,
+      "clothes": 73324,
+      "hair": 19158
+    },
+    "skinComponents": [
+      {
+        "count": 27067,
+        "cx": 419,
+        "cy": 237,
+        "bounds": [
+          303,
+          116,
+          513,
+          373
+        ]
+      },
+      {
+        "count": 4548,
+        "cx": 654,
+        "cy": 380,
+        "bounds": [
+          613,
+          328,
+          695,
+          435
+        ]
+      },
+      {
+        "count": 5257,
+        "cx": 425,
+        "cy": 573,
+        "bounds": [
+          368,
+          538,
+          487,
+          620
+        ]
+      }
+    ],
+    "transparentPixels": 905358
+  },
+  {
+    "id": "qiao-search-satisfied-shirt",
+    "counts": {
+      "skin": 36696,
+      "clothes": 73186,
+      "hair": 18868
+    },
+    "skinComponents": [
+      {
+        "count": 27015,
+        "cx": 419,
+        "cy": 237,
+        "bounds": [
+          303,
+          116,
+          513,
+          372
+        ]
+      },
+      {
+        "count": 4513,
+        "cx": 654,
+        "cy": 380,
+        "bounds": [
+          614,
+          328,
+          696,
+          435
+        ]
+      },
+      {
+        "count": 5168,
+        "cx": 425,
+        "cy": 574,
+        "bounds": [
+          369,
+          539,
+          488,
+          620
+        ]
+      }
+    ],
+    "transparentPixels": 905974
+  },
+  {
+    "id": "yun-form-focused-shirt",
+    "counts": {
+      "skin": 24631,
+      "clothes": 56698,
+      "hair": 14204
+    },
+    "skinComponents": [
+      {
+        "count": 4360,
+        "cx": 437,
+        "cy": 155,
+        "bounds": [
+          380,
+          111,
+          502,
+          209
+        ]
+      },
+      {
+        "count": 1091,
+        "cx": 494,
+        "cy": 171,
+        "bounds": [
+          474,
+          150,
+          512,
+          193
+        ]
+      },
+      {
+        "count": 11508,
+        "cx": 446,
+        "cy": 248,
+        "bounds": [
+          346,
+          176,
+          526,
+          333
+        ]
+      },
+      {
+        "count": 1309,
+        "cx": 428,
+        "cy": 202,
+        "bounds": [
+          408,
+          179,
+          451,
+          224
+        ]
+      },
+      {
+        "count": 3626,
+        "cx": 385,
+        "cy": 494,
+        "bounds": [
+          344,
+          456,
+          428,
+          526
+        ]
+      },
+      {
+        "count": 2737,
+        "cx": 692,
+        "cy": 335,
+        "bounds": [
+          657,
+          286,
+          747,
+          382
+        ]
+      }
+    ],
+    "transparentPixels": 1060761
+  },
+  {
+    "id": "yun-recovery-fatigued-shirt",
+    "counts": {
+      "skin": 23383,
+      "clothes": 71567,
+      "hair": 15583
+    },
+    "skinComponents": [
+      {
+        "count": 4728,
+        "cx": 441,
+        "cy": 158,
+        "bounds": [
+          380,
+          117,
+          508,
+          209
+        ]
+      },
+      {
+        "count": 2431,
+        "cx": 553,
+        "cy": 203,
+        "bounds": [
+          516,
+          154,
+          585,
+          246
+        ]
+      },
+      {
+        "count": 1031,
+        "cx": 495,
+        "cy": 180,
+        "bounds": [
+          477,
+          159,
+          516,
+          200
+        ]
+      },
+      {
+        "count": 1229,
+        "cx": 429,
+        "cy": 205,
+        "bounds": [
+          409,
+          183,
+          452,
+          226
+        ]
+      },
+      {
+        "count": 10645,
+        "cx": 441,
+        "cy": 250,
+        "bounds": [
+          342,
+          187,
+          523,
+          331
+        ]
+      },
+      {
+        "count": 3319,
+        "cx": 353,
+        "cy": 608,
+        "bounds": [
+          321,
+          570,
+          389,
+          652
+        ]
+      }
+    ],
+    "transparentPixels": 1059455
+  },
+  {
+    "id": "yun-search-confused-hoodie",
+    "counts": {
+      "skin": 24733,
+      "clothes": 70652,
+      "hair": 14204
+    },
+    "skinComponents": [
+      {
+        "count": 4491,
+        "cx": 435,
+        "cy": 156,
+        "bounds": [
+          379,
+          112,
+          501,
+          210
+        ]
+      },
+      {
+        "count": 1104,
+        "cx": 493,
+        "cy": 171,
+        "bounds": [
+          473,
+          149,
+          511,
+          193
+        ]
+      },
+      {
+        "count": 11401,
+        "cx": 446,
+        "cy": 247,
+        "bounds": [
+          344,
+          176,
+          526,
+          328
+        ]
+      },
+      {
+        "count": 1316,
+        "cx": 428,
+        "cy": 203,
+        "bounds": [
+          408,
+          179,
+          451,
+          224
+        ]
+      },
+      {
+        "count": 3374,
+        "cx": 345,
+        "cy": 521,
+        "bounds": [
+          301,
+          489,
+          390,
+          550
+        ]
+      },
+      {
+        "count": 3047,
+        "cx": 586,
+        "cy": 355,
+        "bounds": [
+          555,
+          311,
+          610,
+          397
+        ]
+      }
+    ],
+    "transparentPixels": 1085087
+  },
+  {
+    "id": "yun-search-confused-shirt-none",
+    "counts": {
+      "skin": 27027,
+      "clothes": 67840,
+      "hair": 14118
+    },
+    "skinComponents": [
+      {
+        "count": 20361,
+        "cx": 446,
+        "cy": 215,
+        "bounds": [
+          344,
+          111,
+          526,
+          332
+        ]
+      },
+      {
+        "count": 3520,
+        "cx": 343,
+        "cy": 520,
+        "bounds": [
+          298,
+          489,
+          390,
+          549
+        ]
+      },
+      {
+        "count": 3146,
+        "cx": 587,
+        "cy": 356,
+        "bounds": [
+          555,
+          310,
+          611,
+          400
+        ]
+      }
+    ],
+    "transparentPixels": 1082376
+  },
+  {
+    "id": "yun-search-confused-shirt",
+    "counts": {
+      "skin": 25315,
+      "clothes": 67799,
+      "hair": 14696
+    },
+    "skinComponents": [
+      {
+        "count": 4528,
+        "cx": 435,
+        "cy": 156,
+        "bounds": [
+          379,
+          112,
+          501,
+          210
+        ]
+      },
+      {
+        "count": 1137,
+        "cx": 493,
+        "cy": 171,
+        "bounds": [
+          473,
+          149,
+          511,
+          193
+        ]
+      },
+      {
+        "count": 11600,
+        "cx": 446,
+        "cy": 248,
+        "bounds": [
+          344,
+          176,
+          526,
+          333
+        ]
+      },
+      {
+        "count": 1359,
+        "cx": 427,
+        "cy": 203,
+        "bounds": [
+          407,
+          179,
+          451,
+          224
+        ]
+      },
+      {
+        "count": 3523,
+        "cx": 343,
+        "cy": 521,
+        "bounds": [
+          298,
+          489,
+          390,
+          549
+        ]
+      },
+      {
+        "count": 3168,
+        "cx": 586,
+        "cy": 356,
+        "bounds": [
+          554,
+          310,
+          611,
+          400
+        ]
+      }
+    ],
+    "transparentPixels": 1086047
+  },
+  {
+    "id": "yun-search-satisfied-shirt",
+    "counts": {
+      "skin": 24764,
+      "clothes": 67514,
+      "hair": 14387
+    },
+    "skinComponents": [
+      {
+        "count": 4217,
+        "cx": 436,
+        "cy": 157,
+        "bounds": [
+          379,
+          113,
+          501,
+          210
+        ]
+      },
+      {
+        "count": 1100,
+        "cx": 493,
+        "cy": 171,
+        "bounds": [
+          474,
+          149,
+          511,
+          193
+        ]
+      },
+      {
+        "count": 11478,
+        "cx": 446,
+        "cy": 248,
+        "bounds": [
+          344,
+          177,
+          526,
+          332
+        ]
+      },
+      {
+        "count": 1317,
+        "cx": 428,
+        "cy": 203,
+        "bounds": [
+          408,
+          179,
+          451,
+          224
+        ]
+      },
+      {
+        "count": 3514,
+        "cx": 343,
+        "cy": 521,
+        "bounds": [
+          298,
+          489,
+          390,
+          549
+        ]
+      },
+      {
+        "count": 3138,
+        "cx": 586,
+        "cy": 356,
+        "bounds": [
+          555,
+          310,
+          611,
+          400
+        ]
+      }
+    ],
+    "transparentPixels": 1085944
+  }
+]

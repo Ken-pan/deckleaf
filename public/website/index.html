@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Deckleaf — Give your ideas a clearer story</title>
+  <meta name="description" content="A browser slide editor for portfolios, project reviews and design proposals. Shape your story, review AI changes, and present with confidence.">
+  <meta name="theme-color" content="#f7f7f0">
+  <link rel="canonical" href="https://deckleaf-kens-toolbox.netlify.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Deckleaf — Give your ideas a clearer story">
+  <meta property="og:description" content="A considered space for your next portfolio, project review or design proposal.">
+  <meta property="og:url" content="https://deckleaf-kens-toolbox.netlify.app/">
+  <meta property="og:image" content="https://deckleaf-kens-toolbox.netlify.app/assets/social.jpg?v=20261013-entry">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preload" as="font" type="font/ttf" href="assets/manrope.ttf" crossorigin>
+  <link rel="preload" as="font" type="font/ttf" href="assets/inter.ttf" crossorigin>
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7z"/></symbol>
+    <symbol id="download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="moon" viewBox="0 0 24 24"><path d="M20.5 13.5A9 9 0 0 1 10.5 3a9 9 0 1 0 10 10.5z"/></symbol>
+    <symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  </svg>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>Deckleaf</a>
+      <nav id="navigation" aria-label="Main navigation">
+        <a href="#workflow">Features</a><a href="#templates">Templates</a><a href="guide.html">Guide</a><a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-button theme-toggle" aria-label="Switch to dark appearance" aria-pressed="false"><svg class="ic"><use href="#moon"/></svg></button>
+        <a class="button small primary" href="/app?demo=1">Try the sample <svg class="ic" aria-hidden="true"><use href="#arrow"/></svg></a>
+        <button class="icon-button menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="navigation"><svg class="ic"><use href="#menu"/></svg></button>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow entrance">Your next presentation starts here</p>
+        <h1 id="hero-title" class="entrance"><span class="brand-mark hero-logo" aria-hidden="true"></span><span class="hero-wordmark">Deckleaf</span></h1>
+        <p class="hero-promise entrance">Give your ideas <span>a clearer story.</span></p>
+        <p class="lede entrance">Create a portfolio, review, proposal, pitch or report.</p>
+        <div class="actions entrance">
+          <a class="button primary" href="/app">Open editor <svg class="ic" aria-hidden="true"><use href="#arrow"/></svg></a>
+          <a class="demo-link" href="demo.html"><svg class="ic" aria-hidden="true"><use href="#play"/></svg>View demo</a>
+        </div>
+        <p class="hero-note entrance">Open source · MIT · No account needed</p>
+      </div>
+      <div class="hero-folio entrance" aria-label="Real Deckleaf starter decks">
+        <figure class="folio-paper folio-left" aria-hidden="true"><img src="assets/review.jpg?v=20261013-entry" width="1440" height="810" alt="" decoding="async"></figure>
+        <a class="folio-paper folio-main" href="#templates" aria-label="Explore the Editorial portfolio template"><img src="assets/portfolio.jpg?v=20261013-entry" width="1440" height="810" fetchpriority="high" alt="Current portfolio template with clear type and original paper artwork."></a>
+        <figure class="folio-paper folio-right" aria-hidden="true"><img src="assets/proposal.jpg?v=20261013-entry" width="1440" height="810" alt="" decoding="async"></figure>
+      </div>
+      <div class="folio-caption"><span>Thoughtfully composed. Yours to make your own.</span><a href="#templates">Explore the templates <svg class="ic" aria-hidden="true"><use href="#arrow"/></svg></a></div>
+    </section>
+
+    <section class="workspace-band" id="workspace" aria-labelledby="workspace-title">
+      <div class="section reveal">
+        <p class="eyebrow">01 / Your working canvas</p>
+        <div class="section-heading"><h2 id="workspace-title">Space for the story.<br><span>Control over the details.</span></h2><p>Write directly on the canvas. Arrange your evidence. Keep the next slide in view.</p></div>
+        <figure class="product-window">
+          <picture><source data-dark-shot media="(prefers-color-scheme: dark)" srcset="assets/editor-dark.jpg?v=20261013-entry"><img id="editor-shot" src="assets/editor-light.jpg?v=20261013-entry" width="1600" height="1000" loading="lazy" alt="The real Deckleaf editor with editable slide content, page order and contextual design controls."></picture>
+        </figure>
+        <div class="stage-caption"><span>The actual editor. Ready when you are.</span><a href="/app">Open your workspace <svg class="ic" aria-hidden="true"><use href="#arrow"/></svg></a></div>
+      </div>
+    </section>
+
+    <section class="intro section reveal" id="workflow" aria-labelledby="workflow-title">
+      <p class="eyebrow">02 / From first idea to final slide</p>
+      <div class="section-heading"><h2 id="workflow-title">Make the point.<br><span class="muted">Give it room to land.</span></h2><p>Start with a clear structure. Bring in the evidence. Refine the details without losing the thread.</p></div>
+      <div class="workflow-grid">
+        <article><span class="step-number">01</span><h3>Start with a story</h3><p>Choose a portfolio, review, proposal, pitch or report — or start with a blank page. Each layout gives your story room to grow.</p></article>
+        <article><span class="step-number">02</span><h3>Compose your way</h3><p>Edit text directly, let grouped content reflow and change fonts or colors across your deck. Preview layout suggestions before applying them.</p></article>
+        <article><span class="step-number">03</span><h3>Bring it to life</h3><p>Add transitions, pace your reveals and present full screen. Export a standalone HTML presentation or PowerPoint file.</p></article>
+      </div>
+    </section>
+
+    <section class="template-band" id="templates" aria-labelledby="templates-title">
+      <div class="section reveal">
+        <p class="eyebrow">03 / Find your starting point</p>
+        <div class="section-heading"><h2 id="templates-title">A template for<br><span class="muted">every kind of story.</span></h2><p>Five complete decks with editable text, charts and tables, responsive layouts and paced reveals.</p></div>
+        <div class="template-gallery"><div class="template-picker" role="tablist" aria-orientation="vertical" aria-label="Template collections">
+          <button role="tab" id="tab-portfolio" aria-controls="template-panel" aria-selected="true" data-template="portfolio">Portfolio<span>Editorial · 8 slides</span></button>
+          <button role="tab" id="tab-review" aria-controls="template-panel" aria-selected="false" tabindex="-1" data-template="review">Project review<span>Studio · 8 slides</span></button>
+          <button role="tab" id="tab-proposal" aria-controls="template-panel" aria-selected="false" tabindex="-1" data-template="proposal">Design proposal<span>Monograph · 8 slides</span></button>
+          <button role="tab" id="tab-pitch" aria-controls="template-panel" aria-selected="false" tabindex="-1" data-template="pitch">Product pitch<span>Signal · 9 slides</span></button>
+          <button role="tab" id="tab-report" aria-controls="template-panel" aria-selected="false" tabindex="-1" data-template="report">Data report<span>Ledger · 8 slides</span></button>
+        </div>
+        <div id="template-panel" role="tabpanel" aria-labelledby="tab-portfolio" tabindex="0">
+          <figure class="template-preview"><img id="template-image" src="assets/portfolio.jpg?v=20261013-entry" width="1440" height="810" loading="lazy" alt="Current Editorial portfolio cover with original paper artwork and clear editable typography."></figure>
+          <div class="template-details"><div><h3 id="template-title">Portfolio / Editorial</h3><p id="template-description">8 slides · Context, research, craft and reflection.</p></div><a class="text-link" id="template-download" href="assets/editorial.deck.json?v=20261013-entry" download>Get the starter deck <svg class="ic" aria-hidden="true"><use href="#download"/></svg></a></div>
+        </div>
+        </div><p class="caption">41 editable slides across five collections. Artwork is original AI-generated material you can replace.</p>
+      </div>
+    </section>
+
+    <section class="section ai-section reveal" id="ai" aria-labelledby="ai-title">
+      <div class="ai-copy"><p class="eyebrow">04 / A thoughtful editing partner</p><h2 id="ai-title">Ask for a change.<br><span class="muted">Keep the final say.</span></h2><p class="section-lede">AI works alongside your tools. See a proposal, review the result, then choose what to apply.</p><ul class="plain-list"><li>Scope a request to one slide or the whole deck</li><li>Compare the proposal before it changes your work</li><li>Undo an applied change in one step</li></ul><p class="caption">AI is optional. Connect your own HTTPS service with a session API key; browser access and provider fees may apply.</p></div>
+      <div class="ai-illustration" aria-label="Illustration of a layout proposal">
+        <p class="illustration-label">A layout example</p>
+        <div class="request-line"><span class="prompt-mark" aria-hidden="true">↗</span><p>“Give this slide more breathing room.”</p></div>
+        <div class="proposal-comparison">
+          <figure><figcaption>Before</figcaption><div class="mini-slide before" aria-hidden="true"><span class="mini-kicker"></span><span class="mini-title"></span><span class="mini-title short"></span><span class="mini-body"></span><span class="mini-evidence"></span></div></figure>
+          <figure><figcaption>Proposed layout</figcaption><div class="mini-slide after" aria-hidden="true"><span class="mini-kicker"></span><span class="mini-title"></span><span class="mini-title short"></span><span class="mini-body"></span><span class="mini-evidence"></span></div></figure>
+        </div>
+        <div class="proposal-changes"><span>01 / More breathing room</span><span>02 / Clearer alignment</span><span>03 / Your content preserved</span></div>
+        <div class="review-path"><span>Review</span><span aria-hidden="true">→</span><span>Apply</span><span aria-hidden="true">→</span><span>Undo, anytime</span></div>
+      </div>
+    </section>
+
+    <section class="ownership-band" id="ownership" aria-labelledby="ownership-title">
+      <div class="section reveal"><p class="eyebrow">05 / Your work stays yours</p><div class="section-heading"><h2 id="ownership-title">Keep your originals.<br><span class="muted">Keep your options open.</span></h2><p>Your browser documents, source references and editable slides stay distinct. Take a copy with you when it is time to share.</p></div><div class="export-formats" aria-label="Portable export formats"><span>Deck JSON</span><span>PowerPoint</span><span>HTML</span></div><div class="ownership-grid"><article><h3>Saved in your browser</h3><p>Open and edit without an account. Export a Deck JSON backup before clearing site data or switching browsers.</p></article><article><h3>Sources preserved</h3><p>Supported imported objects and source references travel with your Deck file. Review conversion warnings before sharing.</p></article><article><h3>Ready to leave the editor</h3><p>Export Deck JSON, PowerPoint or standalone HTML. Keep a portable copy of the story.</p></article></div><details class="conversion-note"><summary>About importing from other tools <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Import PowerPoint, PDF or Deck JSON directly. Keynote conversion needs the local Mac edition; Figma and Google imports need your own token and browser access. Complex typography, shapes and effects may need review after conversion. A source render provides a visual reference; it does not guarantee that every element converts into an identical editable object.</p></details></div>
+    </section>
+
+    <section class="section faq-section reveal" id="faq" aria-labelledby="faq-title">
+      <div><p class="eyebrow">06 / Before you begin</p><h2 id="faq-title">Before you start.</h2></div>
+      <div class="questions">
+        <details><summary>Can I use Deckleaf on this website? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Yes. Open Deckleaf to create, edit and present immediately. Documents and history stay in this browser, with import and export for portable backups. No account is required.</p></details>
+        <details><summary>Who is it for? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Designers preparing portfolios, teams reviewing projects, and anyone shaping a design proposal. Desktop is the primary editing surface. Smaller screens support reading and direct content edits.</p></details>
+        <details><summary>Do I have to use AI? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>No. Manual editing, templates and presentations work without AI. If you connect a service, review proposals before applying them. Your chosen provider may charge for usage.</p></details>
+        <details><summary>How do I use a starter deck? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Download a starter from the Templates section. In Deckleaf, open the document menu, choose Import, and select the .deck.json file. Replace the sample content with your own work.</p></details>
+        <details><summary>What can I export? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Save an editable Deck JSON file, a PowerPoint presentation, or a standalone HTML presentation. Exported PowerPoint files may need the corresponding fonts on the destination device. Native Keynote export requires Keynote on the local Mac.</p></details>
+        <details><summary>How does this relate to Broadser? <svg class="ic" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Both are tools by Ken Pan. Broadser brings research and sources together on a canvas. Deckleaf helps turn your work into a presentation. Each has its own documents and workspace.</p></details>
+      </div>
+    </section>
+
+    <section class="closing" aria-labelledby="closing-title"><div class="closing-inner reveal"><span class="closing-mark" aria-hidden="true"></span><p class="eyebrow">Your next chapter</p><h2 id="closing-title">Make something<br>worth sharing.</h2><p>Open the editor. Make it your own.</p><div class="actions"><a class="button inverse" href="/app">Open editor <svg class="ic" aria-hidden="true"><use href="#arrow"/></svg></a><a class="button on-dark" href="#templates">Browse templates</a></div><p class="closing-note"><a href="https://github.com/Ken-pan/deckleaf">MIT source on GitHub ↗</a> · No account needed</p></div></section>
+  </main>
+  <footer class="footer"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>Deckleaf</a><p>A tool by <a href="https://www.kenpan.design/">Ken Pan</a>.</p><nav aria-label="Related sites"><a href="https://broadser.kens-toolbox.com/">Broadser ↗</a><a href="https://github.com/Ken-pan/deckleaf">GitHub ↗</a><a href="guide.zh-CN.html">中文指南</a></nav><nav aria-label="Legal"><a href="/privacy.html">Privacy</a><a href="/licenses.html">Licenses</a></nav></footer>
+  <noscript><p class="noscript-note">Starter decks: <a href="assets/editorial.deck.json?v=20261013-entry" download>Editorial</a> · <a href="assets/studio.deck.json?v=20261013-entry" download>Studio</a> · <a href="assets/monograph.deck.json?v=20261013-entry" download>Monograph</a> · <a href="assets/signal.deck.json?v=20261013-entry" download>Signal</a> · <a href="assets/ledger.deck.json?v=20261013-entry" download>Ledger</a></p></noscript>
+</body>
+</html>

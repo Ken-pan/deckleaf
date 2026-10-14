@@ -1,0 +1,2 @@
+<!-- Square grid — Deck Studio. CC0 1.0. Source: http://127.0.0.1:4310/resources/deck-graphics-v1/README.md. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="#26362c"><title>Square grid</title><defs><pattern id="tile" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#26362c" stroke-width="1.2"/></pattern></defs><rect width="1600" height="900" fill="url(#tile)" opacity="0.2"/></svg>

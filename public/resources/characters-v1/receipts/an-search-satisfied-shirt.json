@@ -1,0 +1,11 @@
+{
+  "characterId": "an",
+  "scene": "search",
+  "expression": "satisfied",
+  "outfit": "shirt",
+  "accessory": "none",
+  "tool": "built-in imagegen",
+  "reference": "png/an-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit this exact SEARCH master. Change ONLY the expression from gently confused to satisfied: coordinated relaxed eyebrows, softer smiling eyes and a small confident closed smile. Keep head silhouette, no glasses, nose, hairstyle, body proportions, clothing, pose, hands, wheelchair/chair and ALL scene panel/props and placement unchanged. Same 1536x1024 landscape, real transparent outside alpha, opaque white interiors. Cobalt/near-black/white flat editorial PNG. No new objects, no texture, shading, glow, shadows, gradients, confetti, letters or text. Face must read as the same 齐肩短发 person. This is a saved expression variant of the same search scene.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-07cb7710-c845-4048-b6f3-a00647429040.png"
+}

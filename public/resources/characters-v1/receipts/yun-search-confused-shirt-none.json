@@ -1,0 +1,11 @@
+{
+  "characterId": "yun",
+  "scene": "search",
+  "expression": "confused",
+  "outfit": "shirt",
+  "accessory": "none",
+  "tool": "built-in imagegen",
+  "reference": "png/yun-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit the supplied exact SEARCH master. Change ONLY eyewear: remove the round glasses, restoring clean face/eye pixels behind them; keep the same eyes, eyebrows, nose, mouth, face shape and head silhouette. Preserve the exact gently confused expression, hair, outfit, body proportions, pose, both hands, all scene props and search panel, wheelchair/chair, placement, canvas dimensions and margins. Identity must remain the same 卷发圆镜 person. Flat near-black/cobalt/opaque-white editorial PNG, real alpha transparency outside subjects. No texture, gradients, glow, shadows, new objects, text or watermark.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-1aafc701-1e6c-47cf-852f-7193415c3ef1.png"
+}

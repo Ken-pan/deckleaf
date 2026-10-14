@@ -1,0 +1,11 @@
+{
+  "characterId": "qiao",
+  "scene": "form",
+  "expression": "focused",
+  "outfit": "shirt",
+  "accessory": "none",
+  "tool": "built-in imagegen",
+  "reference": "png/qiao-search-confused-shirt.png",
+  "prompt": "Use case: identity-preserve. Edit/reference target: the supplied SEARCH master of this exact character. Keep the SAME hair silhouette, face shape, glasses state, eye/nose construction, adult body proportions and garment style. Do not redesign the person. Preserve landscape 1536x1024 proportions and clean flat near-black/cobalt/opaque-white editorial drawing. Real alpha outside all subjects, white interiors opaque. No gradients, glow, texture, shadows, groundline, text, letters, logos or watermark.\nIdentity: Neat short solid black side-part hair, no glasses, rounded face with two small oval black eyes and one simple curved nose. Adult seated in a simple manual wheelchair with large rear wheel and small caster; mature professional portrayal. Cobalt collared long-sleeve shirt, black trousers and black shoes. SAME distinct person throughout this pilot.\nChange the scene to FORM: the same character remains on the left seated in the same manual wheelchair. They hold a simple white card near torso and point at one black-outlined browser form panel on the right. Panel contains exactly three blank horizontal rounded field outlines and one small cobalt submit button with no text. Expression focused: both eyebrows level/slightly inward, gaze attentive, small neutral closed mouth. Hands natural, exactly two hands, no magnifying glass. Full feet/chair/wheelchair visible, generous transparent margins. Face is in the same angle as master; clothing solid cobalt, all skin white. One person only.",
+  "source": "/Users/kenpan/.codex/generated_images/01a13162-596f-7710-aa20-975d518dd732/exec-7781e9bd-2f63-4361-89d9-d26e1507daf7.png"
+}

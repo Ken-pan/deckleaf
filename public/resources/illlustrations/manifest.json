@@ -1,0 +1,923 @@
+{
+  "provider": "illlustrations",
+  "creator": "Vijay Verma",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://illlustrations.co/license",
+  "sourceCommit": "b6d6f3286995e6efbbf397eff21b572245c336fd",
+  "checkedAt": "2026-10-12",
+  "items": [
+    {
+      "id": "101-gym-guy",
+      "file": "101-gym-guy.svg",
+      "title": "gym guy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/101/101-gym-guy.svg",
+      "sha256": "1ed6d84a8e4aff43d280dcc95470c505c869c140f32220d65224b4e7c17f9caa"
+    },
+    {
+      "id": "102-gym-cycle",
+      "file": "102-gym-cycle.svg",
+      "title": "gym cycle",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/102/102-gym-cycle.svg",
+      "sha256": "f87006ae67ed34fc4ac0d2432a2de3bad284c508f3380785cd26d8ab6b26da14"
+    },
+    {
+      "id": "103-gym-time",
+      "file": "103-gym-time.svg",
+      "title": "gym time",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/103/103-gym-time.svg",
+      "sha256": "4089ca698fe8ed6e6db0e1fd63a0f03af0b85108dd0041f9ed308fda6f28c1ac"
+    },
+    {
+      "id": "104-dumbbell",
+      "file": "104-dumbbell.svg",
+      "title": "dumbbell",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/104/104-dumbbell.svg",
+      "sha256": "476227e3b7e4c9ba585b809fd9ae62a9bd88f5510a113ff76cc9571a4a9c1b47"
+    },
+    {
+      "id": "105-freelancer",
+      "file": "105-freelancer.svg",
+      "title": "freelancer",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/105/105-freelancer.svg",
+      "sha256": "648bdccf615f1be1f26f520a1f0c0767963533e52667f064e3a9d8dc3ecc2e3f"
+    },
+    {
+      "id": "106-italy",
+      "file": "106-italy.svg",
+      "title": "italy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/106/106-italy.svg",
+      "sha256": "b7a09408dce62497663808f7822c19380a9037647281b1012881e83df12526b1"
+    },
+    {
+      "id": "107-healthy",
+      "file": "107-healthy.svg",
+      "title": "healthy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/107/107-healthy.svg",
+      "sha256": "6b818fc969c43cd4ae6b88e0aba7142e5022f588a057b6d9ec2ca529c6c99712"
+    },
+    {
+      "id": "108-forget-password",
+      "file": "108-forget-password.svg",
+      "title": "forget password",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/108/108-forget-password.svg",
+      "sha256": "af2a38c59355637650a48f68cf42386998acdbf6e994310bd813b2410d5023f4"
+    },
+    {
+      "id": "109-map-location",
+      "file": "109-map-location.svg",
+      "title": "map location",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/109/109-map-location.svg",
+      "sha256": "1e0dcb15762018bf51a0b39233490cbaa1affd7e86e90c23ce179d089cff742f"
+    },
+    {
+      "id": "110-sega-megdrive",
+      "file": "110-sega-megdrive.svg",
+      "title": "sega megdrive",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/110/110-sega-megdrive.svg",
+      "sha256": "5b900fe9452ee0cd4d3e81c55c4e500f93dddfe9ee7e3b94612da945240eed55"
+    },
+    {
+      "id": "111-coding",
+      "file": "111-coding.svg",
+      "title": "coding",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/111/111-coding.svg",
+      "sha256": "4483509db09b71a83e8636f47afdf41e12274726315e1b41f5dc4d73fbc65981"
+    },
+    {
+      "id": "112-installing",
+      "file": "112-installing.svg",
+      "title": "installing",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/112/112-installing.svg",
+      "sha256": "f406e4f949f865ab3c0f7d56497de9acd42c39d33eb5af5723586653cde9b59d"
+    },
+    {
+      "id": "113-workstation",
+      "file": "113-workstation.svg",
+      "title": "workstation",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/113/113-workstation.svg",
+      "sha256": "52ad230e117823dab2ee6d8131f0010636ee198b778620ec9ce0d9f11768775d"
+    },
+    {
+      "id": "114-retro-tv",
+      "file": "114-retro-tv.svg",
+      "title": "retro tv",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/114/114-retro-tv.svg",
+      "sha256": "a4f33d33044a1e8e56c1caaab3a60d5ece7c3cd7f444cea0caf45ec2eb7e56b3"
+    },
+    {
+      "id": "115-eiffel-tower",
+      "file": "115-eiffel-tower.svg",
+      "title": "eiffel tower",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/115/115-eiffel-tower.svg",
+      "sha256": "20791b6e32287cd256dccc1a1bf6efdc551fd3b2f1ab51f2b35b031f2faf05cb"
+    },
+    {
+      "id": "116-gameboy",
+      "file": "116-gameboy.svg",
+      "title": "gameboy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/116/116-gameboy.svg",
+      "sha256": "0c90f26e9b45e328132a5c7fac30d57f0badc745891bd0c2830ba77fa0c06352"
+    },
+    {
+      "id": "117-ironman",
+      "file": "117-ironman.svg",
+      "title": "ironman",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/117/117-ironman.svg",
+      "sha256": "a562dc151de83ec29761e31e5ebb858055a1ace85ee90a0a3986d3758af7236c"
+    },
+    {
+      "id": "118-macbook",
+      "file": "118-macbook.svg",
+      "title": "macbook",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/118/118-macbook.svg",
+      "sha256": "5f0d65acc83c80fd9d8a1e94a7314cecff87ab2a0882fe11b433ce25ef2d8c80"
+    },
+    {
+      "id": "119-working",
+      "file": "119-working.svg",
+      "title": "working",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/119/119-working.svg",
+      "sha256": "ee8f17fe65c1b1b77b5b9d89e06875bc262c6bab7659fe7cd89d28ab9c8a4d75"
+    },
+    {
+      "id": "120-power-of-pen",
+      "file": "120-power-of-pen.svg",
+      "title": "power of pen",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/120/120-power-of-pen.svg",
+      "sha256": "4fb3c03f6450a5ba620669eb7020ffadd4ff5de235160bda9f132f16a975c795"
+    },
+    {
+      "id": "121-work-from-home-1",
+      "file": "121-work-from-home-1.svg",
+      "title": "work from home 1",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/121/121-work-from-home-1.svg",
+      "sha256": "1d25d31926f60b130ad6705a2da1baafea7906177395ea25243b86af7047f4dc"
+    },
+    {
+      "id": "122-work-from-home-2",
+      "file": "122-work-from-home-2.svg",
+      "title": "work from home 2",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/122/122-work-from-home-2.svg",
+      "sha256": "5170250aec7b54a2b01182a02921842e720e2372f9640aae7068afc17eb8b274"
+    },
+    {
+      "id": "123-temprature-meter",
+      "file": "123-temprature-meter.svg",
+      "title": "temprature meter",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/123/123-temprature-meter.svg",
+      "sha256": "a8b19d4b47835d68101d344d8da4634ada5ea179108e533ad62c6949697f6a1d"
+    },
+    {
+      "id": "124-sanitizer",
+      "file": "124-sanitizer.svg",
+      "title": "sanitizer",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/124/124-sanitizer.svg",
+      "sha256": "3feeb0c672265e334e30f2c987e99903e6ddf01afe5996e84f3fb087cc31ab5d"
+    },
+    {
+      "id": "125-wash-hand",
+      "file": "125-wash-hand.svg",
+      "title": "wash hand",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/125/125-wash-hand.svg",
+      "sha256": "1e479e5ec4733da14bf83ca22ad9b53fd9273d8eb6ce529e845d10e930782552"
+    },
+    {
+      "id": "126-namaste-no-hand-shake",
+      "file": "126-namaste-no-hand-shake.svg",
+      "title": "namaste no hand shake",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/126/126-namaste-no-hand-shake.svg",
+      "sha256": "6b2eaa85633ad823bd72743ea74d88bf62bc5a675b611a37ab35a10ad8e846a2"
+    },
+    {
+      "id": "127-sick-sneezing",
+      "file": "127-sick-sneezing.svg",
+      "title": "sick sneezing",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/127/127-sick-sneezing.svg",
+      "sha256": "4fb06f11182de5ea41be5dc192446b020351ab29c8af6f81a28f7f8d429fefd4"
+    },
+    {
+      "id": "128-forehead-tester",
+      "file": "128-forehead-tester.svg",
+      "title": "forehead tester",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/128/128-forehead-tester.svg",
+      "sha256": "3e2518191ffc543a1ad42d1a41ae03b307e4db51a04f26f3b803dc432e3f96ff"
+    },
+    {
+      "id": "129-wear-mask",
+      "file": "129-wear-mask.svg",
+      "title": "wear mask",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/129/129-wear-mask.svg",
+      "sha256": "7df03914d4dd2cb3bfcb2984714d6ae1d18ef100f403c2a0079abfa54b113ff6"
+    },
+    {
+      "id": "130-COVID-Virus",
+      "file": "130-COVID-Virus.svg",
+      "title": "COVID Virus",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/130/130-COVID-Virus.svg",
+      "sha256": "1211cbffd9b7087545b738f2d158b79a9869eff1741a192da45f7627a07198d8"
+    },
+    {
+      "id": "day1-ipod",
+      "file": "day1-ipod.svg",
+      "title": "ipod",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-1/day1-ipod.svg",
+      "sha256": "cac2ffc565ef85ed335818399982dd5d059b397f69b4b1236aa7df8165c40ebe"
+    },
+    {
+      "id": "day2-gaming-console",
+      "file": "day2-gaming-console.svg",
+      "title": "gaming console",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-2/day2-gaming-console.svg",
+      "sha256": "7d52a40d6e4bd687fa9121d56bdd1afc61e4e9637a93b37a9f505d27cbf08de0"
+    },
+    {
+      "id": "day3-gaming-mouse",
+      "file": "day3-gaming-mouse.svg",
+      "title": "gaming mouse",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-3/day3-gaming-mouse.svg",
+      "sha256": "81f8958cbe2b584603ad58f15b780688e6bbf039fa0183505571ef39725da0f7"
+    },
+    {
+      "id": "day4-polariod",
+      "file": "day4-polariod.svg",
+      "title": "polariod",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-4/day4-polariod.svg",
+      "sha256": "83ea17caa110b5168ad17d4cd884be88785eb0f785fb6d58824712e414031e2a"
+    },
+    {
+      "id": "day5-vault",
+      "file": "day5-vault.svg",
+      "title": "vault",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-5/day5-vault.svg",
+      "sha256": "9f6a6d054f33f9538201d6eb950046e72b00270fb63dc2bc0313ca714cd057df"
+    },
+    {
+      "id": "day6-open-vault",
+      "file": "day6-open-vault.svg",
+      "title": "open vault",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-6/day6-open-vault.svg",
+      "sha256": "2208ffb82eee6360e1730c46a51e49408472b051d3ac049caa787863ab538468"
+    },
+    {
+      "id": "day7-vintage-camera",
+      "file": "day7-vintage-camera.svg",
+      "title": "vintage camera",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-7/day7-vintage-camera.svg",
+      "sha256": "26d7a90aabb3974897bb58ab425d02646b4c80706f8b51867170d43c182b287d"
+    },
+    {
+      "id": "day8-printer",
+      "file": "day8-printer.svg",
+      "title": "printer",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-8/day8-printer.svg",
+      "sha256": "563fac9a920cecb4225521084fbf574fb8f1fc15da777831e2961844e7909d30"
+    },
+    {
+      "id": "day9-toolbox",
+      "file": "day9-toolbox.svg",
+      "title": "toolbox",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-9/day9-toolbox.svg",
+      "sha256": "6a20d6f6fc0bcd98ba6e4fc846baa7df07e1b5a65c77bb5085f1c61b88dd8346"
+    },
+    {
+      "id": "day10-canvas-stand",
+      "file": "day10-canvas-stand.svg",
+      "title": "canvas stand",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-10/day10-canvas-stand.svg",
+      "sha256": "e50b53b12564794d8026a5e86c40c516e4efacf56237efe4d500df2fb05ce329"
+    },
+    {
+      "id": "day11-blackboard",
+      "file": "day11-blackboard.svg",
+      "title": "blackboard",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-11/day11-blackboard.svg",
+      "sha256": "2de690c12e88bb8d2efef539bf36cb5e7a9c678041f81c0c40944cc30d3fc261"
+    },
+    {
+      "id": "day12-bed",
+      "file": "day12-bed.svg",
+      "title": "bed",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-12/day12-bed.svg",
+      "sha256": "bd99ac2c5ba5dc33a7db05ba999fc797150341c821cbf7f87a95c6fab1e466dd"
+    },
+    {
+      "id": "day13-it-girl",
+      "file": "day13-it-girl.svg",
+      "title": "it girl",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-13/day13-it-girl.svg",
+      "sha256": "0238d08719c3f1d12e5941841a3fc990eff5e2d17db6b2cd97b01bc9838a927e"
+    },
+    {
+      "id": "day14-forklift",
+      "file": "day14-forklift.svg",
+      "title": "forklift",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-14/day14-forklift.svg",
+      "sha256": "7bc9ad619f97016f5d27c70683de501b828c2d0b62c3c737b365ae6fbd00ef90"
+    },
+    {
+      "id": "day15-color-tool",
+      "file": "day15-color-tool.svg",
+      "title": "color tool",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-15/day15-color-tool.svg",
+      "sha256": "430228b3cff7cd21d725bb771da02d3f9050268da1a5d46f0b1d7d3a04ba7b1a"
+    },
+    {
+      "id": "day16-retro-cassette",
+      "file": "day16-retro-cassette.svg",
+      "title": "retro cassette",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-16/day16-retro-cassette.svg",
+      "sha256": "8a48a47414e1ae7e0fc0ed919ab1fdc5d2c2ecd0b2280db893503c152a7a62ed"
+    },
+    {
+      "id": "day17-walkie-talkie",
+      "file": "day17-walkie-talkie.svg",
+      "title": "walkie talkie",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-17/day17-walkie-talkie.svg",
+      "sha256": "39c16f461a2a4dec190e919d8a2e92b0f5a4b39e85ae1e6b1a1befde4385bd62"
+    },
+    {
+      "id": "day18-floppy",
+      "file": "day18-floppy.svg",
+      "title": "floppy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-18/day18-floppy.svg",
+      "sha256": "f710fa195ba8c6bc0130dd6e8c205b74e785a5010c4367b926a4041beb36b981"
+    },
+    {
+      "id": "day19-apple-watch",
+      "file": "day19-apple-watch.svg",
+      "title": "apple watch",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-19/day19-apple-watch.svg",
+      "sha256": "5d59bcc67fa7e3ecaa95a99ea86def85b596d95263d81f34a958cfcf4cab006d"
+    },
+    {
+      "id": "day20-rocket",
+      "file": "day20-rocket.svg",
+      "title": "rocket",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-20/day20-rocket.svg",
+      "sha256": "cc68b4413736f0e0c74e3643e54d77ddbfee0a885daab9085fce97d39d638152"
+    },
+    {
+      "id": "day21-Lantern",
+      "file": "day21-Lantern.svg",
+      "title": "Lantern",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-21/day21-Lantern.svg",
+      "sha256": "5352e69f65859f71568fc2a45e9dcde6dd1c951f7272fd74879006ead53a0098"
+    },
+    {
+      "id": "day22-owl",
+      "file": "day22-owl.svg",
+      "title": "owl",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-22/day22-owl.svg",
+      "sha256": "36b79a64291145b1b1feed6a058c6b18d3437426ad6bf96da74a61c2ad491373"
+    },
+    {
+      "id": "day23-radio",
+      "file": "day23-radio.svg",
+      "title": "radio",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-23/day23-radio.svg",
+      "sha256": "33bbf56b408bdf90cdec1378df12db78608451553811638799b3726e7b576fd0"
+    },
+    {
+      "id": "day24-e-scooter",
+      "file": "day24-e-scooter.svg",
+      "title": "e scooter",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-24/day24-e-scooter.svg",
+      "sha256": "7cb274e5d584ffdd8a078c12883042a6dd16961feb29fc3367474568829a9f1b"
+    },
+    {
+      "id": "day25-sport-bicycle",
+      "file": "day25-sport-bicycle.svg",
+      "title": "sport bicycle",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-25/day25-sport-bicycle.svg",
+      "sha256": "fee835ce897ca1428fd6762ad607d21e47c0a4fcea48216df3ab58d18656f0ca"
+    },
+    {
+      "id": "day26-rainbow",
+      "file": "day26-rainbow.svg",
+      "title": "rainbow",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-26/day26-rainbow.svg",
+      "sha256": "45d7095f5cbaa5ef973c5e1d67468d85d4bf4ddb3dbd4534b40ad8f23bfbaa02"
+    },
+    {
+      "id": "day27-my-robot",
+      "file": "day27-my-robot.svg",
+      "title": "my robot",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-27/day27-my-robot.svg",
+      "sha256": "ab8e77ec7eb00e1596bc63d0a41e6fd95e24e866dbce42521e12117cd5d9e65a"
+    },
+    {
+      "id": "day28-selfi-girl",
+      "file": "day28-selfi-girl.svg",
+      "title": "selfi girl",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-28/day28-selfi-girl.svg",
+      "sha256": "8d73e8dd054f57d688d7e5d43e0e0c98294b3acafa0c30dd990f7813d5bec4d6"
+    },
+    {
+      "id": "day29-selfie-boy",
+      "file": "day29-selfie-boy.svg",
+      "title": "selfie boy",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-29/day29-selfie-boy.svg",
+      "sha256": "0e0fb8e3fdd4f1a43acf37738aceaece4a93962912d67931e213eee52e235bda"
+    },
+    {
+      "id": "day30-cafe",
+      "file": "day30-cafe.svg",
+      "title": "cafe",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-30/day30-cafe.svg",
+      "sha256": "e6a14476a14493048c10e0ede66d8f1158bd43ad84b794411c5a12f2b9005dec"
+    },
+    {
+      "id": "day31-sweet-home",
+      "file": "day31-sweet-home.svg",
+      "title": "sweet home",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-31/day31-sweet-home.svg",
+      "sha256": "fc5bec1942b7499eeedb7151252e6fb785223f233e112b065129c9d505da9033"
+    },
+    {
+      "id": "day32-frankenstein",
+      "file": "day32-frankenstein.svg",
+      "title": "frankenstein",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-32/day32-frankenstein.svg",
+      "sha256": "c80d6c854a94f7bbb46d3d1269135c37bff5407e3a45cdc732a86421b9c5a17a"
+    },
+    {
+      "id": "day33-pumpkin",
+      "file": "day33-pumpkin.svg",
+      "title": "pumpkin",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-33/day33-pumpkin.svg",
+      "sha256": "d99fee81df2b2fac3b8e289cdf9702da024547b84797ec2f7fbeee55add7e11f"
+    },
+    {
+      "id": "day34-ticket",
+      "file": "day34-ticket.png",
+      "title": "ticket",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-34/day34-ticket.png",
+      "sha256": "f16f09c7f0c698e3bcb583de67b7a58bfd63fb34b6b78dcd7705a15854010372",
+      "originalSvg": "day34-ticket.svg",
+      "format": "png",
+      "note": "Original SVG references missing external raster files; use the author-provided standalone PNG."
+    },
+    {
+      "id": "day35-firework",
+      "file": "day35-firework.svg",
+      "title": "firework",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-35/day35-firework.svg",
+      "sha256": "39d9f9637feb73be01c075b6df858f61b40b6f4d177c4244c18eba1db8219f59"
+    },
+    {
+      "id": "day36-abacus",
+      "file": "day36-abacus.svg",
+      "title": "abacus",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-36/day36-abacus.svg",
+      "sha256": "475885e0877654fa46b7c536662526d530c850080bed2d07acf4d3db0a456c37"
+    },
+    {
+      "id": "day37-calculator",
+      "file": "day37-calculator.svg",
+      "title": "calculator",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-37/day37-calculator.svg",
+      "sha256": "1deedd9853f1810ff49258f4d299fc71ad14d61ce11297f0723d3da07dd8d85b"
+    },
+    {
+      "id": "day38-macintosh",
+      "file": "day38-macintosh.svg",
+      "title": "macintosh",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-38/day38-macintosh.svg",
+      "sha256": "10223d9d1faafe85103bedf9302bdd2c6a845c1873d0c645b8b79c4e8202cd46"
+    },
+    {
+      "id": "day39-pc",
+      "file": "day39-pc.svg",
+      "title": "pc",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-39/day39-pc.svg",
+      "sha256": "ca77ebae04bbd49686747b2b8d05f5a4898c56255384ddd1b864f6e168e49c8f"
+    },
+    {
+      "id": "day40-powerbook-100",
+      "file": "day40-powerbook-100.svg",
+      "title": "powerbook 100",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-40/day40-powerbook-100.svg",
+      "sha256": "c146dadce465780d69f85da8beac457fbc91b2a93d2bf370e5c780d8f8635bc4"
+    },
+    {
+      "id": "day41-desktop",
+      "file": "day41-desktop.svg",
+      "title": "desktop",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-41/day41-desktop.svg",
+      "sha256": "201186e2983864b66c87ac66c88a708d38f4ac7ab3f98437a68cb2675f0ceb7f"
+    },
+    {
+      "id": "day42-imac",
+      "file": "day42-imac.svg",
+      "title": "imac",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-42/day42-imac.svg",
+      "sha256": "60f24d516d44ec826ba59c18964c1e3a6a7c21843362f8f8966ebd7787211751"
+    },
+    {
+      "id": "day43-ram",
+      "file": "day43-ram.svg",
+      "title": "ram",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-43/day43-ram.svg",
+      "sha256": "68678292cc4d3a363e75de306565dc453af309216f098b2d9b9455c78583e859"
+    },
+    {
+      "id": "day44-hdd",
+      "file": "day44-hdd.svg",
+      "title": "hdd",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-44/day44-hdd.svg",
+      "sha256": "c0c3072dc97d18639ea664de9ddaac814d8be296998db367539fb2dd515cf711"
+    },
+    {
+      "id": "day45-gpu-ati",
+      "file": "day45-gpu-ati.svg",
+      "title": "gpu ati",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-45/day45-gpu-ati.svg",
+      "sha256": "865b53fee9b87a05511985ac1569deeb94886970aae3cb5bb8962fe7730bbd16"
+    },
+    {
+      "id": "day46-experiment-lab",
+      "file": "day46-experiment-lab.svg",
+      "title": "experiment lab",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-46/day46-experiment-lab.svg",
+      "sha256": "6722cc550b9144b09962e8ccee61cdb6e143a0b42a0d67b0ba025c15db034dd6"
+    },
+    {
+      "id": "day47-chemistry-lab",
+      "file": "day47-chemistry-lab.svg",
+      "title": "chemistry lab",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-47/day47-chemistry-lab.svg",
+      "sha256": "c33d85006254acefce77ca6ff2c0d83a20cb16834da3e449d4c096664d798aa3"
+    },
+    {
+      "id": "day48-medical-lab",
+      "file": "day48-medical-lab.svg",
+      "title": "medical lab",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-48/day48-medical-lab.svg",
+      "sha256": "f624459dbdf2c2dbbbd528d472beb1c8dcb1f0c5edf57982107c3b88d2f691e2"
+    },
+    {
+      "id": "day49-angler-fish",
+      "file": "day49-angler-fish.svg",
+      "title": "angler fish",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-49/day49-angler-fish.svg",
+      "sha256": "d0e8f699debbd7e28c22b197e2c3c6a3fbe42d0d17cba05bf498b6262a36a328"
+    },
+    {
+      "id": "day50-pirahna",
+      "file": "day50-pirahna.svg",
+      "title": "pirahna",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-50/day50-pirahna.svg",
+      "sha256": "c7015accb653ea27c6adb94d2d7a3cf0c1da57395ea96ee32596c1f6992fcc7c"
+    },
+    {
+      "id": "day51-whale",
+      "file": "day51-whale.svg",
+      "title": "whale",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-51/day51-whale.svg",
+      "sha256": "f0e0a148d2ec0cc81611fe4152ca6f81eb3543f3fc92753015da5ba11384cdad"
+    },
+    {
+      "id": "day52-auntum",
+      "file": "day52-auntum.svg",
+      "title": "auntum",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-52/day52-auntum.svg",
+      "sha256": "aaa8430ec3d35d0b6ae41823fd562cdb479317863778835636d9a6f504fcbd12"
+    },
+    {
+      "id": "day53-farm",
+      "file": "day53-farm.svg",
+      "title": "farm",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-53/day53-farm.svg",
+      "sha256": "e1fd7a2975ad993d765539ce21001d1a5bbec5c3fbfe90523c2494a2771db5e4"
+    },
+    {
+      "id": "day54-building",
+      "file": "day54-building.svg",
+      "title": "building",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-54/day54-building.svg",
+      "sha256": "aba433fcccf0c8c4715ed303baed8e7d0a372d72aa43734f671747cb38126a0a"
+    },
+    {
+      "id": "day55-living-room-interior",
+      "file": "day55-living-room-interior.svg",
+      "title": "living room interior",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-55/day55-living-room-interior.svg",
+      "sha256": "49dd7d45c9f2acab86366107f7b80dd6e14cdaff8b6051cfba5b72e917a6afab"
+    },
+    {
+      "id": "day56-tv-room",
+      "file": "day56-tv-room.svg",
+      "title": "tv room",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-56/day56-tv-room.svg",
+      "sha256": "f56ab4a466cf0ebe0c258decb339cd336083de2007f162cc81e1d11a0d0c5126"
+    },
+    {
+      "id": "day57-reading-room",
+      "file": "day57-reading-room.svg",
+      "title": "reading room",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-57/day57-reading-room.svg",
+      "sha256": "60aaaaf84c32323e0a7903793da9819ad45793fbb95e8d2bbff3cce8e21df790"
+    },
+    {
+      "id": "day58-bedroom",
+      "file": "day58-bedroom.svg",
+      "title": "bedroom",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-58/day58-bedroom.svg",
+      "sha256": "2b0e17945bb08ac252c8850f08b711d44658ad0019dd212aa5a782eedcb81534"
+    },
+    {
+      "id": "day59-kitchen",
+      "file": "day59-kitchen.svg",
+      "title": "kitchen",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-59/day59-kitchen.svg",
+      "sha256": "5683121062c6d93b596844877f46ff9d88c98cf36ef419d1e7d7b1a545935588"
+    },
+    {
+      "id": "day60-bathroom",
+      "file": "day60-bathroom.svg",
+      "title": "bathroom",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-60/day60-bathroom.svg",
+      "sha256": "d79e8146ce6ece772ec2b33441f9d0882e6792331b23d528ad3c6e9b871a28d3"
+    },
+    {
+      "id": "day61-travel-bag",
+      "file": "day61-travel-bag.svg",
+      "title": "travel bag",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-61/day61-travel-bag.svg",
+      "sha256": "2a7f01bb8c0dc8abfd4d24358b5fc009be37eeff0944a16d823cd169a0139c98"
+    },
+    {
+      "id": "day62-office-bag",
+      "file": "day62-office-bag.svg",
+      "title": "office bag",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-62/day62-office-bag.svg",
+      "sha256": "e5dc8e43f0f38aeebe646105c70bc30aed33950e56ef0407a8b076fbae6a23c7"
+    },
+    {
+      "id": "day63-school-bag",
+      "file": "day63-school-bag.svg",
+      "title": "school bag",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-63/day63-school-bag.svg",
+      "sha256": "3b9a9f168878bf18d84fa2b48cc6ec97d5437a930b7eb6c996d534763b96357c"
+    },
+    {
+      "id": "day64-followers",
+      "file": "day64-followers.svg",
+      "title": "followers",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-64/day64-followers.svg",
+      "sha256": "3ecb67b489baf529d2c7edafaae6d2dc78bb047d9e378030e55ff41d956d025b"
+    },
+    {
+      "id": "day65-city-road",
+      "file": "day65-city-road.svg",
+      "title": "city road",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-65/day65-city-road.svg",
+      "sha256": "e93b5e561cd520d87cd5b1af71dab6a7fee9514c66cf83f4fea1db7bebbc30e7"
+    },
+    {
+      "id": "day66-travel",
+      "file": "day66-travel.svg",
+      "title": "travel",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-66/day66-travel.svg",
+      "sha256": "e19979ff8a09b1d58602c73e5d2f05eca6064347880b9b00d098a3ffc5047bfe"
+    },
+    {
+      "id": "day67-dog",
+      "file": "day67-dog.svg",
+      "title": "dog",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-67/day67-dog.svg",
+      "sha256": "eb50f27dbbb00c0df72a67cc100564a15708a29a38eee629c6a7fbd667f62460"
+    },
+    {
+      "id": "day68-happy-cat",
+      "file": "day68-happy-cat.svg",
+      "title": "happy cat",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-68/day68-happy-cat.svg",
+      "sha256": "ed0685ff8f7848cdb226b5274e80e146ef7ac5ffb217d303e91cf8473bdbdc29"
+    },
+    {
+      "id": "day69-dotted-notebook",
+      "file": "day69-dotted-notebook.svg",
+      "title": "dotted notebook",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-69/day69-dotted-notebook.svg",
+      "sha256": "64c46c3c82cc52016e0ee49ac641bf32d4d85c2e09939761578c8e399909391d"
+    },
+    {
+      "id": "day70-designer-fav-tool-wacom",
+      "file": "day70-designer-fav-tool-wacom.svg",
+      "title": "designer fav tool wacom",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-70/day70-designer-fav-tool-wacom.svg",
+      "sha256": "1525e955089c6fad43b0ccd5ba6819c1a0da9a16dd17437804bca12428f8d524"
+    },
+    {
+      "id": "day71-designer-tool-essential",
+      "file": "day71-designer-tool-essential.svg",
+      "title": "designer tool essential",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-71/day71-designer-tool-essential.svg",
+      "sha256": "c77b595bb7311c0dadd793f00c7e3a57379964b6c603f11e44257f9774ec42df"
+    },
+    {
+      "id": "day72-designer-tool-war",
+      "file": "day72-designer-tool-war.svg",
+      "title": "designer tool war",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-72/day72-designer-tool-war.svg",
+      "sha256": "47c390f72835d239815a747a1d3ed8f64c5bb0dbb9a169581054e158ae427133"
+    },
+    {
+      "id": "day73-writing-tool",
+      "file": "day73-writing-tool.svg",
+      "title": "writing tool",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-73/day73-writing-tool.svg",
+      "sha256": "cddf9aba3c84fa3adf5f28222c73d1811ee009dc996ed0f87f2b6a8af8636505"
+    },
+    {
+      "id": "day74-stationary-set",
+      "file": "day74-stationary-set.svg",
+      "title": "stationary set",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-74/day74-stationary-set.svg",
+      "sha256": "b408bacfa23a4e07265a1880e5240f047b6653c928b76c1d7abccb395e4873c0"
+    },
+    {
+      "id": "day75-stationary-set-2",
+      "file": "day75-stationary-set-2.svg",
+      "title": "stationary set 2",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-75/day75-stationary-set-2.svg",
+      "sha256": "409147ee497531814c4a7beaae0723f40ab113e5e0bd2817db07dc360cbf857e"
+    },
+    {
+      "id": "day76-watch-spectacle",
+      "file": "day76-watch-spectacle.svg",
+      "title": "watch spectacle",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-76/day76-watch-spectacle.svg",
+      "sha256": "40d1ceacf4770c9a28f7b3737048ec65bee9613ccfae115dacc274c71b1d1345"
+    },
+    {
+      "id": "day77-pocket-knief",
+      "file": "day77-pocket-knief.svg",
+      "title": "pocket knief",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-77/day77-pocket-knief.svg",
+      "sha256": "6a10855299d2b99b0aebe1a2306d7c45ee99d8c9c11881504c2cb19e7abb15cf"
+    },
+    {
+      "id": "day78-wallet",
+      "file": "day78-wallet.svg",
+      "title": "wallet",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-78/day78-wallet.svg",
+      "sha256": "053902dc57538ef885fad01642862c919cac742e1dd09fd75443c05924627215"
+    },
+    {
+      "id": "day79-coffee",
+      "file": "day79-coffee.svg",
+      "title": "coffee",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-79/day79-coffee.svg",
+      "sha256": "7b72e92b965387feae6710f1b71816e37d95b79b7aa48ecf4bdf3d6f663387b5"
+    },
+    {
+      "id": "day80-tea",
+      "file": "day80-tea.svg",
+      "title": "tea",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-80/day80-tea.svg",
+      "sha256": "ab7a1363265540b6b37f2b3fb76f21340ab690a87cb6b44e2c965accdc83e4e1"
+    },
+    {
+      "id": "day81-ice-cream",
+      "file": "day81-ice-cream.svg",
+      "title": "ice cream",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-81/day81-ice-cream.svg",
+      "sha256": "e7b488fdb77fcb40c56fe53558fd3a47cbf21c6cb1f6a4b1349e5cf0769ee9fb"
+    },
+    {
+      "id": "day82-burger",
+      "file": "day82-burger.svg",
+      "title": "burger",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-82/day82-burger.svg",
+      "sha256": "63c77797a61c6e6ca4968a9cacf5cc67d89aab970d700b6626a1f361bbfa0eef"
+    },
+    {
+      "id": "day83-snowman",
+      "file": "day83-snowman.svg",
+      "title": "snowman",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-83/day83-snowman.svg",
+      "sha256": "03c719b1a380214bdc4c6d2e6755e8a1c10608c33c5dd0f1f250dd3a3ec933e8"
+    },
+    {
+      "id": "day84-reindeer",
+      "file": "day84-reindeer.svg",
+      "title": "reindeer",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-84/day84-reindeer.svg",
+      "sha256": "df9c7617921e8b263707552cb0cc62020deca29fb5703e26fbe3c439699767f6"
+    },
+    {
+      "id": "day85-socks",
+      "file": "day85-socks.svg",
+      "title": "socks",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-85/day85-socks.svg",
+      "sha256": "cf27f2a8baf6eec69f5f8661d55461764e9b371c2c2778d3f0385a88c49c9fb4"
+    },
+    {
+      "id": "day86-candle",
+      "file": "day86-candle.svg",
+      "title": "candle",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-86/day86-candle.svg",
+      "sha256": "12834f0f2eaf97716ad664080feb7552d55feae4c3bddc550e6be290c02afa73"
+    },
+    {
+      "id": "day87-chritmas-ball",
+      "file": "day87-chritmas-ball.svg",
+      "title": "chritmas ball",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-87/day87-chritmas-ball.svg",
+      "sha256": "92295b72f437da6c2e0f9b97777aabff57ef139d1b2d4b39a1def05fc61ecf65"
+    },
+    {
+      "id": "day88-jingle-bell",
+      "file": "day88-jingle-bell.svg",
+      "title": "jingle bell",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-88/day88-jingle-bell.svg",
+      "sha256": "0743ea2ba7bc9d1cd92af6d87b656300f14105410611907f5f05a0c901c39f94"
+    },
+    {
+      "id": "day89-christmas-gift",
+      "file": "day89-christmas-gift.svg",
+      "title": "christmas gift",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-89/day89-christmas-gift.svg",
+      "sha256": "c5ee59fdfae8d3543830b7ca6f56a23cb0c4c16e7eeb2baf649a733d1db5816a"
+    },
+    {
+      "id": "day90-santa",
+      "file": "day90-santa.svg",
+      "title": "santa",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-90/day90-santa.svg",
+      "sha256": "f43bd847b7b41f56744a71357c0cf5f7a68f5f575fb6a288a27df71ff39504b8"
+    },
+    {
+      "id": "day91-merry-christmas",
+      "file": "day91-merry-christmas.svg",
+      "title": "merry christmas",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-91/day91-merry-christmas.svg",
+      "sha256": "c440a8c38e93a8711a73555c3db20a728e90eec6d7130046d204dd67c0c5d1af"
+    },
+    {
+      "id": "day92-freelancing",
+      "file": "day92-freelancing.svg",
+      "title": "freelancing",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-92/day92-freelancing.svg",
+      "sha256": "9f58658170300452d783e183fed959b817d8764475968275798c8b1dce92d90c"
+    },
+    {
+      "id": "day93-programing",
+      "file": "day93-programing.svg",
+      "title": "programing",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-93/day93-programing.svg",
+      "sha256": "32829e10d3ae8df5641c70be6030da77152d8257785826d28a93d090edce22e6"
+    },
+    {
+      "id": "day94-ui-ux",
+      "file": "day94-ui-ux.svg",
+      "title": "ui ux",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-94/day94-ui-ux.svg",
+      "sha256": "e4fb26ade02984b4e9c21ebf6e32e7f473b6f6ce93150637f5fa352d03f22086"
+    },
+    {
+      "id": "day95-app-development",
+      "file": "day95-app-development.svg",
+      "title": "app development",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-95/day95-app-development.svg",
+      "sha256": "b3025c70b96fa7f51dca0a954ec0a84ef985fc29201aff26ad4ba08e3668fb34"
+    },
+    {
+      "id": "day96-camping",
+      "file": "day96-camping.svg",
+      "title": "camping",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-96/day96-camping.svg",
+      "sha256": "7332c13c341f632113a7306a5877a4b5f89b8113c6afa0e4c04bc83b25ce3651"
+    },
+    {
+      "id": "day97-champagne",
+      "file": "day97-champagne.svg",
+      "title": "champagne",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-97/day97-champagne.svg",
+      "sha256": "e0ba35742b50310105630bbdf67fcca8b183905a35f35c1de8fba2a1710ef931"
+    },
+    {
+      "id": "day98-junk-boat",
+      "file": "day98-junk-boat.svg",
+      "title": "junk boat",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-98/day98-junk-boat.svg",
+      "sha256": "cc76b05c8d9dfa119b11734bbe5bfe5c01642e47160f025e6d5654cb18570a52"
+    },
+    {
+      "id": "day99-pirate-boat",
+      "file": "day99-pirate-boat.svg",
+      "title": "pirate boat",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-99/day99-pirate-boat.svg",
+      "sha256": "6b86ae9ae677a8a8e4934fffe994651c45e9487d7980ac100c9a3868389c6adc"
+    },
+    {
+      "id": "day100-the-snail",
+      "file": "day100-the-snail.svg",
+      "title": "the snail",
+      "sourceUrl": "https://github.com/realvjy/illlustrations/blob/b6d6f3286995e6efbbf397eff21b572245c336fd/content/illlustrations/day-100/day100-the-snail.svg",
+      "sha256": "a98ff4a7ba68376af60e9a91cb45b4eb24a50eafb5e82f40a7f59be1cad91e8c"
+    }
+  ]
+}

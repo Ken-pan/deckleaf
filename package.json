@@ -1,0 +1,77 @@
+{
+  "name": "deckleaf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "dev": "tsx server/index.ts",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit",
+    "build": "npm run build:brand && npm run build:figma && vite build && node scripts/check-startup.mjs && node scripts/compress-assets.mjs",
+    "characters:build": "tsx scripts/build-character-library.mjs",
+    "characters:review": "tsx scripts/review-character-library.ts",
+    "build:brand": "node scripts/build-brand.mjs",
+    "adopt:brand": "node scripts/adopt-brand.mjs",
+    "test": "tsx --test tests/*.test.ts",
+    "mcp": "tsx server/mcp.ts",
+    "pretest": "npm run build:brand",
+    "build:figma": "node scripts/build-figma-plugin.mjs",
+    "build:web": "npm run build:brand && npm run build:figma && node scripts/build-browser.mjs",
+    "package:source": "node scripts/package-source.mjs",
+    "licenses:generate": "node scripts/generate-notices.mjs",
+    "demo:build": "tsx scripts/build-release-demo.ts"
+  },
+  "dependencies": {
+    "@iconify-json/bi": "^1.2.7",
+    "@iconify-json/carbon": "^1.2.28",
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/iconoir": "^1.2.12",
+    "@iconify-json/lucide": "^1.2.143",
+    "@iconify-json/material-symbols": "^1.2.95",
+    "@iconify-json/ph": "^1.2.2",
+    "@iconify-json/radix-icons": "^1.2.6",
+    "@iconify-json/ri": "^1.2.10",
+    "@iconify-json/tabler": "^1.2.42",
+    "@iconify/utils": "^3.1.7",
+    "@lucide/svelte": "^1.44.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "echarts": "6.1.0",
+    "fast-xml-parser": "^5.0.0",
+    "jszip": "^3.10.1",
+    "pdfjs-dist": "6.4.299",
+    "pngjs": "^7.0.0",
+    "pptxgenjs": "4.0.1",
+    "svelte": "^5.46.4",
+    "zod": "^3.25.0",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^22.0.0",
+    "@types/pngjs": "^6.0.5",
+    "image-size": "^2.0.4",
+    "svelte-check": "^4.4.6",
+    "svgo": "^4.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4"
+  },
+  "overrides": {
+    "image-size": "^2.0.4"
+  },
+  "license": "MIT",
+  "author": "Ken Pan",
+  "description": "A local-first slide editor with reviewable AI proposals and portable presentations.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ken-pan/deckleaf.git"
+  },
+  "homepage": "https://deckleaf-kens-toolbox.netlify.app",
+  "bugs": {
+    "url": "https://github.com/Ken-pan/deckleaf/issues"
+  }
+}

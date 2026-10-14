@@ -1,0 +1,46 @@
+/* Quiet neutral surfaces; semantic glyphs carry severity without recoloring
+   document content or turning every message into a primary action. */
+.ui-notice { --notice-color:var(--info-text); --notice-first-line:calc(var(--ui-body) * var(--ui-line-reading)); --notice-dismiss-size:var(--control-md); display:flex; align-items:flex-start; gap:12px; min-width:0; padding:12px; border:1px solid var(--border-default); border-radius:var(--r-popover); background:var(--surface-overlay); color:var(--text-primary); font-size:var(--ui-body); line-height:var(--ui-line-reading); }
+.ui-notice[data-tone='success'] { --notice-color:var(--success-text); }
+.ui-notice[data-tone='warning'] { --notice-color:var(--warning-text); }
+.ui-notice[data-tone='error'] { --notice-color:var(--danger-text); }
+.ui-notice[data-tone='progress'] { --notice-color:var(--text-secondary); }
+.ui-notice-icon { display:flex; align-items:center; justify-content:center; flex:none; width:1.42857em; height:var(--notice-first-line); color:var(--notice-color); }
+.ui-notice-icon svg { width:1.28571em; height:1.28571em; }
+.ui-notice-content { flex:1; min-width:0; }
+.ui-notice-copy { overflow-wrap:anywhere; }
+.ui-notice-copy strong { display:block; margin-bottom:4px; font-weight:var(--ui-weight-semibold); }
+.ui-notice-copy p { margin:0; font-size:inherit; color:inherit; line-height:inherit; }
+.ui-notice-copy :is(strong,p) { max-width:75ch; }
+.ui-notice-copy .ui-notice-detail { margin-top:4px; color:var(--text-secondary); }
+.ui-notice-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.ui-notice-actions > button { max-width:100%; height:auto; min-height:36px; white-space:normal; text-align:start; }
+.ui-notice .ui-notice-dismiss { margin:calc((var(--notice-first-line) - var(--notice-dismiss-size)) / 2) -4px calc((var(--notice-first-line) - var(--notice-dismiss-size)) / 2) 0; flex:none; }
+:root .ui-notice .ui-notice-dismiss:focus-visible { outline-offset:-3px; }
+.notification-feedback { display:flex; flex-direction:column; gap:8px; flex:none; padding:12px 16px; max-height:36%; overflow:auto; overscroll-behavior:contain; background:var(--surface-chrome); border-bottom:1px solid var(--border-subtle); }
+.notification-feedback:empty { display:none; }
+.notification-feedback .ui-notice { border-color:var(--border-subtle); }
+/* Wrapping is intrinsic: enlarged type naturally returns actions below copy. */
+@media (min-width:1024px) {
+  .notification-feedback:not(.notification-in-dialog) .ui-notice-content:has(.ui-notice-actions) { display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; }
+  .notification-feedback:not(.notification-in-dialog) .ui-notice-content:has(.ui-notice-actions) .ui-notice-copy { flex:1 1 32rem; }
+  .notification-feedback:not(.notification-in-dialog) .ui-notice-actions { margin-top:0; }
+}
+.notification-outlet { position:fixed; width:360px; max-width:calc(var(--ui-viewport-width,100vw) - 24px); overflow:auto; z-index:var(--z-toast); border-radius:var(--r-popover); box-shadow:var(--shadow-floating); }
+.notification-outlet .ui-notice { box-shadow:none; }
+.notification-outlet .ui-notice-content { max-height:calc(var(--notification-max-height,100dvh) - 26px); overflow:auto; overscroll-behavior:contain; }
+.notification-outlet[data-notification-hidden='true'] { visibility:hidden; pointer-events:none; }
+.notification-feedback.notification-in-dialog { padding:0; max-height:none; overflow:visible; background:none; border:0; margin-bottom:16px; }
+.notification-feedback.notification-in-dialog:empty { margin:0; }
+.notification-outlet.notification-in-dialog { position:static; width:auto; max-width:none; max-height:30%; flex:none; margin:0 var(--dialog-gutter) 16px; box-shadow:none; }
+.notification-in-dialog .ui-notice { box-shadow:none; }
+.notification-history { display:flex; flex-direction:column; gap:16px; margin-bottom:16px; }
+.notification-history time { display:block; margin:4px 0 0 44px; font-size:var(--ui-meta); color:var(--text-secondary); }
+@media (max-width:760px), (pointer:coarse) {
+  .ui-notice { --notice-dismiss-size:44px; }
+  .ui-notice-actions > button, .ui-notice .ui-notice-dismiss { min-height:44px; }
+  .ui-notice .ui-notice-dismiss { width:44px; }
+  .notification-feedback { padding:8px 12px; max-height:40%; }
+}
+@media (forced-colors:active) { .ui-notice { border-color:CanvasText; } .ui-notice-icon { color:CanvasText; } }
+@media print { .notification-feedback,.notification-outlet { display:none!important; } }

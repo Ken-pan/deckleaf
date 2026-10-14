@@ -1,0 +1,77 @@
+{
+  "name": "Deckleaf",
+  "revision": "60dd18a86bab",
+  "master": "brand/logo.svg",
+  "masterSha256": "60dd18a86bab041997b6a3ca9a53fa7ef83af3955dd6c572ac276a87a992638e",
+  "sourceSha256": "c13f7da15b77f9acbacdd841bc9e213f8c3b5b0a24f5ca535f5a188b654324bf",
+  "defaultInk": "#055841",
+  "pathCount": 2,
+  "urls": {
+    "logo": "/brand/logo.svg?v=60dd18a86bab",
+    "favicon": "/favicon.svg?v=60dd18a86bab",
+    "fallbackIcon": "/favicon.ico?v=60dd18a86bab",
+    "touchIcon": "/brand/apple-touch-icon.png?v=60dd18a86bab"
+  },
+  "files": [
+    {
+      "path": "brand/logo.svg",
+      "sha256": "60dd18a86bab041997b6a3ca9a53fa7ef83af3955dd6c572ac276a87a992638e",
+      "bytes": 1403
+    },
+    {
+      "path": "favicon.svg",
+      "sha256": "dcffadf791c9fb7b10457f4d190f10a3a5405a74819f17c7580ba67e115b4b0d",
+      "bytes": 1511
+    },
+    {
+      "path": "brand/app-icon.svg",
+      "sha256": "8a0282b2b7d92b1008c120905c885203b7883706ccf966e10de1a060a751a292",
+      "bytes": 1732
+    },
+    {
+      "path": "brand/apple-touch-icon.svg",
+      "sha256": "683102db47f89f5741ac23006a6569f774740dcdf9c863424beb659920ddcf40",
+      "bytes": 1531
+    },
+    {
+      "path": "brand/logo.png",
+      "sha256": "a66cddd891a480467757c700b2fd9c69e276399c073b8c3a138a56b5fce6d970",
+      "bytes": 25886
+    },
+    {
+      "path": "brand/app-icon.png",
+      "sha256": "e6808075d5987ec5e1944ee9430b08d4b51bacc7890f11f9b622a1af9974b75b",
+      "bytes": 37922
+    },
+    {
+      "path": "brand/app-icon-512.png",
+      "sha256": "aa60fcef46f7d00406f7c74fe07c974e0fa1558751657f91e60ce8493cfab5bd",
+      "bytes": 15897
+    },
+    {
+      "path": "brand/app-icon-192.png",
+      "sha256": "0ee0b8ee8fa36707a1fca489754ffa16df3ceeb0db17e045f080d78f61897e59",
+      "bytes": 5641
+    },
+    {
+      "path": "brand/apple-touch-icon.png",
+      "sha256": "82002a9b7c56f74c3684064038eb5f1436d00cf085847ef090c14a03338eab5c",
+      "bytes": 2609
+    },
+    {
+      "path": "brand/favicon-32.png",
+      "sha256": "8caca7bf72411e6858cfeaa0cb44d994b33d847b2649b4bd855a45e31f97e6e2",
+      "bytes": 791
+    },
+    {
+      "path": "brand/favicon-16.png",
+      "sha256": "da4e5f83af0d9f86008cab8a472b37f07123639535d3f0e33fc382146d388184",
+      "bytes": 498
+    },
+    {
+      "path": "favicon.ico",
+      "sha256": "2179b4e7f5c9c64eeaec7f23a053a28925618dc26e091b7584c790bd14a009c9",
+      "bytes": 1327
+    }
+  ]
+}

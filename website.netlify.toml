@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build:web"
+  publish = "output/website/dist"
+  functions = "output/web-editor/functions"
+
+# Browser documents and history stay in IndexedDB. Only open-photo assets use a function.
