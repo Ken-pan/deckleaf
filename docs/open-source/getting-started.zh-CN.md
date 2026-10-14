@@ -13,7 +13,7 @@
 1. 在顶部文稿名输入框重命名。
 2. 在幻灯片列表选择一页；选中文字并点击 Edit text，或双击文字编辑，点击外部结束。分组对象可能需要再点击一次才能选中内部对象。
 3. 选中对象后使用右侧属性调整排版、尺寸和外观；插入工具支持文字、图片、形状、表格和图表。
-4. **Document menu → Undo** 撤销。桌面快捷键为 Command/Control+Z 撤销，Shift+Command/Control+Z 重做。
+4. **Document menu → Undo** 撤销。桌面快捷键为 Command/Control+Z 撤销，Shift+Command/Control+Z 重做。点击文字外部或 Command/Control+Enter 完成文字编辑，Escape 取消当前文字编辑。
 5. **Present** 进入演示，箭头前进，Escape 返回。隐藏页仍可编辑，演示时跳过。
 
 关闭窗口前，等待保存提示结束。**Open document library** 查看当前浏览器或本地安装的已保存文稿。出现保存错误时保留原窗口，并使用恢复或导出操作。
