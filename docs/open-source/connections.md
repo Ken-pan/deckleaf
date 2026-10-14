@@ -4,7 +4,7 @@ Manual editing, templates and export need none of these connections. Check a pro
 
 ## AI
 
-Open Settings → More settings → AI connection, or use the AI workspace settings. Choose a provider, enter a model and use a session API key. OpenAI uses its standard HTTPS API; compatible providers need their API base URL. Use a provider that permits direct browser access for the browser edition. If it blocks browser requests, use the local edition rather than disabling browser security.
+Open Settings → More settings → AI models → Connect provider, or use the AI workspace settings. Choose a provider, enter a model and use a session API key. OpenAI uses its standard HTTPS API; compatible providers need their API base URL. Use a provider that permits direct browser access for the browser edition. If it blocks browser requests, use the local edition rather than disabling browser security.
 
 Local server operators can supply `OPENAI_API_KEY` or `DECK_AI_KEY` through the process environment; `DECK_AI_MODEL` supplies a default model. The app does not automatically load `.env` files. Settings may retain provider/model preferences, but not the session API key.
 
