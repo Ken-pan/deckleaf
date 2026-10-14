@@ -49,7 +49,7 @@ test('ICO fallback and downloadable kit contain the current image frames', async
     assert.equal(png.width, size); assert.equal(png.height, size);
     assert.deepEqual(frame, read(`public/brand/favicon-${size}.png`));
   }
-  const kit = await JSZip.loadAsync(read('output/brand/Deck-Studio-Brand-Kit.zip'));
+  const kit = await JSZip.loadAsync(read('output/brand/Decksprig-Brand-Kit.zip'));
   for (const file of manifest.files) assert.equal(sha(await kit.file(file.path)!.async('nodebuffer')), file.sha256);
 });
 

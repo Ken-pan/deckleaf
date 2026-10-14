@@ -14,7 +14,7 @@ The vector contains two editable cubic paths and no embedded bitmap. Card corner
 | Browser icon | `public/favicon.svg`, `public/favicon.ico` (16/32px frames), `public/brand/favicon-16.png`, `favicon-32.png` |
 | Home-screen artwork | `public/brand/apple-touch-icon.svg`, `apple-touch-icon.png` (180px) |
 | Asset revision and hashes | `public/brand/manifest.json` |
-| Downloadable brand kit | `output/brand/Deck-Studio-Brand-Kit.zip` |
+| Downloadable brand kit | `output/brand/Decksprig-Brand-Kit.zip` |
 | Current brand board | `output/branding-pass/brand-system.png` |
 | Logo/icon size preview | `output/brand/brand-preview.png` |
 
