@@ -1,6 +1,6 @@
 # Getting started
 
-[Editable sample](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [Video and walkthrough](https://decksprig-kens-toolbox.netlify.app/demo.html) · [中文指南](getting-started.zh-CN.md)
+[Editable sample](https://decksprig.kens-toolbox.com/app?demo=1) · [Video and walkthrough](https://decksprig.kens-toolbox.com/demo.html) · [中文指南](getting-started.zh-CN.md)
 
 ## Your first document
 

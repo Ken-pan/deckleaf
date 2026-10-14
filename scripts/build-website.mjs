@@ -18,7 +18,7 @@ for (const [from,to] of [
 const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/website/dist');
 await mkdir(out, { recursive: true });
 await cp(source, out, { recursive: true });
-await writeFile(resolve(out,'index.html'),(await readFile(resolve(out,'index.html'),'utf8')).replaceAll('https://decksprig-kens-toolbox.netlify.app',origin));
+await writeFile(resolve(out,'index.html'),(await readFile(resolve(out,'index.html'),'utf8')).replaceAll('https://decksprig.kens-toolbox.com',origin));
 for (const name of ['privacy.html','licenses.html','legal.css','licenses']) await cp(resolve(root,'public',name),resolve(out,name),{recursive:true});
 await mkdir(resolve(out,'fonts'),{recursive:true});
 for (const name of ['inter.ttf','Inter-OFL.txt']) await cp(resolve(root,'public/fonts',name),resolve(out,'fonts',name));

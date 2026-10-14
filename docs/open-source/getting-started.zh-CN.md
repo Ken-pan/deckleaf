@@ -1,6 +1,6 @@
 # 中文使用指南
 
-[打开可编辑示例](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [视频与演示](https://decksprig-kens-toolbox.netlify.app/demo.html) · [English guide](getting-started.md)
+[打开可编辑示例](https://decksprig.kens-toolbox.com/app?demo=1) · [视频与演示](https://decksprig.kens-toolbox.com/demo.html) · [English guide](getting-started.md)
 
 ## 第一份文稿
 

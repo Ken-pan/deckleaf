@@ -1,6 +1,6 @@
 # Release status and remaining gates
 
-Initial release prepared on 14 October 2026. Public source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig-kens-toolbox.netlify.app. Product name: **Decksprig**; storage and document compatibility retain legacy identifiers.
+Initial release prepared on 14 October 2026. Public source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig.kens-toolbox.com. Product name: **Decksprig**; storage and document compatibility retain legacy identifiers.
 
 | Preparation | Status |
 | --- | --- |

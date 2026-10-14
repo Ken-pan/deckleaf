@@ -2,7 +2,7 @@
 
 本地优先的演示文稿编辑器：编辑幻灯片、审阅可选的 AI 修改、导出自己的作品。
 
-[**直接试用可编辑示例**](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [演示与视频](https://decksprig-kens-toolbox.netlify.app/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.1](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1)
+[**直接试用可编辑示例**](https://decksprig.kens-toolbox.com/app?demo=1) · [演示与视频](https://decksprig.kens-toolbox.com/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.2](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.2)
 
 ![实际编辑器画面](public/website/assets/editor-light.jpg)
 

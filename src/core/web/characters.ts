@@ -1,4 +1,4 @@
-const projectOrigin = import.meta.env.VITE_DECKSPRIG_PUBLIC_ORIGIN || 'https://decksprig-kens-toolbox.netlify.app';
+const projectOrigin = import.meta.env.VITE_DECKSPRIG_PUBLIC_ORIGIN || 'https://decksprig.kens-toolbox.com';
 import {z} from 'zod';
 import {CharacterManifestSchema,CharacterRecipeSchema,SavedCharacterVariantSchema,CharacterRequestInputSchema,CharacterGenerationRequestSchema,REGION_NAMES,DEFAULT_CHARACTER_PALETTE,characterVariant,customizeCharacterPixels,measureCharacterAccent,generationPrompt,defaultCharacterRecipe,type CharacterRecipe} from '../characters';
 import type {ResourceItem} from '../resources';

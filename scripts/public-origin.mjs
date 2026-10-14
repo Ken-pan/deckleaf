@@ -1,4 +1,4 @@
-const official = 'https://decksprig-kens-toolbox.netlify.app';
+const official = 'https://decksprig.kens-toolbox.com';
 
 /** @param {string | undefined} value */
 export function publicOrigin(value = process.env.DECKSPRIG_PUBLIC_ORIGIN ?? process.env.DECKLEAF_PUBLIC_ORIGIN) {

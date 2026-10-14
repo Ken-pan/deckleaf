@@ -4,7 +4,7 @@ import {listWebDecks,readWebDeck,saveWebDeck,webHistory} from './store';
 
 const unavailable = (message:string,status=409) => Object.assign(new Error(message),{status});
 export async function browserJson(url:string,method='GET',body?:any,aiOptions:import('../../../server/ai').AIRunOptions={}):Promise<any> {
-  const target=new URL(url,globalThis.location?.href || 'https://decksprig-kens-toolbox.netlify.app'),path=target.pathname;
+  const target=new URL(url,globalThis.location?.href || 'https://decksprig.kens-toolbox.com'),path=target.pathname;
   if(path.startsWith('/api/workflows'))return (await import('./workflows')).browserWorkflow(path,method,body,target.searchParams);
   if(path.startsWith('/api/publishing/'))throw unavailable('Website hosting connections require the local edition. Export the HTML presentation here and publish it with your hosting provider.');
   if(path==='/api/health')return {ok:true,runtime:'browser',storage:'indexeddb',converters:{keynote:false,libreoffice:false},ai:{configured:false,model:''}};

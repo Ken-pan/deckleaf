@@ -1,6 +1,6 @@
 {
   "name": "decksprig",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "engines": {
@@ -70,7 +70,7 @@
     "type": "git",
     "url": "https://github.com/Ken-pan/decksprig.git"
   },
-  "homepage": "https://decksprig-kens-toolbox.netlify.app",
+  "homepage": "https://decksprig.kens-toolbox.com",
   "bugs": {
     "url": "https://github.com/Ken-pan/decksprig/issues"
   }

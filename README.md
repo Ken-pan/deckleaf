@@ -2,7 +2,7 @@
 
 A local-first presentation editor. Make slides, review optional AI changes, and take your work with you.
 
-[**Try the editable sample**](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [Website & demo](https://decksprig-kens-toolbox.netlify.app/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1)
+[**Try the editable sample**](https://decksprig.kens-toolbox.com/app?demo=1) · [Website & demo](https://decksprig.kens-toolbox.com/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.2)
 
 ![The actual Decksprig editor](public/website/assets/editor-light.jpg)
 
@@ -10,12 +10,12 @@ An early **0.1.0** release by Ken Pan, developed with Codex. Code is [MIT licens
 
 ## Try it in five minutes
 
-1. [Open the sample](https://decksprig-kens-toolbox.netlify.app/app?demo=1). It creates a new three-slide document in this browser. Close the import report after reading it.
+1. [Open the sample](https://decksprig.kens-toolbox.com/app?demo=1). It creates a new three-slide document in this browser. Close the import report after reading it.
 2. Rename the document in the top bar. Select text and choose **Edit text**, or double-click it to edit; select an object to change its properties.
 3. Choose **Present** to preview. Press Escape to return.
 4. Open **Document menu → Export document → Deck file** to download an editable backup. Choose **PowerPoint** or **Web page** to share a presentation.
 
-No account, provider subscription or API key is required for this workflow. Browser documents stay in this browser; export a backup before clearing site data or changing browsers. Desktop is the primary editing surface. See the [walkthrough and video](https://decksprig-kens-toolbox.netlify.app/demo.html).
+No account, provider subscription or API key is required for this workflow. Browser documents stay in this browser; export a backup before clearing site data or changing browsers. Desktop is the primary editing surface. See the [walkthrough and video](https://decksprig.kens-toolbox.com/demo.html).
 
 ## Run locally
 
@@ -81,7 +81,7 @@ The browser website/editor is written to `output/website/dist`; optional resourc
 npm run package:source
 ```
 
-Creates a fresh directory under `output/open-source/<timestamp>/` containing `decksprig-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.1 release](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
+Creates a fresh directory under `output/open-source/<timestamp>/` containing `decksprig-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.2 release](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.2) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
 
 ## License, support and contributions
 

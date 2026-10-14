@@ -1,6 +1,6 @@
 # Decksprig launch kit
 
-Prepared announcement copy; publishing it to communities is a separate choice. Source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig-kens-toolbox.netlify.app · Release: https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1. Use the fictional sample and actual editor recording; no customer or extracted portfolio examples.
+Prepared announcement copy; publishing it to communities is a separate choice. Source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig.kens-toolbox.com · Release: https://github.com/Ken-pan/decksprig/releases/tag/v0.1.2. Use the fictional sample and actual editor recording; no customer or extracted portfolio examples.
 
 ## Repository description
 
@@ -18,7 +18,7 @@ I made it with Codex and reviewed the generated code, dependencies and licenses.
 
 The code is MIT licensed, including commercial and closed-source reuse. I'd especially appreciate a small bug report or an example of a workflow that feels awkward. Please use fictional material in public reports.
 
-Try it: https://decksprig-kens-toolbox.netlify.app/app?demo=1
+Try it: https://decksprig.kens-toolbox.com/app?demo=1
 Source and local setup: https://github.com/Ken-pan/decksprig
 
 ## 中文介绍
@@ -27,7 +27,7 @@ Source and local setup: https://github.com/Ken-pan/decksprig
 
 代码采用 MIT，允许商用和闭源二次开发。现在是早期版本，复杂 PowerPoint 效果和字体需要在目标软件里检查。欢迎试用、提 bug，或者告诉我哪一步用起来不顺手。演示内容全部是虚构示例。
 
-直接试用：https://decksprig-kens-toolbox.netlify.app/app?demo=1
+直接试用：https://decksprig.kens-toolbox.com/app?demo=1
 源码与本地运行：https://github.com/Ken-pan/decksprig
 
 ## Show HN draft
