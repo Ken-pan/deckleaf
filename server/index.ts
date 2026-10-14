@@ -170,6 +170,6 @@ const server = createServer(async (req, res) => {
     await serveStatic(req, res, file);
   } catch (error: any) { if (res.headersSent) { res.destroy(); return; } send(res, {error: error.code === 'ENOENT' ? 'File not found.' : error.message || 'Could not complete the action. Try again.'}, error.status || (error.code === 'ENOENT' ? 404 : 400)); }
 });
-server.listen(port, '127.0.0.1', () => console.log(`Deckleaf · http://127.0.0.1:${port}`));
+server.listen(port, '127.0.0.1', () => console.log(`Decksprig · http://127.0.0.1:${port}`));
 process.once('SIGTERM', () => server.close(() => process.exit()));
 process.once('SIGINT', () => server.close(() => process.exit()));

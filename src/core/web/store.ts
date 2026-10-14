@@ -25,7 +25,7 @@ export function webDatabase(): Promise<IDBDatabase> {
       resolve(db);
     };
     request.onerror = () => reject(storageError(request.error));
-    request.onblocked = () => reject(failure('Close older Deckleaf tabs, then reload to open browser storage.'));
+    request.onblocked = () => reject(failure('Close older Decksprig tabs, then reload to open browser storage.'));
   });
   opening = promise;
   void promise.catch(() => { if (opening === promise) opening = undefined; });

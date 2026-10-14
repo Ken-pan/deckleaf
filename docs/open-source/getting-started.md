@@ -1,6 +1,6 @@
 # Getting started
 
-[Editable sample](https://deckleaf-kens-toolbox.netlify.app/app?demo=1) · [Video and walkthrough](https://deckleaf-kens-toolbox.netlify.app/demo.html) · [中文指南](getting-started.zh-CN.md)
+[Editable sample](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [Video and walkthrough](https://decksprig-kens-toolbox.netlify.app/demo.html) · [中文指南](getting-started.zh-CN.md)
 
 ## Your first document
 
@@ -38,7 +38,7 @@ Choose **Import document**, or drop a supported file onto the canvas. An import 
 | Situation | What to do |
 | --- | --- |
 | Node command is unavailable | Install Node.js 22.14 or newer, reopen your terminal, then run `node --version` |
-| Port 4310 is occupied | Stop the earlier Deckleaf server, preserving its `.data/`; restart one instance |
+| Port 4310 is occupied | Stop the earlier Decksprig server, preserving its `.data/`; restart one instance |
 | Local browser opens a blank page | Keep `npm run dev` running and use `http://127.0.0.1:4310/`; production needs `npm run build` before `npm start` |
 | Documents are missing on another device | Storage is local to this installation/browser; import an exported Deck file |
 | PPTX fonts/effects look different | Install the relevant licensed fonts in the target app and inspect conversion warnings |
@@ -48,4 +48,4 @@ Choose **Import document**, or drop a supported file onto the canvas. An import 
 | Optional provider cannot connect | Check credentials and provider browser access, or use the local edition; manual editing still works |
 | Save fails | Keep the original tab open, export a backup, and use recovery. Report a fictional reproduction rather than a private document |
 
-See [optional connections](connections.md), [self-hosting](self-hosting.md), [privacy](../../PRIVACY.md), [asset terms](../../ASSET_LICENSES.md) and [issues](https://github.com/Ken-pan/deckleaf/issues).
+See [optional connections](connections.md), [self-hosting](self-hosting.md), [privacy](../../PRIVACY.md), [asset terms](../../ASSET_LICENSES.md) and [issues](https://github.com/Ken-pan/decksprig/issues).

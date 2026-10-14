@@ -7,4 +7,4 @@
   NODE_VERSION = "22"
 
 # Documents/history stay in each browser. Optional photo search is disabled
-# unless an operator explicitly enables DECKLEAF_PHOTO_SEARCH_ENABLED.
+# unless an operator explicitly enables DECKSPRIG_PHOTO_SEARCH_ENABLED.

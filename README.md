@@ -1,34 +1,34 @@
-# Deckleaf
+# Decksprig
 
 A local-first presentation editor. Make slides, review optional AI changes, and take your work with you.
 
-[**Try the editable sample**](https://deckleaf-kens-toolbox.netlify.app/app?demo=1) · [Website & demo](https://deckleaf-kens-toolbox.netlify.app/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/deckleaf/releases/tag/v0.1.0)
+[**Try the editable sample**](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [Website & demo](https://decksprig-kens-toolbox.netlify.app/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1)
 
-![The actual Deckleaf editor](public/website/assets/editor-light.jpg)
+![The actual Decksprig editor](public/website/assets/editor-light.jpg)
 
 An early **0.1.0** release by Ken Pan, developed with Codex. Code is [MIT licensed](LICENSE); commercial use and closed-source derivatives are welcome. Original decorative artwork is CC0 to the extent of the rights held; [fonts, icons, third-party assets and brand marks](ASSET_LICENSES.md) have separate terms.
 
 ## Try it in five minutes
 
-1. [Open the sample](https://deckleaf-kens-toolbox.netlify.app/app?demo=1). It creates a new three-slide document in this browser. Close the import report after reading it.
+1. [Open the sample](https://decksprig-kens-toolbox.netlify.app/app?demo=1). It creates a new three-slide document in this browser. Close the import report after reading it.
 2. Rename the document in the top bar. Select text and choose **Edit text**, or double-click it to edit; select an object to change its properties.
 3. Choose **Present** to preview. Press Escape to return.
 4. Open **Document menu → Export document → Deck file** to download an editable backup. Choose **PowerPoint** or **Web page** to share a presentation.
 
-No account, provider subscription or API key is required for this workflow. Browser documents stay in this browser; export a backup before clearing site data or changing browsers. Desktop is the primary editing surface. See the [walkthrough and video](https://deckleaf-kens-toolbox.netlify.app/demo.html).
+No account, provider subscription or API key is required for this workflow. Browser documents stay in this browser; export a backup before clearing site data or changing browsers. Desktop is the primary editing surface. See the [walkthrough and video](https://decksprig-kens-toolbox.netlify.app/demo.html).
 
 ## Run locally
 
 Install **Node.js 22.14 or newer**, Git and a modern browser. No native conversion tools are needed for ordinary editing.
 
 ```sh
-git clone https://github.com/Ken-pan/deckleaf.git
-cd deckleaf
+git clone https://github.com/Ken-pan/decksprig.git
+cd decksprig
 npm ci
 npm run dev
 ```
 
-Open **http://127.0.0.1:4310/**. Choose a template, start blank, or select **Try sample**. Keep the terminal running. If port 4310 is occupied, stop your earlier Deckleaf instance first; do not clear its data directory.
+Open **http://127.0.0.1:4310/**. Choose a template, start blank, or select **Try sample**. Keep the terminal running. If port 4310 is occupied, stop your earlier Decksprig instance first; do not clear its data directory.
 
 To run a production build locally:
 
@@ -81,12 +81,16 @@ The browser website/editor is written to `output/website/dist`; optional resourc
 npm run package:source
 ```
 
-Creates a fresh directory under `output/open-source/<timestamp>/` containing `deckleaf-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.0 release](https://github.com/Ken-pan/deckleaf/releases/tag/v0.1.0) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
+Creates a fresh directory under `output/open-source/<timestamp>/` containing `decksprig-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.1 release](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
 
 ## License, support and contributions
 
 Read [asset licenses](ASSET_LICENSES.md), [complete third-party notices](THIRD_PARTY_NOTICES.md), [source provenance](docs/provenance.md), [security reporting](SECURITY.md) and [contributing](CONTRIBUTING.md). Report bugs with a fictional minimal reproduction. This early release has no commercial support or service-level commitment.
 
-Deckleaf retains legacy `deck-studio` schema identifiers, storage keys and environment variables for document compatibility. Do not rename them in existing documents.
+Decksprig retains legacy `deck-studio` schema identifiers, storage keys and environment variables for document compatibility. Do not rename them in existing documents.
 
-[Blue & Black](https://github.com/Ken-pan/blue-and-black) illustrations and [Mallowbits](https://github.com/Ken-pan/mallowbits) stickers are independent CC0 collections by the same creator. Deckleaf retains a pinned artwork copy for local use.
+[Duoquill](https://github.com/Ken-pan/duoquill) illustrations and [Clovlets](https://github.com/Ken-pan/clovlets) stickers are independent CC0 collections by the same creator. Decksprig retains a pinned artwork copy for local use.
+
+## Name and website change
+
+Decksprig was previously called Deckleaf. Version 0.1.1 keeps the same document format, `deck-studio-*` storage keys and resource IDs. Existing local `.data/` libraries continue to work. The old hosted editor remains available at [the previous address](https://deckleaf-kens-toolbox.netlify.app/app) for accessing documents saved there. Browser storage belongs to its exact origin: export Deck files at the old address, then import them at the new one. Nothing is automatically transferred between domains. Read [migration notes](docs/open-source/name-change.md).

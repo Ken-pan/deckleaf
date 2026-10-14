@@ -1,6 +1,6 @@
 {
-  "name": "deckleaf",
-  "version": "0.1.0",
+  "name": "decksprig",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -68,10 +68,10 @@
   "description": "A local-first slide editor with reviewable AI proposals and portable presentations.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ken-pan/deckleaf.git"
+    "url": "https://github.com/Ken-pan/decksprig.git"
   },
-  "homepage": "https://deckleaf-kens-toolbox.netlify.app",
+  "homepage": "https://decksprig-kens-toolbox.netlify.app",
   "bugs": {
-    "url": "https://github.com/Ken-pan/deckleaf/issues"
+    "url": "https://github.com/Ken-pan/decksprig/issues"
   }
 }

@@ -12,7 +12,7 @@ Ask for a small change, inspect the proposal, choose Apply changes when satisfie
 
 ## Figma
 
-Import document → Figma accepts a file link and an access token with read access to that file. The token is cleared after success or closing. For a local file workflow, load `plugins/figma-export/manifest.json` as a development plugin in Figma and export `.deck.json`, then import it into Deckleaf. Provider permissions and supported design objects vary; inspect the import report. No public Figma plugin listing is supplied with this release.
+Import document → Figma accepts a file link and an access token with read access to that file. The token is cleared after success or closing. For a local file workflow, load `plugins/figma-export/manifest.json` as a development plugin in Figma and export `.deck.json`, then import it into Decksprig. Provider permissions and supported design objects vary; inspect the import report. No public Figma plugin listing is supplied with this release.
 
 ## Google Slides
 

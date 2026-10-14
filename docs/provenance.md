@@ -1,6 +1,6 @@
-# Deckleaf source provenance
+# Decksprig source provenance
 
-Deckleaf and Broadser are personal projects by Ken Pan. The Deckleaf editor reuses Broadser's semantic tokens and control styles with the owner's authorization. Document styling remains independent of editor styling.
+Decksprig and Broadser are personal projects by Ken Pan. The Decksprig editor reuses Broadser's semantic tokens and control styles with the owner's authorization. Document styling remains independent of editor styling.
 
 Runtime templates use fictional placeholder content and project-generated artwork. Extracted portfolio case studies, customer screenshots, research records, private acceptance snapshots and local documents are excluded from the source candidate. Structured slide import remains available for files supplied by the user; tests use fictional data.
 

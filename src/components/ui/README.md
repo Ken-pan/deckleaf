@@ -70,7 +70,7 @@ inside the frame, and scrolling bodies reserve space for keyboard focus.
 This applies the principles in [Carbon spacing](https://www.carbondesignsystem.com/building-blocks/foundations/spacing/overview),
 [popover guidance](https://www.carbondesignsystem.com/building-blocks/core/components/popover/guidelines)
 and [modal guidance](https://www.carbondesignsystem.com/building-blocks/core/components/modal/guidelines).
-The particular radius values are Deckleaf's design decisions. W3C's
+The particular radius values are Decksprig's design decisions. W3C's
 [minimum target criterion](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
 is 24px with exceptions; 44px is the more generous touch treatment used here,
 not a claim that all desktop controls must be 44px.

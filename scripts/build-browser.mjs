@@ -9,7 +9,7 @@ import {publicOrigin} from './public-origin.mjs';
 const root=resolve(import.meta.dirname,'..'),candidate=resolve(root,'output/web-editor/build'),out=resolve(root,'output/website/dist');
 const origin = publicOrigin();
 process.env.VITE_DECK_RUNTIME='browser';
-if(!process.argv.includes('--package-only'))await build({publicDir:false,define:{'import.meta.env.VITE_DECKLEAF_PUBLIC_ORIGIN':JSON.stringify(origin)},plugins:[{
+if(!process.argv.includes('--package-only'))await build({publicDir:false,define:{'import.meta.env.VITE_DECKSPRIG_PUBLIC_ORIGIN':JSON.stringify(origin)},plugins:[{
   name:'public-template-attribution',
   transform(code,id){if(id===resolve(root,'src/core/template-media.ts'))return code.replaceAll('http://127.0.0.1:4310/',origin+'/');},
 }],build:{outDir:candidate,emptyOutDir:true,rollupOptions:{input:{studio:resolve(root,'index.html')}}}});
@@ -26,7 +26,7 @@ for(const name of ['favicon.svg','favicon.ico'])await cp(resolve(root,'public',n
 await cp(resolve(root,'public/speaker.html'),resolve(out,'speaker.html'));
 for(const name of ['privacy.html','licenses.html','legal.css','licenses'])await cp(resolve(root,'public',name),resolve(out,name),{recursive:true});
 await mkdir(resolve(out,'examples'),{recursive:true});
-await cp(resolve(root,'public/examples/deckleaf-demo.deck.json'),resolve(out,'examples/deckleaf-demo.deck.json'));
+for (const name of ['decksprig-demo.deck.json', 'deckleaf-demo.deck.json']) await cp(resolve(root,'public/examples',name),resolve(out,'examples',name));
 // Only project-owned template artwork is public; imported examples stay excluded.
 await cp(resolve(root,'public/examples/template-assets'),resolve(out,'examples/template-assets'),{recursive:true});
 await cp(resolve(root,'plugins/figma-export'),resolve(out,'plugins/figma-export'),{recursive:true,filter:path=>!path.endsWith('.ts')});

@@ -1,6 +1,6 @@
 # 中文使用指南
 
-[打开可编辑示例](https://deckleaf-kens-toolbox.netlify.app/app?demo=1) · [视频与演示](https://deckleaf-kens-toolbox.netlify.app/demo.html) · [English guide](getting-started.md)
+[打开可编辑示例](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [视频与演示](https://decksprig-kens-toolbox.netlify.app/demo.html) · [English guide](getting-started.md)
 
 ## 第一份文稿
 
@@ -36,7 +36,7 @@
 | 问题 | 处理方式 |
 | --- | --- |
 | `node` 不存在 | 安装 Node.js 22.14 或更新版本，重新打开终端 |
-| 4310 被占用 | 停止之前的 Deckleaf 服务，保留 `.data/`，只运行一份实例 |
+| 4310 被占用 | 停止之前的 Decksprig 服务，保留 `.data/`，只运行一份实例 |
 | 文稿在另一台设备消失 | 数据保存在原浏览器/安装中，导入之前导出的 Deck 文件 |
 | PPTX 字体或效果不同 | 在目标软件安装有许可的字体并查看转换警告 |
 | PDF 不是完全可编辑 | PDF 以参考画面和文字提取为主，这是当前限制 |
@@ -45,4 +45,4 @@
 | AI/云服务连接失败 | 检查凭证和浏览器访问限制，或用本地版；手动编辑无需连接 |
 | 保存失败 | 保持窗口、导出备份并使用恢复；报告问题时使用虚构复现 |
 
-进阶阅读：[连接配置](connections.md)、[自托管](self-hosting.md)、[隐私](../../PRIVACY.md)、[素材许可](../../ASSET_LICENSES.md)、[问题反馈](https://github.com/Ken-pan/deckleaf/issues)。
+进阶阅读：[连接配置](connections.md)、[自托管](self-hosting.md)、[隐私](../../PRIVACY.md)、[素材许可](../../ASSET_LICENSES.md)、[问题反馈](https://github.com/Ken-pan/decksprig/issues)。

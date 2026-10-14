@@ -56,7 +56,7 @@
   async function importStyle(event:Event){
     const input=event.currentTarget as HTMLInputElement,file=input.files?.[0];if(!file)return;
     try{if(file.size>50_000)throw new Error();const value=JSON.parse(await file.text());if(value.schema!=='deck-studio/style/1')throw new Error();draft=DesignSystemSchema.parse(value.system);fileError='';savedId='';libraryNotice='';resetFields();}
-    catch{fileError='Choose a valid Deckleaf style file.';}finally{input.value='';}
+    catch{fileError='Choose a valid Decksprig style file.';}finally{input.value='';}
   }
   function exportStyle(){const system=DesignSystemSchema.parse(draft);download(JSON.stringify({schema:'deck-studio/style/1',system},null,2),`${system.name.replace(/[^a-zA-Z0-9]+/g,'-').toLowerCase()||'custom'}.deck-style.json`);}
   const validation=$derived(DesignSystemSchema.safeParse(draft));

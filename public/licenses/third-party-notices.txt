@@ -1,6 +1,6 @@
-Deckleaf third-party dependency notices
+Decksprig third-party dependency notices
 Generated from package-lock.json. Original notices are reproduced below.
-JSZip is used under its MIT option. MPL-2.0 build components keep their file-level license; Deckleaf code is MIT.
+JSZip is used under its MIT option. MPL-2.0 build components keep their file-level license; Decksprig code is MIT.
 Platform alternatives and build-only tools are included for completeness; this is not a claim that all are shipped in the browser.
 
 ========================================================================

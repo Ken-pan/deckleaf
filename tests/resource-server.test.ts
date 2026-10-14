@@ -16,7 +16,7 @@ test('a static directory read failure returns JSON before headers and leaves the
   const child=spawn(process.execPath,['--import',import.meta.resolve('tsx'),processPath],{cwd:directory,env:{...process.env,NODE_ENV:'production',PORT:String(port),DECK_STUDIO_DATA:resolve(directory,'data')},stdio:['ignore','pipe','pipe']});
   let stderr='';child.stderr.on('data',data=>stderr+=data.toString());
   try {
-    await new Promise<void>((ok,no)=>{const timer=setTimeout(()=>no(new Error('Server startup timed out: '+stderr)),10000);child.stdout.on('data',data=>{if(data.toString().includes('Deckleaf')){clearTimeout(timer);ok();}});child.once('exit',code=>{clearTimeout(timer);no(new Error(`Server exited ${code}: ${stderr}`));});});
+    await new Promise<void>((ok,no)=>{const timer=setTimeout(()=>no(new Error('Server startup timed out: '+stderr)),10000);child.stdout.on('data',data=>{if(data.toString().includes('Decksprig')){clearTimeout(timer);ok();}});child.once('exit',code=>{clearTimeout(timer);no(new Error(`Server exited ${code}: ${stderr}`));});});
     const response=await fetch(`http://127.0.0.1:${port}/resources/`);assert.equal(response.status,404);assert.equal((await response.json()).error,'File not found.');
     const decks=await fetch(`http://127.0.0.1:${port}/api/decks`);assert.equal(decks.status,200);assert.deepEqual(await decks.json(),[]);
     const blank=newDeck('Explicit blank',[blankSlide()]);

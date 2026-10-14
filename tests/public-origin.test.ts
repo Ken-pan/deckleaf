@@ -8,3 +8,18 @@ test('self-host origin is normalized and rejects credentials or URL components',
     assert.throws(() => publicOrigin(value));
   }
 });
+
+test('new public-origin setting takes precedence over the legacy fallback', () => {
+  const current = process.env.DECKSPRIG_PUBLIC_ORIGIN;
+  const legacy = process.env.DECKLEAF_PUBLIC_ORIGIN;
+  try {
+    delete process.env.DECKSPRIG_PUBLIC_ORIGIN;
+    process.env.DECKLEAF_PUBLIC_ORIGIN = 'https://old.example.org';
+    assert.equal(publicOrigin(), 'https://old.example.org');
+    process.env.DECKSPRIG_PUBLIC_ORIGIN = 'https://new.example.org';
+    assert.equal(publicOrigin(), 'https://new.example.org');
+  } finally {
+    if (current === undefined) delete process.env.DECKSPRIG_PUBLIC_ORIGIN; else process.env.DECKSPRIG_PUBLIC_ORIGIN = current;
+    if (legacy === undefined) delete process.env.DECKLEAF_PUBLIC_ORIGIN; else process.env.DECKLEAF_PUBLIC_ORIGIN = legacy;
+  }
+});

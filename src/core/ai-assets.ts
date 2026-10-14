@@ -57,7 +57,7 @@ export async function prepareAssetReplacements(deck:Deck,input:z.infer<typeof Re
     const id=item.resourceId??target.resource?.id;
     if(!source&&!id)throw new Error('Supply an existing resourceId from search_resources, or document artwork IDs from read_assets.');
     if(!source&&!services)throw new Error('The resource library is unavailable. Reuse standalone document artwork instead.');
-    if(item.graphic&&!id?.startsWith('deck-graphics:'))throw new Error('Graphic settings apply only to Deckleaf patterns, textures and accents.');
+    if(item.graphic&&!id?.startsWith('deck-graphics:'))throw new Error('Graphic settings apply only to Decksprig patterns, textures and accents.');
     if(item.characterRecipeJson&&!id?.startsWith('character:'))throw new Error('Character settings require an existing character resource.');
     return {item,target,source,id:id!};
   });

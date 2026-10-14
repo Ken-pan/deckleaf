@@ -92,7 +92,7 @@ function previewImage(image:PNG){
   return output;
 }
 function attribution(recipe:CharacterRecipe,sourceSha256:string,characterLabel:string,sceneLabel:string):ResourceAttribution{
-  return {id:`character:${recipe.variantId}`,kind:'illustration',provider:'Characters and scenes',title:`${characterLabel} · ${sceneLabel}`,creator:'Deckleaf · AI-generated',
+  return {id:`character:${recipe.variantId}`,kind:'illustration',provider:'Characters and scenes',title:`${characterLabel} · ${sceneLabel}`,creator:'Decksprig · AI-generated',
     sourceUrl:'http://127.0.0.1:4310/characters.html',license:'CC0 1.0',licenseUrl:'https://creativecommons.org/publicdomain/zero/1.0/',attributionRequired:false,
     attribution:`${characterLabel} · ${sceneLabel} · AI-generated artwork · CC0 1.0`,originalSha256:sourceSha256,characterRecipe:recipe,color:recipe.clothesColor};
 }

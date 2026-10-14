@@ -1,8 +1,8 @@
-# Deckleaf
+# Decksprig
 
 本地优先的演示文稿编辑器：编辑幻灯片、审阅可选的 AI 修改、导出自己的作品。
 
-[**直接试用可编辑示例**](https://deckleaf-kens-toolbox.netlify.app/app?demo=1) · [演示与视频](https://deckleaf-kens-toolbox.netlify.app/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.0](https://github.com/Ken-pan/deckleaf/releases/tag/v0.1.0)
+[**直接试用可编辑示例**](https://decksprig-kens-toolbox.netlify.app/app?demo=1) · [演示与视频](https://decksprig-kens-toolbox.netlify.app/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.1](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.1)
 
 ![实际编辑器画面](public/website/assets/editor-light.jpg)
 
@@ -22,13 +22,13 @@ Ken Pan 的个人项目，使用 Codex 开发。首个公开版本为 **0.1.0**�
 需要 Node.js **22.14 或更新版本**、Git 和现代浏览器。普通编辑不需要安装 Keynote 或 LibreOffice。
 
 ```sh
-git clone https://github.com/Ken-pan/deckleaf.git
-cd deckleaf
+git clone https://github.com/Ken-pan/decksprig.git
+cd decksprig
 npm ci
 npm run dev
 ```
 
-打开 **http://127.0.0.1:4310/**，选择模板、空白文稿或 **Try sample**，并保持终端运行。端口占用时先停止之前的 Deckleaf 实例，不要删除数据。
+打开 **http://127.0.0.1:4310/**，选择模板、空白文稿或 **Try sample**，并保持终端运行。端口占用时先停止之前的 Decksprig 实例，不要删除数据。
 
 生产模式：
 
@@ -62,4 +62,8 @@ npm run package:source
 
 阅读[贡献指南](CONTRIBUTING.md)、[漏洞报告](SECURITY.md)和[第三方声明](THIRD_PARTY_NOTICES.md)。这是早期版本，欢迎提交使用虚构内容的最小复现；没有商业支持或 SLA。旧的 `deck-studio` 文档标识、存储键和环境变量为兼容性保留。
 
-独立素材项目：[Blue & Black 插图](https://github.com/Ken-pan/blue-and-black) · [Mallowbits 贴纸](https://github.com/Ken-pan/mallowbits)。
+独立素材项目：[Duoquill 插图](https://github.com/Ken-pan/duoquill) · [Clovlets 贴纸](https://github.com/Ken-pan/clovlets)。
+
+## 更名与迁移
+
+Decksprig 原名 Deckleaf。0.1.1 保留文档格式、`deck-studio-*` 存储标识、素材 ID 和本地 `.data/` 文档库。[旧地址的编辑器](https://deckleaf-kens-toolbox.netlify.app/app)继续用于读取旧地址保存的文档。浏览器存储属于具体域名：请在旧地址导出 Deck 文件，再到新地址导入；域名间不会自动转移文档。详见[迁移说明](docs/open-source/name-change.md)。

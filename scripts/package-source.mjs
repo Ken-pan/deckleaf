@@ -7,14 +7,15 @@ import {execFileSync} from 'node:child_process';
 // git add . or the working directory's historical evidence and local documents.
 const root = resolve(import.meta.dirname, '..');
 const releaseId = new Date().toISOString().replace(/[:.]/g, '-') + '-' + process.pid;
-const output = process.env.DECKLEAF_SOURCE_OUTPUT ? resolve(process.env.DECKLEAF_SOURCE_OUTPUT) : resolve(root, 'output/open-source', releaseId);
-const candidate = join(output, '.deckleaf-stage-' + releaseId);
-const finalCandidate = join(output, 'deckleaf');
+const sourceOutput = process.env.DECKSPRIG_SOURCE_OUTPUT ?? process.env.DECKLEAF_SOURCE_OUTPUT;
+const output = sourceOutput ? resolve(sourceOutput) : resolve(root, 'output/open-source', releaseId);
+const candidate = join(output, '.decksprig-stage-' + releaseId);
+const finalCandidate = join(output, 'decksprig');
 if (relative(root, output).startsWith('..') || !relative(root, output).split(/[\\/]/).includes('output')) throw new Error('Source packages must be staged inside a project output directory.');
 const files = ['.gitignore', 'README.md', 'README.zh-CN.md', 'LICENSE', 'ASSET_LICENSES.md', 'PRIVACY.md', 'SECURITY.md', 'CONTRIBUTING.md', 'THIRD_PARTY_NOTICES.md', 'package.json', 'package-lock.json', 'index.html', 'brand.html', 'characters.html', 'svelte.config.js', 'tsconfig.json', 'vite.config.ts', 'netlify.toml', 'website.netlify.toml', 'docs/branding.md', 'docs/provenance.md'];
 const scripts = ['build-brand.mjs', 'adopt-brand.mjs', 'build-figma-plugin.mjs', 'check-startup.mjs', 'compress-assets.mjs', 'build-browser.mjs', 'build-browser-resources.ts', 'build-website.mjs', 'public-origin.mjs', 'build-character-library.mjs', 'review-character-library.ts', 'package-source.mjs', 'release-content.mjs', 'generate-notices.mjs', 'build-deck-graphics.mjs', 'build-release-demo.ts'];
 const resources = new Set(['blue-black-v1', 'characters-v1', 'deck-graphics-v1', 'doodles', 'illlustrations', 'licenses']);
-const motionExamples = new Set(['modern-transitions-showcase.html', 'modern-transitions-showcase.json', 'smart-motion-studies.html', 'smart-motion-studies.json', 'motion-prototype-fixture.html', 'motion-choreography-demo.html', 'motion-choreography-demo.json', 'deckleaf-demo.deck.json']);
+const motionExamples = new Set(['modern-transitions-showcase.html', 'modern-transitions-showcase.json', 'smart-motion-studies.html', 'smart-motion-studies.json', 'motion-prototype-fixture.html', 'motion-choreography-demo.html', 'motion-choreography-demo.json', 'decksprig-demo.deck.json', 'deckleaf-demo.deck.json']);
 const privateText = /\bim-(?:compare|collection|search)\b|portfolio\d{4}|\/Users\/[^/\s]+\/(?:Projects|Documents)\//;
 import {containsCredential} from './release-content.mjs';
 function publicFile(path) {
@@ -62,10 +63,10 @@ async function inspect(dir) {
 }
 await inspect(candidate);
 await rename(candidate, finalCandidate);
-const archive = join(output, 'deckleaf-source.tar.gz');
-if (!process.argv.includes('--stage-only')) execFileSync('tar', ['-czf', archive + '.tmp', '-C', output, 'deckleaf'], {env: {...process.env, COPYFILE_DISABLE: '1'}});
+const archive = join(output, 'decksprig-source.tar.gz');
+if (!process.argv.includes('--stage-only')) execFileSync('tar', ['-czf', archive + '.tmp', '-C', output, 'decksprig'], {env: {...process.env, COPYFILE_DISABLE: '1'}});
 if (!process.argv.includes('--stage-only')) await rename(archive + '.tmp', archive);
 const report = {status: 'private-release-candidate', files: Object.keys(manifest).length, sourceBytes: Object.values(manifest).reduce((sum, file) => sum + file.bytes, 0), archiveBytes: process.argv.includes('--stage-only') ? 0 : (await stat(archive)).size, filesByPath: manifest};
-await writeFile(join(output, 'deckleaf-source-manifest.json'), JSON.stringify(report, null, 2) + '\n');
-if (!process.argv.includes('--stage-only')) await writeFile(join(output, 'SHA256SUMS'), createHash('sha256').update(await readFile(archive)).digest('hex') + '  deckleaf-source.tar.gz\n');
+await writeFile(join(output, 'decksprig-source-manifest.json'), JSON.stringify(report, null, 2) + '\n');
+if (!process.argv.includes('--stage-only')) await writeFile(join(output, 'SHA256SUMS'), createHash('sha256').update(await readFile(archive)).digest('hex') + '  decksprig-source.tar.gz\n');
 console.log(JSON.stringify({output, status: report.status, files: report.files, sourceMB: +(report.sourceBytes / 1e6).toFixed(1), archiveMB: +(report.archiveBytes / 1e6).toFixed(1)}));

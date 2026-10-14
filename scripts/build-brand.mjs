@@ -68,7 +68,7 @@ for (const path of ['index.html', 'characters.html', 'brand.html']) {
 
 const pluginPath = 'plugins/figma-export/ui.html';
 let plugin = read(pluginPath).toString();
-const pluginTitle = plugin.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/)?.[1] || 'Export to Deckleaf';
+const pluginTitle = plugin.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/)?.[1] || 'Export to Decksprig';
 const pluginMark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28" fill="currentColor" aria-hidden="true">${paths}</svg>`;
 const pluginHeader = `<!-- deck-studio-brand:start -->\n<div class="plugin-brand" data-brand-revision="${revision}" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--figma-color-text)">${pluginMark}<h2 style="margin:0">${pluginTitle}</h2></div>\n<!-- deck-studio-brand:end -->`;
 plugin = /<!-- deck-studio-brand:start -->[\s\S]*?<!-- deck-studio-brand:end -->/.test(plugin)
@@ -77,13 +77,13 @@ plugin = /<!-- deck-studio-brand:start -->[\s\S]*?<!-- deck-studio-brand:end -->
 write(pluginPath, plugin);
 
 const trace = JSON.parse(read('public/brand/references/approved-logo-trace.json'));
-const manifest = {name: 'Deckleaf', revision, master: 'brand/logo.svg', masterSha256: hash(source), sourceSha256: trace.sha256, defaultInk: ink, pathCount: [...source.matchAll(/<path\b/g)].length, urls, files: files.map(path => ({path, sha256: hash(read(`public/${path}`)), bytes: read(`public/${path}`).length}))};
+const manifest = {name: 'Decksprig', revision, master: 'brand/logo.svg', masterSha256: hash(source), sourceSha256: trace.sha256, defaultInk: ink, pathCount: [...source.matchAll(/<path\b/g)].length, urls, files: files.map(path => ({path, sha256: hash(read(`public/${path}`)), bytes: read(`public/${path}`).length}))};
 write('public/brand/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 
 const zip = new JSZip();
 for (const path of [...files, 'brand/manifest.json']) zip.file(path, read(`public/${path}`), {date: new Date('2026-10-12T00:00:00Z')});
 zip.file('README.md', read('docs/branding.md'), {date: new Date('2026-10-12T00:00:00Z')});
-const output = new URL('output/brand/Deck-Studio-Brand-Kit.zip', root);
+const output = new URL('output/brand/Decksprig-Brand-Kit.zip', root);
 mkdirSync(fileURLToPath(new URL('output/brand/', root)), {recursive: true});
 writeFileSync(output, await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'}));
 console.log(`Generated ${files.length} brand assets, revision ${revision}, entry metadata, plugin mark and brand kit.`);

@@ -1,4 +1,4 @@
-# Deckleaf patterns and accents
+# Decksprig patterns and accents
 
 60 transparent SVG resources: 30 patterns, 6 textures, 24 accents.
 

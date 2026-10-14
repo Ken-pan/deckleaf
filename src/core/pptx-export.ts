@@ -25,7 +25,7 @@ export async function buildPptx(deck: Deck, original = false, imageDimensions: I
   deck={...deck,slides:deck.slides.map(s=>({...s,elements:s.elements.map(e=>e.sourceRegion&&s.source?.render?{...e,src:s.source.render,crop:e.sourceRegion}:e)}))};
   const {default: PptxGenJS} = await import('pptxgenjs');
   const pptx = new PptxGenJS();
-  pptx.defineLayout({name: 'DECK', width: deck.width / 96, height: deck.height / 96}); pptx.layout = 'DECK'; pptx.title = deck.title; pptx.subject = 'Deckleaf'; pptx.author = 'Deckleaf';
+  pptx.defineLayout({name: 'DECK', width: deck.width / 96, height: deck.height / 96}); pptx.layout = 'DECK'; pptx.title = deck.title; pptx.subject = 'Decksprig'; pptx.author = 'Decksprig';
   const c = (color: string) => color.replace('#', '');
   let deadline = performance.now() + 8;
   for (const s of deck.slides) {

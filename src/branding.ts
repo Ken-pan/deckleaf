@@ -1,7 +1,7 @@
 import { version } from '../package.json';
 import { BRAND_ASSETS } from './brand-assets';
 
-export const BRAND = { name: 'Deckleaf', description: 'Portfolios and presentations', version } as const;
+export const BRAND = { name: 'Decksprig', description: 'Portfolios and presentations', version } as const;
 
 let geometry: Promise<string> | undefined;
 let appearanceSignature = '', revision = 0;

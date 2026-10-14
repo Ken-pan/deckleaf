@@ -1,4 +1,4 @@
-# Deckleaf identity
+# Decksprig identity
 
 The active mark is the user-selected solid rounded card with a transparent two-leaf sprout cutout and one rear card. The original clipboard PNG is retained unchanged as `public/brand/references/approved-logo-source.png` (SHA-256 `c13f7da15b77f9acbacdd841bc9e213f8c3b5b0a24f5ca535f5a188b654324bf`). The reviewed vector master is `public/brand/references/approved-logo-vector.svg`.
 
