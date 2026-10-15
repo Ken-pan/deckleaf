@@ -2,6 +2,7 @@ import {writeFile,readFile,mkdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {templateDeck} from '../src/core/templates';
 import {validateDeck} from '../src/core/model';
+import {publicOrigin} from './public-origin.mjs';
 const names={portfolio:'editorial',review:'studio',minimal:'minimalist',proposal:'monograph',pitch:'signal',report:'ledger'};
 const counts=[];
 for(const [collection,file] of Object.entries(names)){
@@ -13,6 +14,6 @@ for(const [collection,file] of Object.entries(names)){
   const mime=element.src.endsWith('.jpg')?'image/jpeg':element.src.endsWith('.svg')?'image/svg+xml':'image/png';
   element.src=`data:${mime};base64,${bytes.toString('base64')}`;
  }
- validateDeck(deck);await writeFile(`public/website/assets/${file}.deck.json`,JSON.stringify(deck));counts.push({collection,file,slides:deck.slides.length});
+ validateDeck(deck);await writeFile(`public/website/assets/${file}.deck.json`,JSON.stringify(deck).replaceAll('http://127.0.0.1:4310/',publicOrigin()+'/'));counts.push({collection,file,slides:deck.slides.length});
 }
 await mkdir('output/website',{recursive:true});await writeFile('output/website/template-counts.json',JSON.stringify(counts,null,2));console.log(counts);
