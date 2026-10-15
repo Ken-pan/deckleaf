@@ -70,11 +70,31 @@ export async function prepareTemplateUpdate(deck:Deck,input:z.infer<typeof Templ
  const owned=new Set(slide.template?.generated?.map(e=>e.id)??[]),bound=new Set(slide.template?.slots?.map(s=>s.elementId)??[]),baseline=new Map(slide.template?.generated?.map(e=>[e.id,e.signature]));
  if(slide.elements.some(e=>owned.has(e.id)&&(e.sourceId||e.nativeTextLayout)))throw new Error('Keep imported source objects intact. Edit their existing objects or prepare a native page beside them.');
  if(slide.elements.some(e=>owned.has(e.id)&&e.locked))throw new Error('Unlock template objects before changing the template layout.');
- const retained=slide.elements.filter(e=>!owned.has(e.id)||!bound.has(e.id)&&baseline.get(e.id)!==templateSignature(e));
+ let retained=slide.elements.filter(e=>e.type==='image'&&input.content?.noImage!==true||!owned.has(e.id)||!bound.has(e.id)&&baseline.get(e.id)!==templateSignature(e));
  const content={...(input.contentMode==='replace'?input.content:{...current.content,...input.content}),...(input.density?{density:input.density}:{})},collection=input.collection??current.collection??deck.templateCollection??'review',layout=input.layout??current.layout!;
+ if(!slide.elements.some(e=>e.type==='image'&&owned.has(e.id)))content.noImage=true;
  const pages=await authoredTemplatePages(deck,layout,collection,content,deck.slides.indexOf(slide)+1,input.notes??slide.notes);
  if(pages.length!==1)throw new Error('This content needs continuation slides. Use prepare_template to add them beside the original, or shorten the content before reflowing.');
  const replacement=pages[0],keys=new Map(slide.template!.slots!.map(s=>[s.key,s.elementId]));
+ // Reflow chart frames, while keeping the supplied data and existing display
+ // settings. A template factory's example title/settings cannot overwrite them.
+ if(content.chart)for(const e of replacement.elements)if(e.type==='chart')e.chart=structuredClone(content.chart);
+ // A family/layout change never authorizes stock artwork on a previously
+ // text-only page. Custom images keep their own frames, independent of templates.
+ if(!slide.elements.some(e=>e.type==='image'&&owned.has(e.id))){const removed=new Set(replacement.elements.filter(e=>e.type==='image').map(e=>e.id));replacement.elements=replacement.elements.filter(e=>!removed.has(e.id));replacement.autoLayouts=replacement.autoLayouts?.map(l=>({...l,order:l.order.filter(id=>!removed.has(id))})).filter(l=>l.order.length);}
+ // Reflow existing native artwork into the new art frame. A template change is
+ // not permission to replace a chosen asset or add a second sample illustration.
+ const artwork=slide.elements.filter(e=>e.type==='image'&&owned.has(e.id)),reused=new Set<string>(),imageIds=new Map<string,string>(),artGroups=new Map<string,string>();
+ for(const [index,next] of replacement.elements.entries())if(next.type==='image'){
+  const previous=artwork.find(e=>!reused.has(e.id)&&e.resource?.kind===next.resource?.kind)??artwork.find(e=>!reused.has(e.id));if(!previous)continue;
+  reused.add(previous.id);imageIds.set(next.id,previous.id);if(next.group&&previous.group)artGroups.set(next.group,previous.group);replacement.elements[index]={...structuredClone(previous),x:next.x,y:next.y,w:next.w,h:next.h,group:next.group??previous.group,layoutItem:next.layoutItem};
+  if(!next.group&&previous.group&&!replacement.groups?.some(g=>g.id===previous.group)){replacement.groups??=[];replacement.groups.push({id:previous.group,name:slide.groups?.find(g=>g.id===previous.group)?.name??'Artwork'});replacement.template!.generatedGroups=[...replacement.template!.generatedGroups??[],previous.group];}
+ }
+ for(const e of replacement.elements)if(e.group)e.group=artGroups.get(e.group)??e.group;
+ for(const g of replacement.groups??[]){g.id=artGroups.get(g.id)??g.id;if(g.parent)g.parent=artGroups.get(g.parent)??g.parent;}
+ for(const layout of replacement.autoLayouts??[]){layout.id=artGroups.get(layout.id)??layout.id;layout.order=layout.order.map(id=>imageIds.get(id)??artGroups.get(id)??id);}
+ replacement.template!.generatedGroups=replacement.template!.generatedGroups?.map(id=>artGroups.get(id)??id);
+ retained=retained.filter(e=>!reused.has(e.id));
  // Local type/color overrides follow their semantic content, without changing the document's theme.
  for(const slot of replacement.template!.slots!){const e=replacement.elements.find(e=>e.id===slot.elementId)!,old=slide.elements.find(e=>e.id===keys.get(slot.key));if(!old)continue;for(const key of old.design?.overrides??[])if(TYPE_PROPERTIES.includes(key))(e as any)[key]=old[key];if(old.design?.overrides?.length&&e.design)e.design.overrides=[...old.design.overrides];if(!old.design?.fill){e.fill=old.fill;if(e.design)delete e.design.fill;}if(!old.design?.stroke){e.stroke=old.stroke;if(e.design)delete e.design.stroke;}if(e.text===old.text){e.runs=structuredClone(old.runs);e.paragraphs=structuredClone(old.paragraphs);e.italic=old.italic;}e.animation=structuredClone(old.animation);e.motionKey=old.motionKey;e.motionMatch=old.motionMatch;}
  replacement.template!.generated=replacement.elements.map(e=>({id:e.id,signature:templateSignature(e)}));

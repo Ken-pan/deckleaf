@@ -14,6 +14,8 @@ import type {NoticeTone} from '../notification-lifetime';
 import {captureClipboardContent,clipboardContent,clipboardSlides,clipboardFonts,portableMembers,pasteOffset,detachClipboardStyles,type ClipboardContent,type PastePlacement} from './clipboard';
 import {orderedSlideSelection,selectSlideRange,type SlideSelectionIntent} from './slide-selection';
 import {slideVisibilityOperations} from './slide-visibility';
+import {deleteSelection} from './delete-selection';
+import {editorCommands} from './clipboard-queue';
 import {selectedSlideOrder,reorderSelectedSlides,moveSelectedSlides,type SlideMove} from './slide-order';
 
 type EditorContext = {activeId: string; selected: string[]; selectedGroup?:string; editingGroup?:string; individualSelection?:boolean; sourceMode: boolean; selectedSlides?:string[]; slideAnchor?:string; slideSelectionMode?:boolean};
@@ -294,9 +296,15 @@ export class Editor {
     try{return (await import('./group-exit-command')).exitGroup(this,toSlide,ids,scope,revision,slideId,deckId);}catch(e:any){this.error=e.message||'Could not move the selection out of its group.';return false;}
   }
   private async containerCommand(action:'group'|'auto',ungroup=false,wrap=false) {
-    if(!this.slide||ungroup&&!this.selectedContainer)return;const target=this.activeId,ids=this.selected.join(',');
-    try{(await import('./group-edit-command')).editContainer(this,action,ungroup,wrap,target,ids);}catch(e:any){this.error=e.message;}
+    if(!this.slide)return;
+    await editorCommands.run(this.commandContext(),()=>this.commandContext(),async current=>{
+      const {editContainer}=await import('./group-edit-command');
+      if(this.commandContext()!==current)throw Error('The document changed. Try the command again.');
+      editContainer(this,action,ungroup,wrap,this.activeId,this.selected.join(','));
+      return this.commandContext();
+    }).catch(e=>this.notify(e.message,'warning'));
   }
+  commandContext(){return `${this.deck?.id}:${this.activeId}:${this.deck?.revision}:${this.editingGroup}:${this.selected.join(',')}:${this.sourceMode}:${this.editingId}:${this.selectedContainer}:${this.selectedSlides.join(',')}:${this.slideSelectionMode}`;}
   add(e: SlideElement, revision?: number) {
     const layout = this.slide && selectedLayout(this.slide, this.selected,this.editingGroup||this.selectedContainer);
     if(this.editingGroup)e={...e,group:this.editingGroup};
@@ -401,7 +409,12 @@ export class Editor {
   async moveLayers(ids:string[],drop:LayerDrop,revision=this.deck?.revision,slideId=this.activeId,deckId=this.deck?.id):Promise<boolean> {
     try{return (await import('./layer-move-command')).moveLayers(this,ids,drop,revision,slideId,deckId);}catch(e:any){this.error=e.message||'Layer controls could not load. Try moving again.';return false;}
   }
-  remove() { const members=this.selectedContainer&&this.slide?descendants(this.slide,this.selectedContainer):this.selection.filter(e=>!e.locked);this.commit(members.map(e => ({op: 'delete_element', slideId: this.slide!.id, elementId: e.id}))); }
+  remove() {
+    if(!this.slide)return;
+    const {operations,blocked}=deleteSelection(this.slide,this.selected,this.selectionScope),revision=this.deck?.revision;
+    this.commit(operations);
+    if(blocked)this.notify(this.deck?.revision!==revision?'Unlocked objects deleted. Locked objects were kept.':'Unlock the selection before deleting.','warning');
+  }
   private redoContext(before:Deck,context:EditorContext):EditorContext {
     if(this.deck&&(before.slides.some(slide=>!this.deck!.slides.some(value=>value.id===slide.id))||this.deck.slides.some(slide=>!before.slides.some(value=>value.id===slide.id))))return this.context();
     if(this.activeId===context.activeId)return this.context();

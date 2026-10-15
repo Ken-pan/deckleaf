@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {tablePresentation,tableCellStyle} from '../core/table-appearance';
+  import {tablePresentation,tableCellStyle,tableCellSpan} from '../core/table-appearance';
   import type {SlideElement} from '../core/model';
   import type {DesignSystem} from '../core/design-system-schema';
   let {element,system,style='',editable=false,managed=false,activeCell,selection,tabTarget,oncell}:{element:SlideElement;system?:DesignSystem;style?:string;editable?:boolean;managed?:boolean;activeCell?:{row:number;column:number};selection?:{top:number;bottom:number;left:number;right:number};tabTarget?:{row:number;column:number};oncell?:(row:number,column:number,node:HTMLElement)=>void}=$props();
@@ -25,14 +25,15 @@
 </script>
 <table class="slide-table" class:cell-editable={editable} style={style} role={editable?'grid':undefined} aria-multiselectable={managed?true:undefined} aria-label={editable?`${element.name||'Table'} · Editable cells`:undefined}>
   <colgroup>{#each p.widths as width}<col style:width={`${width*100}%`}/>{/each}</colgroup>
-  <tbody>{#each rows as row,i}<tr style:height={p.heights?`${p.heights[i]*100}%`:undefined}>{#each Array.from({length:p.widths.length},(_,j)=>j) as j}
+  <tbody>{#each rows as row,i}<tr style:height={p.heights?`${p.heights[i]*100}%`:undefined}>{#each Array.from({length:p.widths.length},(_,j)=>j) as j}{@const span=tableCellSpan(p,i,j)}{#if !span.covered}
     <!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions a11y_no_static_element_interactions -->
-    <svelte:element this={p.headerRow&&i===0?'th':'td'} role={p.headerRow&&i===0?'columnheader':editable?'gridcell':'cell'} scope={p.headerRow&&i===0?'col':undefined} style={css(i,j)} data-table-row={i} data-table-column={j} aria-selected={managed?selected(i,j):undefined} class:selected-cell={selected(i,j)} class:active-cell={editable&&activeCell?.row===i&&activeCell?.column===j} tabindex={editable?(i===tabCell.row&&j===tabCell.column?0:-1):undefined} onfocus={()=>{if(editable)focusedCell={row:i,column:j};}} onkeydown={event=>key(event,i,j)} ondblclick={event=>{if(editable){event.stopPropagation();oncell?.(i,j,event.currentTarget as HTMLElement);}}}>{row[j]??''}</svelte:element>
-  {/each}</tr>{/each}</tbody>
+    <svelte:element this={p.headerRow&&i===0?'th':'td'} role={p.headerRow&&i===0?'columnheader':editable?'gridcell':'cell'} scope={p.headerRow&&i===0?'col':undefined} rowspan={span.rowSpan} colspan={span.columnSpan} aria-rowindex={editable?i+1:undefined} aria-colindex={editable?j+1:undefined} style={css(i,j)} data-table-row={i} data-table-column={j} aria-selected={managed?selected(i,j):undefined} class:selected-cell={selected(i,j)} class:current-cell={managed&&selected(i,j)&&i===tabCell.row&&j===tabCell.column} class:active-cell={editable&&activeCell?.row===i&&activeCell?.column===j} tabindex={editable?(i===tabCell.row&&j===tabCell.column?0:-1):undefined} onfocus={()=>{if(editable)focusedCell={row:i,column:j};}} onkeydown={event=>key(event,i,j)} ondblclick={event=>{if(editable){event.stopPropagation();oncell?.(i,j,event.currentTarget as HTMLElement);}}}>{row[j]??''}</svelte:element>
+  {/if}{/each}</tr>{/each}</tbody>
 </table>
 <style>
   .slide-table{width:100%;height:100%;border-collapse:collapse;table-layout:fixed;white-space:pre-wrap;font-variant-numeric:tabular-nums}.slide-table th,.slide-table td{overflow-wrap:anywhere}
   .cell-editable .active-cell,.cell-editable :focus-visible{outline:calc(2px / var(--canvas-scale,1)) solid var(--canvas-selection);outline-offset:calc(-2px / var(--canvas-scale,1))}
   .cell-editable .selected-cell{background-image:linear-gradient(color-mix(in srgb,var(--canvas-selection) 14%,transparent),color-mix(in srgb,var(--canvas-selection) 14%,transparent))!important;outline:calc(1px / var(--canvas-scale,1)) solid color-mix(in srgb,var(--canvas-selection) 45%,transparent);outline-offset:calc(-1px / var(--canvas-scale,1))}
+  .cell-editable .current-cell{outline:calc(2px / var(--canvas-scale,1)) solid var(--canvas-selection);outline-offset:calc(-2px / var(--canvas-scale,1))}
   @media(hover:hover) and (pointer:fine){.cell-editable th:hover,.cell-editable td:hover{outline:calc(1px / var(--canvas-scale,1)) solid color-mix(in srgb,var(--canvas-selection) 55%,transparent);outline-offset:calc(-1px / var(--canvas-scale,1))}}
 </style>

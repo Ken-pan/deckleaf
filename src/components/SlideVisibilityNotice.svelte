@@ -1,6 +1,6 @@
 <script lang="ts">
   import {EyeOff} from '@lucide/svelte';
-  import {Button} from './ui';
+  import Button from './ui/Button.svelte';
   let {allHidden = false, preview = false, onunhide}: {
     allHidden?: boolean; preview?: boolean; onunhide: () => void;
   } = $props();

@@ -44,7 +44,7 @@ export function readAssets(deck:Deck,input:z.infer<typeof ReadAssetsSchema>,scop
 export async function prepareAssetReplacements(deck:Deck,input:z.infer<typeof ReplaceAssetsSchema>,services?:EditingServices) {
   if(input.baseRevision!==deck.revision)throw new Error('The document revision changed. Read assets and prepare replacements again.');
   const targets=new Set<string>();
-  const find=(slideId:string,elementId:string)=>{const e=deck.slides.find(s=>s.id===slideId)?.elements.find(e=>e.id===elementId);if(!e||e.type!=='image')throw new Error('Image no longer exists. Use read_assets to choose an image object.');return e;};
+  const find=(slideId:string,elementId:string)=>{const e=deck.slides.find(s=>s.id===slideId)?.elements.find(e=>e.id===elementId);if(!e)throw new Error('Image no longer exists. Use read_assets to choose an image object.');if(e.type!=='image')throw new Error(`The target is a ${e.type} object. To turn text or a shape into artwork, use search_resources, prepare_resource and prepare_element, then delete the old object in the same prepared proposal. Asset replacements require an existing image object.`);return e;};
   // Validate the whole batch before loading any external resource.
   const jobs=input.replacements.map(item=>{
     const key=`${item.slideId}/${item.elementId}`;if(targets.has(key))throw new Error('Use each replacement target once.');targets.add(key);
@@ -90,7 +90,7 @@ export async function prepareAssetReplacements(deck:Deck,input:z.infer<typeof Re
     if(fit==='fill'&&region){patch.fit='fill';patch.aspectRatioLocked=false;}
     // A deliberate local color no longer follows the previous accent binding.
     if(target.design?.fill&&image.resource?.color?.toLowerCase()!==(target.resource?.color??target.fill).toLowerCase()){const design={...target.design};delete design.fill;patch.design=design;}
-    if(unchangedSource&&patch.fit===target.fit)throw new Error('Choose a different asset or style. This replacement is unchanged; search_resources can find a new library resource.');
+    if(unchangedSource&&patch.fit===target.fit)throw new Error('This replacement is unchanged: the asset already uses the requested color, style and fit. For a customization request, report that it already matches; do not choose different artwork. For an artwork replacement request, search_resources can find a different asset.');
     const unset:('crop'|'resource')[]=[];if(!patch.crop&&target.crop)unset.push('crop');if(!image.resource&&target.resource)unset.push('resource');
     operations.push({op:'update_element',slideId:item.slideId,elementId:item.elementId,patch,...(unset.length?{unset}:{})});
     details.push({slideId:item.slideId,elementId:item.elementId,resourceId:image.resource?.id,kind,purpose:region?'region-fill':kind??'photo',fit:patch.fit,license:image.resource?.license,framePreserved:true});

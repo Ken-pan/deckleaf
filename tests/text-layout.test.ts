@@ -46,8 +46,8 @@ test('invalid measurement and stale/locked AI changes roll back atomically', () 
 });
 test('content-and-evidence templates wrap headings and body in persistent responsive frames', () => {
   const s=createLayout('split'), title=s.elements.find(e=>e.text==='The evidence')!,body=s.elements.find(e=>e.text.startsWith('Describe what you observed.'))!;
-  assert.equal(title.textSizing,'auto-height');assert.equal(title.layoutItem?.widthMode,'fill');assert.equal(title.layoutItem?.maxWidth,480);
-  assert.equal(body.textSizing,'auto-height');assert.equal(body.layoutItem?.widthMode,'fill');assert.equal(body.w,470);
+  assert.equal(title.textSizing,'auto-height');assert.equal(title.layoutItem?.widthMode,'fill');assert.equal(title.layoutItem?.maxWidth,516);
+  assert.equal(body.textSizing,'auto-height');assert.equal(body.layoutItem?.widthMode,'fill');assert.equal(body.w,516);
 });
 test('automatic layout retains authored text sizing modes while repositioning text', () => {
   const d=fixture('auto-height'), s=d.slides[0];

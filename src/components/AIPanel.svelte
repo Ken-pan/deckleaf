@@ -171,5 +171,6 @@
   .ai-review-secondary{display:flex;justify-content:space-between;gap:8px;align-items:center}
   .ai-review-actions{padding:12px;gap:8px}
   .ai-preview{padding:12px}
+  @media(max-height:520px){.ai-panel{overflow:auto;overscroll-behavior:contain}.ai-request-body,.ai-preview{flex:none;overflow:visible}.ai-compose textarea{height:min(3lh,30dvh);min-height:2lh;max-height:45dvh}}
   @media(max-width:760px),(pointer:coarse){.ai-request-help summary,.ai-suggestions button,.ai-request-actions :global(button),.ai-review-actions :global(button),.ai-review-pages :global(button){min-height:44px}.ai-review-pages :global(button){min-width:44px}}
 </style>

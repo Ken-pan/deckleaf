@@ -28,7 +28,7 @@ test('AI transport produces validated proposals, preserves rich text and rejects
     assert.equal(proposal.operations.length, 1);
     assert.equal(applyOperations(deck, proposal.operations, proposal.baseRevision, 'ai').slides[0].elements[0].runs?.[0].text, 'Edited');
     const input = JSON.parse(received.messages[1].content); assert.equal(input.deck.slides.length, 1); assert.equal(input.scope.elementIds[0], e.id);
-    assert.equal(Object.hasOwn(input.deck.slides[0],'title'),false);assert.equal(input.deck.title,'Source deck');assert.deepEqual(input.pages,[{id:s.id,number:1}]);
+    assert.equal(Object.hasOwn(input.deck.slides[0],'title'),false);assert.equal(input.deck.title,'Source deck');assert.deepEqual(input.pages,[{id:s.id,number:1,heading:'Original'}]);
     outside = true; await assert.rejects(() => proposeAI(deck, 'Edit selected text', scope, settings), /outside the selected scope/);
     assert.equal(deck.slides[0].elements[0].text, 'Original');
   } finally { await new Promise<void>(ok => server.close(() => ok())); }

@@ -76,7 +76,7 @@ test('native template export is well-formed, reusable and preserves gaps, foreca
 test('five-column replacement removes the stock report result and preserves an explicitly edited result',()=>{
  const d=templateDeck('report',{},true),s=d.slides.find(s=>s.template?.prototype==='table')!,e=s.elements.find(e=>e.type==='table')!,metric=s.elements.find(e=>e.name==='Current result')!;
  const cells=[['Region','Baseline','Current','Period','Source'],...Array.from({length:8},(_,i)=>['Region '+i,'42%','53%','Q3','Matched cohort'])];
- const next=applyOperations(d,[{op:'update_element',slideId:s.id,elementId:e.id,patch:{cells}}]);const first=next.slides.find(p=>p.id===s.id)!;const table=first.elements.find(t=>t.type==='table')!;assert.equal(table.x,84);assert.equal(table.w,1276);assert.ok(!first.elements.some(t=>t.id===metric.id));assert.equal(next.revision,d.revision+1);
+ const next=applyOperations(d,[{op:'update_element',slideId:s.id,elementId:e.id,patch:{cells}}]);const first=next.slides.find(p=>p.id===s.id)!;const table=first.elements.find(t=>t.type==='table')!;assert.equal(table.x,84);assert.equal(table.w,1440-first.layout!.margins.left-first.layout!.margins.right);assert.ok(!first.elements.some(t=>t.id===metric.id));assert.equal(next.revision,d.revision+1);
  const custom=applyOperations(d,[{op:'update_element',slideId:s.id,elementId:metric.id,patch:{text:'72%'}}]);const after=applyOperations(custom,[{op:'update_element',slideId:s.id,elementId:e.id,patch:{cells}}]);assert.equal(after.slides.find(p=>p.id===s.id)!.elements.find(t=>t.id===metric.id)!.text,'72%');
 });
 

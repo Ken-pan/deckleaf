@@ -54,7 +54,7 @@
     };
   });
 </script>
-<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} oncancel={(e) => { e.preventDefault(); onclose(); }}>
+<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} onkeydown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !event.isComposing && event.target === heading) { event.preventDefault(); onclose(); } }} oncancel={(e) => { e.preventDefault(); onclose(); }}>
   <DialogHeader {title} {subtitle} {titleId} {closeLabel} {onclose} bind:heading />
   <!-- Scrollable dialog prose has a keyboard reading position. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->

@@ -5,7 +5,7 @@ export type CellRange={anchor:Cell;head:Cell};
 export function cellBounds(range:CellRange){return {top:Math.min(range.anchor.row,range.head.row),bottom:Math.max(range.anchor.row,range.head.row),left:Math.min(range.anchor.column,range.head.column),right:Math.max(range.anchor.column,range.head.column)};}
 export function cellInRange(range:CellRange|undefined,row:number,column:number){if(!range)return false;const b=cellBounds(range);return row>=b.top&&row<=b.bottom&&column>=b.left&&column<=b.right;}
 export function selectedCells(cells:string[][],range:CellRange){const b=cellBounds(range);return Array.from({length:b.bottom-b.top+1},(_,i)=>Array.from({length:b.right-b.left+1},(_,j)=>cells[b.top+i]?.[b.left+j]??''));}
-export function cellsTsv(cells:string[][]){return cells.map(row=>row.map(v=>/[\t\r\n"]/.test(v)?`"${v.replaceAll('"','""')}"`:v).join('\t')).join('\r\n');}
+export function cellsTsv(cells:string[][]){return cells.map(row=>row.map(v=>v===''&&cells.length===1&&row.length===1||/[\t\r\n"]/.test(v)?`"${v.replaceAll('"','""')}"`:v).join('\t')).join('\r\n');}
 export function clearCellRange(cells:string[][],range:CellRange){const b=cellBounds(range),next=cells.map(row=>[...row]);for(let r=b.top;r<=b.bottom;r++){while(next[r].length<=b.right)next[r].push('');for(let c=b.left;c<=b.right;c++)next[r][c]='';}return tableCells(next);}
 /** A single target grows to the source range; a selected rectangle tiles matching data. */
 export function pasteCellRange(cells:string[][],text:string,range:CellRange){

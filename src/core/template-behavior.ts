@@ -111,19 +111,6 @@ export function configureTemplateBehavior(s:Slide,collection:CollectionId,page:L
     const next=s.elements.filter(b=>b.id!==e.id&&b.y>e.y+8&&b.x<e.x+e.w-16&&b.x+b.w>e.x+16).sort((a,b)=>a.y-b.y)[0];
     e.textSizing='auto-height';stack('Heading frame',[e],{w:e.w,h:Math.max(60,(next?.y??736)-e.y-16),gap:0});
   }
-  // Each page saves its own reading grid. Running heads, folios and intentional
-  // full-bleed media sit outside these content guides.
-  const grid:Partial<Record<CollectionId,Partial<Record<LayoutId,[number,number,number,number,number,number]>>>>={
-    // left, right, top, bottom, columns, gutter
-    portfolio:{cover:[84,716,174,100,1,0],facts:[84,80,162,110,5,14],statement:[84,80,174,74,1,0],split:[84,80,146,100,12,20],'before-after':[84,84,130,74,2,44],process:[84,100,126,74,3,40],evidence:[84,80,116,74,12,20],close:[84,80,188,100,3,48]},
-    review:{cover:[84,80,156,80,3,40],facts:[84,80,156,74,12,20],split:[84,80,146,74,2,44],process:[84,80,138,74,1,0],'before-after':[84,84,138,74,2,44],metrics:[84,80,138,74,12,20],roadmap:[84,80,138,74,1,0],close:[84,100,138,74,3,40]},
-    proposal:{cover:[84,80,156,94,12,24],statement:[84,438,174,74,1,0],facts:[84,80,138,94,5,14],split:[84,80,116,74,12,20],quote:[468,80,166,74,1,0],process:[84,100,138,94,3,40],evidence:[568,80,144,74,3,24],close:[84,100,190,74,3,40]},
-    pitch:{cover:[84,80,198,110,12,24],statement:[84,100,174,74,3,40],split:[84,80,146,94,12,20],metrics:[84,80,138,74,12,20],'before-after':[84,80,126,94,5,14],process:[84,80,138,94,4,100],roadmap:[84,80,138,94,1,0],facts:[84,100,128,74,3,40],close:[84,494,176,94,1,0]},
-    report:{cover:[84,80,180,132,2,48],facts:[84,80,164,74,12,20],metrics:[84,80,134,74,12,20],table:[84,80,138,74,12,20],'before-after':[84,80,138,94,4,40],quote:[84,80,174,74,1,0],roadmap:[84,80,172,74,12,20],close:[84,80,176,74,12,20]},
-  };
-  const [left,right,top,bottom,columns,gutter]=grid[collection]?.[page]??[84,80,138,74,12,20];
-  s.layout??={margins:{left,right,top,bottom},columns,gutter};
-
   const effects:Partial<Record<CollectionId,Partial<Record<LayoutId,SlideTransition['effect']>>>>={
     portfolio:{'before-after':'smart'},
     review:{},

@@ -1,3 +1,5 @@
+import {blockFingerprint} from './block-fingerprint';
+export {blockFingerprint} from './block-fingerprint';
 import { element, uid, type Deck, type Slide, type SlideElement, type SlideGroup } from './model';
 import { deckDesignSystem, styledElement, contrastRatio } from './deck-design-system';
 import type { ColorRole, TextRole } from './design-system-schema';
@@ -5,7 +7,7 @@ import type { Bounds } from './interactions';
 import type { Operation } from './operations';
 import {descendants,groupBox,ancestorIds} from './container-tree';
 import {browserTextSize} from './text-layout';
-import {inlineTextWidth} from './inline-text-width';
+import {inlineTextLines} from './inline-text-width';
 
 export {BLOCK_IDS,BlockOptionsSchema,type BlockId,type BlockOptions,type BlockInput} from './deck-block-schema';
 import {BLOCK_IDS,BlockOptionsSchema,type BlockId,type BlockOptions,type BlockInput} from './deck-block-schema';
@@ -31,22 +33,13 @@ export const DECK_BLOCKS: readonly BlockSpec[] = [
 export function blockSpec(id:BlockId){const spec=DECK_BLOCKS.find(b=>b.id===id);if(!spec)throw new Error('Choose a supported block.');return spec;}
 export function defaultBlockOptions(id:BlockId):BlockOptions {const spec=blockSpec(id);return BlockOptionsSchema.parse({title:spec.label,items:spec.items.map((item,index)=>({...item,...(['architecture','organization'].includes(id)&&index>0?{parent:id==='architecture'&&index>1?1:0}:{})}))});}
 export function searchDeckBlocks(query:string,category:BlockCategory='All'){const words=query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);return DECK_BLOCKS.filter(b=>(category==='All'||b.category===category)&&words.every(w=>`${b.label} ${b.description} ${b.aliases}`.toLocaleLowerCase().includes(w)));}
-export const blockLayouts=(id:BlockId)=>id==='swot'?['auto'] as const:['agenda','gantt','funnel'].includes(id)?['auto','vertical'] as const:id==='timeline'?['auto','horizontal','vertical'] as const:['auto','horizontal','vertical','grid'] as const;
+export const blockLayouts=(id:BlockId,fixedFrame=false)=>id==='swot'||fixedFrame&&['agenda','gantt','funnel'].includes(id)?['auto'] as const:['agenda','gantt','funnel'].includes(id)?['auto','vertical'] as const:id==='timeline'?['auto','horizontal','vertical'] as const:['auto','horizontal','vertical','grid'] as const;
 export function blockLayoutLabel(id:BlockId,layout:BlockOptions['layout']){if(['agenda','gantt','funnel'].includes(id))return layout==='vertical'?'Tall':'Wide';return ({auto:'Auto',horizontal:'Horizontal',vertical:'Vertical',grid:'Grid'})[layout];}
-
-/** Fingerprints ignore identity, group movement and inherited theme values. */
-export function blockFingerprint(elements:SlideElement[]):string {
-  if(!elements.length)return '';
-  const x=Math.min(...elements.map(e=>e.x)),y=Math.min(...elements.map(e=>e.y)),w=Math.max(...elements.map(e=>e.x+e.w))-x,h=Math.max(...elements.map(e=>e.y+e.h))-y;
-  const round=(v:number)=>Math.round(v*10000)/10000;
-  const data=JSON.stringify(elements.map(e=>({type:e.type,name:e.name,x:round((e.x-x)/w),y:round((e.y-y)/h),w:round(e.w/w),h:round(e.h/h),text:e.text,runs:e.runs,paragraphs:e.paragraphs,fill:e.design?.fill?e.design.fill:e.fill,stroke:e.design?.stroke?e.design.stroke:e.stroke,font:e.design?.text??e.design?.font??e.fontFamily,weight:e.design?.text&&!e.design.overrides?.includes('fontWeight')?undefined:e.fontWeight,size:e.design?.text&&!e.design.overrides?.includes('fontSize')?e.design.textScale:round(e.fontSize/w),radius:round(e.radius/w),rotation:e.rotation,hidden:e.hidden,src:e.src,design:e.design?{...e.design,overrides:[...(e.design.overrides??[])].sort()}:undefined})),(_,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b))):value);
-  let a=2166136261,b=5381;for(let i=0;i<data.length;i++){a=Math.imul(a^data.charCodeAt(i),16777619);b=Math.imul(b,33)^data.charCodeAt(i);}return (a>>>0).toString(16).padStart(8,'0')+(b>>>0).toString(16).padStart(8,'0');
-}
 
 /** Generate native objects at the requested frame, using the document's type and color roles. */
 export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'width'|'height'|'designSystem'>,slide?:Pick<Slide,'backgroundStyle'>,frame?:Pick<Bounds,'w'|'h'>):DeckBlock {
   const spec=blockSpec(id),options=BlockOptionsSchema.parse(input),items=options.items,n=items.length;
-  const minimum=frame&&['metrics','agenda','process','timeline','organization','roadmap','gantt','kanban'].includes(id)?1:spec.min;
+  const minimum=frame&&['metrics','agenda','process','timeline','organization','roadmap','gantt','kanban','funnel'].includes(id)?1:spec.min;
   if(n<minimum||n>spec.max)throw new Error(`Use ${spec.min}–${spec.max} items for ${spec.label}.`);
   const scale=Math.min(page.width/1440,page.height/810),system=deckDesignSystem(page);
   const vertical=options.layout==='vertical';
@@ -61,7 +54,7 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   const add=(type:SlideElement['type'],attrs:Partial<SlideElement>)=>{
     const e=element(type,{...attrs,...(itemIndex>=0?{blockItem:itemIndex}:{}),group:group.id});let result=styledElement({...e,x:e.x*scale,y:e.y*scale,w:Math.max(1,e.w*scale),h:Math.max(1,e.h*scale),fontSize:Math.max(4,e.fontSize*scale),strokeWidth:e.strokeWidth*scale,radius:e.radius*scale},system,page);
     if(type==='text'&&result.text){const min=Math.max(4,(options.density==='compact'?12:14)*scale);
-      const measure=()=>browserTextSize({...result,textSizing:'auto-height'}, {})??{w:result.w,h:result.text.split('\n').reduce((count,line)=>count+Math.max(1,Math.ceil(inlineTextWidth(line,result.fontSize,result.fontFamily)/result.w)),0)*result.fontSize*result.lineHeight+4*scale};
+      const measure=()=>browserTextSize({...result,textSizing:'auto-height'}, {})??{w:result.w,h:inlineTextLines(result.text,result.fontSize,result.fontFamily,result.w)*result.fontSize*result.lineHeight+8*scale};
       let size=measure();
       while(size.h>result.h+.5&&result.fontSize>min){result={...result,fontSize:Math.max(min,result.fontSize-scale)};size=measure();}
       if(result.design?.text)result.design={...result.design,textScale:result.fontSize/(system.typography[result.design.text].fontSize*scale)};
@@ -76,7 +69,7 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   const labelHeight=(label:string,detail:string,w:number,h:number,preferred:number)=>{
     if(!options.showDetails||!detail)return h;
     const style=system.typography.body,min=options.density==='compact'?12:14;
-    const measure=(value:string)=>{const e=element('text',{text:value,w:w*scale,fontFamily:style.fontFamily,fontSize:Math.max(4,min*scale),lineHeight:style.lineHeight,fontWeight:500,textSizing:'auto-height'});return (browserTextSize(e,{})?.h??value.split('\n').reduce((n,line)=>n+Math.max(1,Math.ceil(inlineTextWidth(line,min,style.fontFamily)/w)),0)*min*style.lineHeight*scale+4*scale)/scale;};
+    const measure=(value:string)=>{const e=element('text',{text:value,w:w*scale,fontFamily:style.fontFamily,fontSize:Math.max(4,min*scale),lineHeight:style.lineHeight,fontWeight:500,textSizing:'auto-height'});return (browserTextSize(e,{})?.h??inlineTextLines(value,min,style.fontFamily,w)*min*style.lineHeight*scale+8*scale)/scale;};
     return Math.max(measure(label),Math.min(preferred,h-measure(detail)));
   };
   // A transparent native frame keeps repeated edits and resizing anchored to the same area.
@@ -93,7 +86,7 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
       const horizontal=options.layout==='horizontal'||options.layout==='auto'&&depths.some(d=>depths.filter(v=>v===d).length>4);
       const boxes=items.map((_,k)=>{const peers=depths.flatMap((d,index)=>d===depths[k]?[index]:[]),order=peers.indexOf(k);
         if(horizontal){const w=(width-gap*(levels-1))/levels,h=Math.min(124,(height-gap*(peers.length-1))/peers.length);return {x:left+depths[k]*(w+gap),y:top+(height-(h+gap)*peers.length+gap)/2+order*(h+gap),w,h};}
-        const long=options.showDetails&&(items[k].detail.length>80||[...items[k].detail].filter(c=>/[\u2e80-\uffff]/.test(c)).length>25),w=Math.min(long?560:320,(width-gap*(peers.length-1))/peers.length),h=(height-36*(levels-1))/levels;return {x:left+(width-(w+gap)*peers.length+gap)/2+order*(w+gap),y:top+depths[k]*(h+36),w,h};
+        const long=options.showDetails&&(items[k].detail.length>80||[...items[k].detail].filter(c=>/[\u2e80-\uffff]/.test(c)).length>25),levelGap=items.some(i=>i.detail.length>80)?24:36,w=Math.min(long?560:320,(width-gap*(peers.length-1))/peers.length),h=(height-levelGap*(levels-1))/levels;return {x:left+(width-(w+gap)*peers.length+gap)/2+order*(w+gap),y:top+depths[k]*(h+levelGap),w,h};
       });
       boxes.forEach((child,k)=>{if(parents[k]<0)return;const parent=boxes[parents[k]];if(horizontal){const x=(parent.x+parent.w+child.x)/2;line(parent.x+parent.w,parent.y+parent.h/2,x,parent.y+parent.h/2,ink);line(x,parent.y+parent.h/2,x,child.y+child.h/2,ink);line(x,child.y+child.h/2,child.x,child.y+child.h/2,ink);}else{const y=(parent.y+parent.h+child.y)/2;line(parent.x+parent.w/2,parent.y+parent.h,parent.x+parent.w/2,y,ink);line(parent.x+parent.w/2,y,child.x+child.w/2,y,ink);line(child.x+child.w/2,y,child.x+child.w/2,child.y,ink);}});
       boxes.forEach((box,k)=>node(items[k],box.x,box.y,box.w,box.h));
@@ -101,7 +94,7 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   }else if(id==='agenda'||id==='timeline'&&(vertical||options.layout==='auto'&&n>5)){items.forEach((i,k)=>row(i,k));}
   else if(id==='process'){
     if(vertical){items.forEach((i,k)=>row({...i,meta:options.numbered?String(k+1).padStart(2,'0'):''},k));}
-    else{const cols=options.layout==='grid'||options.layout==='auto'&&n>4?Math.min(3,n):n,rows=Math.ceil(n/cols),w=(width-gap*(cols-1))/cols,h=Math.min((height-gap*(rows-1)-(options.stagger&&rows===1?(n-1)*24:0))/rows,210),y0=top+(height-(h+gap)*rows+gap-(options.stagger&&rows===1?(n-1)*24:0))/2;
+    else{const cols=options.layout==='grid'||options.layout==='auto'&&n>4?Math.min(3,n):n,rows=Math.ceil(n/cols),w=(width-gap*(cols-1))/cols,h=Math.min((height-gap*(rows-1)-(options.stagger&&rows===1?(n-1)*24:0))/rows,items.some(i=>i.detail.length>80)?320:210),y0=top+(height-(h+gap)*rows+gap-(options.stagger&&rows===1?(n-1)*24:0))/2;
       items.forEach((i,k)=>{itemIndex=k;const x=left+k%cols*(w+gap),y=y0+Math.floor(k/cols)*(h+gap)+(options.stagger&&rows===1?k*24:0);box(x,y,w,h);if(k%cols<cols-1&&k<n-1){line(x+w,y+h/2,x+w+gap,y+h/2,ink);line(x+w+gap-6,y+h/2-5,x+w+gap,y+h/2,ink);line(x+w+gap-6,y+h/2+5,x+w+gap,y+h/2,ink);}const numberH=options.numbered?32:0;if(options.numbered)text(String(k+1).padStart(2,'0'),x+16,y+14,w-32,30,18,panelMuted,false,'left','caption');text(i.label,x+16,y+14+numberH,w-32,Math.min(66,h*.35),24,panelInk,true);if(options.showDetails)text(i.detail,x+16,y+22+numberH+Math.min(66,h*.35),w-32,Math.max(16,h-40-numberH-Math.min(66,h*.35)),20,panelMuted);});
     }
   }else if(id==='timeline'){
@@ -110,7 +103,12 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
     if(vertical&&id!=='swot'){items.forEach((i,k)=>row(i,k));}
     else{const cols=id==='swot'||n===4&&options.layout==='auto'?2:options.layout==='grid'||options.layout==='auto'&&n>4?Math.min(3,n):n,rows=Math.ceil(n/cols),w=(width-gap*(cols-1))/cols,h=(height-gap*(rows-1))/rows;
       items.forEach((i,k)=>{itemIndex=k;const x=left+k%cols*(w+gap),y=top+Math.floor(k/cols)*(h+gap),inset=20;box(x,y,w,h);
-        if(id==='metrics'){if(options.showMeta)text(i.meta,x+inset,y+inset,w-2*inset,Math.min(90,h*.34),Math.min(56,h*.26)*.86,options.tone==='accent'?accentInk:'accent',false,'left','heading');text(i.label,x+inset,y+h*.43,w-2*inset,h*.24,24,panelInk,true);if(options.showDetails){const lines=i.detail.split('\n');lines.forEach((v,j)=>text(v,x+inset,y+h*.72+j*h*.22/lines.length,w-2*inset,h*.22/lines.length,20,panelMuted));}}
+        if(id==='metrics'){
+          const valueH=options.showMeta?Math.min(90,h*.28):0,labelH=h*.20,labelY=inset+(options.showMeta?valueH+8:0),detailY=labelY+labelH+8;
+          if(options.showMeta)text(i.meta,x+inset,y+inset,w-2*inset,valueH,Math.min(56,h*.26)*.86,options.tone==='accent'?accentInk:'accent',false,'left','heading');
+          text(i.label,x+inset,y+labelY,w-2*inset,labelH,24,panelInk,true);
+          if(options.showDetails){const lines=i.detail.split('\n'),available=Math.max(16,h-inset-detailY);lines.forEach((v,j)=>text(v,x+inset,y+detailY+j*available/lines.length,w-2*inset,available/lines.length,20,panelMuted));}
+        }
         else{const labelH=Math.min(64,h*.26);text(i.label,x+inset,y+inset,w-2*inset,labelH,26,panelInk,true);const metaH=id==='roadmap'&&options.showMeta&&i.meta?36:0;if(metaH)text(i.meta,x+inset,y+inset+labelH+6,w-2*inset,metaH,18,panelMuted,false,'left','caption');const dy=y+inset+labelH+metaH+16;if(options.showDetails)text(i.detail,x+inset,dy,w-2*inset,Math.max(16,y+h-inset-dy),22,panelInk);}
       });
     }
@@ -128,7 +126,7 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
 export function placeDeckBlock(block:DeckBlock,geometry:Bounds,slideId:string):{operations:Operation[];ids:string[];groupId:string}{
   const scale=Math.min(geometry.w/block.w,geometry.h/block.h);if(!Number.isFinite(scale)||scale<=0)throw new Error('Choose a valid block size.');
   const group={...block.group,id:uid('block')};
-  const elements=block.elements.map(e=>({...e,id:uid(),group:group.id,x:geometry.x+e.x*scale,y:geometry.y+e.y*scale,w:Math.max(1,e.w*scale),h:Math.max(1,e.h*scale),fontSize:Math.max(4,e.fontSize*scale),strokeWidth:e.strokeWidth*scale,radius:e.radius*scale}));
+  const elements=block.elements.map(e=>{const fontSize=Math.max(4,e.fontSize*scale);return {...e,id:uid(),group:group.id,x:geometry.x+e.x*scale,y:geometry.y+e.y*scale,w:Math.max(1,e.w*scale),h:Math.max(1,e.h*scale),fontSize,strokeWidth:e.strokeWidth*scale,radius:e.radius*scale,...(e.design?.text?{design:{...e.design,textScale:(e.design.textScale??1)*fontSize/e.fontSize}}:{})};});
   group.block={...block.group.block!,fingerprint:blockFingerprint(elements)};
   return {operations:[{op:'set_group',slideId,group},...elements.map(e=>({op:'add_element' as const,slideId,element:e}))],ids:elements.map(e=>e.id),groupId:group.id};
 }

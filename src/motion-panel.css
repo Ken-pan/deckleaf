@@ -87,6 +87,7 @@
 @media(max-width:760px){.motion-panel .motion-cue-head .icon-btn,.motion-panel .smart-preview-caption .icon-btn,.motion-panel .transition-preview-footer .icon-btn{min-width:44px;min-height:44px}.motion-panel-body .panel-section>.ui-button,.motion-next-state .ui-button{min-height:44px}}
 
 /* Keep timing and sequence controls aligned with Design properties. */
+@media(max-height:520px){.inspector-content.motion-panel{overflow:auto!important;overscroll-behavior:contain}.motion-panel-body{flex:none;overflow:visible}}
 .motion-panel-body .motion-controls{gap:0}
 .motion-context>span{white-space:normal;overflow-wrap:anywhere}
 .motion-pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:var(--ui-meta);color:var(--text-secondary);margin-block:8px}

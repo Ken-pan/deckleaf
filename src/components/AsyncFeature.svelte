@@ -2,7 +2,8 @@
   import { onDestroy, untrack } from 'svelte';
   import { loadFeature, type Feature, type FeatureProps } from '../features';
   import Dialog from './LazyDialog.svelte';
-  import { Button, EmptyState } from './ui';
+  import Button from './ui/Button.svelte';
+  import EmptyState from './ui/EmptyState.svelte';
   import { CircleAlert } from '@lucide/svelte';
   let { feature, props = {} as FeatureProps[T], onclose, modalTitle }: {feature: T; props?: FeatureProps[T]; onclose?: () => void; modalTitle?: string} = $props();
   // Retain the real invoker across the loading dialog and the loaded feature.

@@ -46,12 +46,11 @@ test('next motion state retains template nested flows with new object and contai
   const old=new Set([...s.elements.map(e=>e.id),...s.groups!.map(g=>g.id)]);assert.ok(copy.elements.every(e=>!old.has(e.id)&&!old.has(e.group??'')));assert.ok(copy.autoLayouts!.every(l=>!old.has(l.id)&&l.order.every(id=>!old.has(id))));
   assert.ok(matchSmartLayers(next.slides[at('portfolio','process')],copy).pairs.length);validateDeck(next);
 });
-test('page-specific grids follow the authored reading structures',()=>{
+test('page grids actually anchor authored reading regions',()=>{
   for(const c of COLLECTIONS){const d=authoredTemplateDeck(c.id);assert.ok(new Set(d.slides.map(s=>JSON.stringify(s.layout))).size>=4);}
-  const d=authoredTemplateDeck('portfolio'),s=d.slides[at('portfolio','before-after')],columns=columnBounds(d,s);
-  assert.deepEqual(columns.map(c=>[c.x,c.w]),[[84,614],[742,614]]);
-  assert.equal(authoredTemplateDeck('proposal').slides[at('proposal','quote')].layout!.margins.left,468);
-  assert.equal(authoredTemplateDeck('portfolio').slides[at('portfolio','process')].layout!.columns,3);
+  const d=authoredTemplateDeck('portfolio'),s=d.slides[at('portfolio','before-after')],columns=columnBounds(d,s),boxes=s.elements.filter(e=>e.name==='Original sample interface'||e.name==='Updated sample interface').sort((a,b)=>a.x-b.x);
+  assert.equal(boxes.length,2);for(const [i,box] of boxes.entries()){const first=columns[i*6],last=columns[i*6+5];assert.ok(Math.abs(box.x-first.x)<.01);assert.ok(Math.abs(box.x+box.w-last.x-last.w)<.01);}
+  const quote=authoredTemplateDeck('proposal'),page=quote.slides[at('proposal','quote')];assert.equal(page.autoLayouts!.find(l=>l.name==='Research rationale')!.x,columnBounds(quote,page)[4].x);
 });
 test('long copy fits complete text and short copy restores the preferred hierarchy',()=>{
   const d=resolveDeckTextSizing(authoredTemplateDeck('report'),measure),s=d.slides[0],flow=s.autoLayouts!.find(l=>l.name==='Report introduction')!,title=s.elements.find(e=>e.id===flow.order[0])!,body=s.elements.find(e=>e.id===flow.order[1])!;

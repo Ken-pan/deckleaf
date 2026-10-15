@@ -150,3 +150,15 @@ test('SVG background is an export choice and CSV retains Unicode with an Excel-r
   assert(!transparent.includes('fill="#182B28"'));assert(opaque.includes('fill="#182B28"'));
   const csv=chartCsv(e.chart!);assert.equal(csv.charCodeAt(0),0xFEFF);assert.deepEqual(parseChartData(csv).series,e.chart!.series);
 });
+
+test('canvas chart formatting keeps optional defaults and reaches rendering and native export',async()=>{
+ const chart=validateChart({...sampleChart(),legendPosition:'right',showValues:true,series:[{name:'First',values:[1,2,3,4]},{name:'Second',values:[2,3,4,5]}],axisRange:{min:-10,max:100},axisStyle:{fontSize:20,rotation:45},dataLabels:{position:'inside',fontSize:26,color:'#C02030',bold:true}});
+ const e=element('chart',{w:900,h:520,fontFamily:'Arial',chart}),option=chartOption(e) as any;
+ assert.equal(option.legend.right,24);assert.equal(option.legend.orient,'vertical');assert.equal(option.yAxis.min,-10);assert.equal(option.xAxis.axisLabel.rotate,45);assert.equal(option.series[0].label.color,'#C02030');assert.equal(option.series[0].label.fontWeight,700);
+ const svg=renderChartSvg(e,true);assert.match(svg,/data-chart-format="axis"/);assert.match(svg,/data-chart-format="labels"/);assert.doesNotMatch(renderChartSvg(e),/data-chart-format/);
+ const slide=blankSlide();slide.elements=[e];const zip=await JSZip.loadAsync(await buildPptx(newDeck('Formatted chart',[slide]))),xml=await zip.file(Object.keys(zip.files).find(p=>/^ppt\/charts\/chart\d+\.xml$/.test(p))!)!.async('string');
+ assert.match(xml,/<c:legendPos val="r"/);assert.match(xml,/<c:min val="-10"/);assert.match(xml,/C02030/);assert.match(xml,/<c:dLblPos val="ctr"/);
+ assert.throws(()=>validateChart({...chart,axisStyle:{fontSize:0}}));assert.throws(()=>validateChart({...chart,dataLabels:{color:'#fff'}}));
+});
+
+test('line endpoint value labels align into the plot without changing chart data or axes',()=>{const c=validateChart({...sampleChart(),type:'area',labels:['Q1','Q2','Q3'],series:[{name:'Registered',values:[18,27,42]}],showValues:true,dataLabels:{position:'outside',fontSize:22}}),e=element('chart',{w:1100,h:420,fontSize:24,chart:c}),o=chartOption(e),data=(o.series as any[])[0].data;assert.deepEqual(data,[{value:18,label:{align:'left'}},27,{value:42,label:{align:'right'}}]);assert.deepEqual(e.chart,c);assert.equal((o.series as any[])[0].label.position,'top');});

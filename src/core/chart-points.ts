@@ -15,6 +15,7 @@ export function interactiveChartSvg(svg:string,chart:Chart):string{
   const line=chart.type==='line'||chart.type==='area';
   const escape=(value:string)=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   return svg.replace(/<path\b([^>]*\becmeta_data_index="(\d+)"[^>]*?)\s*(?:\/>|>\s*<\/path>)/g,(match,attributes:string,index:string)=>{
+    if(/\becmeta_ssr_type="legend"/.test(attributes))return match;
     const rendered=attributes.match(/\becmeta_series_index="(\d+)"/),point=rendered&&chartPointFromRender(chart,Number(rendered[1]),Number(index));
     if(!point)return match;
     const data=` data-chart-series="${point.series}" data-chart-category="${point.category}"`,name=escape(`${chart.series[point.series].name} · ${chart.labels[point.category]}: ${formatChartValue(chart,chart.series[point.series].values[point.category])}`);

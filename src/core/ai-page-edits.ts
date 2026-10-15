@@ -1,0 +1,65 @@
+import {z} from 'zod';
+import type {Deck} from './model';
+import {applyOperations,type Operation} from './operations';
+import {AgentBoxSchema,AgentStyleSchema,simplePatch} from './agent-tools';
+import {AI_TEMPLATE_LAYOUTS,StoryCollectionSchema} from './ai-story';
+import {readTemplate,prepareTemplateUpdate,authoredTemplatePages} from './ai-templates';
+import {ChartSchema,validateChart} from './chart-schema';
+import {prepareAssetReplacements} from './ai-assets';
+import type {EditingServices} from './ai-tools';
+
+const item=z.object({index:z.number().int().min(0).max(99).optional(),heading:z.string().max(5000).optional(),body:z.string().max(10000).optional()}).strict();
+export const PageEditsSchema=z.object({baseRevision:z.number().int().min(0),summary:z.string().min(1).max(3000),pages:z.array(z.object({
+ number:z.number().int().min(1).max(3000).describe('Current one-based page number from the provided pages map. No slide ID guessing.'),
+ heading:z.string().min(1).max(5000).optional().describe('Existing page title (标题). Omit/null to keep it.'),body:z.string().max(20000).optional().describe('Existing subtitle, description or body paragraph (副标题/描述/正文). Update this field directly; do not guess text element IDs.'),items:z.array(item).min(1).max(100).optional(),
+ layout:z.enum(AI_TEMPLATE_LAYOUTS).optional(),collection:StoryCollectionSchema.optional(),density:z.enum(['presentation','reading']).optional(),notes:z.string().max(5000).optional(),chart:ChartSchema.partial().optional().describe('Patch the existing editable chart; omitted display/data/source fields stay unchanged. Labels and each supplied series must have matching lengths.'),
+ updates:z.array(z.object({elementId:z.string(),text:z.string().max(100000).optional(),box:AgentBoxSchema.optional(),style:AgentStyleSchema.optional()}).strict()).min(1).max(100).optional(),
+ assets:z.array(z.object({elementId:z.string().optional().describe('Omit only if this page has exactly one editable image.'),action:z.enum(['style','replace']).describe('style keeps the existing resource ID; replace requires a different searched resourceId.'),resourceId:z.string().min(1).max(200).optional(),color:z.string().regex(/^#[\da-fA-F]{6}$/).optional(),fit:z.enum(['auto','contain','cover','region']).optional()}).strict()).min(1).max(12).optional(),
+ }).strict()).max(12),deletePages:z.array(z.number().int().min(1).max(3000)).min(1).max(12).optional().describe('Delete only these ORIGINAL page numbers from the baseRevision map. Numbers never shift during the batch.'),
+ additions:z.array(z.object({afterNumber:z.number().int().min(0).max(3000).describe('Insert after this ORIGINAL page number; 0 means before the first original page. Never use renumbered pages.'),layout:z.enum(AI_TEMPLATE_LAYOUTS),collection:StoryCollectionSchema.optional(),heading:z.string().min(1).max(5000),body:z.string().max(20000).optional(),items:z.array(z.object({heading:z.string().max(5000),body:z.string().max(10000)}).strict()).min(1).max(100).optional(),chart:ChartSchema.optional(),notes:z.string().max(5000).optional(),density:z.enum(['presentation','reading']).optional()}).strict()).min(1).max(12).optional()}).strict();
+
+/** One page-addressed batch uses the same canonical text, template and resource transactions. */
+export async function pageEditOperations(deck:Deck,input:z.infer<typeof PageEditsSchema>,services?:EditingServices){
+ if(input.baseRevision!==deck.revision)throw new Error('The document changed. Read the current page map and revision.');
+ if(new Set(input.pages.map(p=>p.number)).size!==input.pages.length)throw new Error('Use each page number once; combine its changes in that entry.');
+ const deletions=input.deletePages??[];if(new Set(deletions).size!==deletions.length)throw new Error('Use each deleted page number once.');
+ for(const n of deletions)if(!deck.slides[n-1])throw new Error(`Slide ${n} does not exist.`);else if(input.pages.some(p=>p.number===n))throw new Error(`Slide ${n} cannot be edited and deleted in the same batch.`);
+ for(const addition of input.additions??[])if(addition.afterNumber>deck.slides.length)throw new Error(`Insertion anchor ${addition.afterNumber} does not exist in the original page map.`);
+ let working=deck;const operations:Operation[]=[],coverage:{number:number;slideId:string;changes:number;unchanged:string[]}[]=[];
+ const append=(ops:Operation[])=>{if(!ops.length)return;working={...applyOperations(working,ops,working.revision,'ai'),revision:deck.revision};operations.push(...ops);};
+ for(const page of input.pages){
+  const slideId=deck.slides[page.number-1]?.id;if(!slideId)throw new Error(`Slide ${page.number} does not exist.`);
+  const start=operations.length,unchanged:string[]=[];let slide=working.slides.find(s=>s.id===slideId)!;const current=readTemplate(slide);
+  const hasContent=page.heading!==undefined||page.body!==undefined||page.items!==undefined;
+  const content={...current.content,...(page.heading!==undefined?{heading:page.heading}:{}),...(page.body!==undefined?{body:page.body}:{})};
+  if(page.chart){if(!current.content.chart)throw new Error(`Slide ${page.number} has no authored chart. Read its editable objects or add a native chart page.`);const merged={...current.content.chart,...page.chart};for(const key of ['visual','numberFormat','axisStyle','dataLabels']as const)if(page.chart[key])Object.assign(merged,{[key]:{...current.content.chart[key],...page.chart[key]}});content.chart=validateChart(merged);}
+  if(page.items){const used=new Set<number>();content.items=structuredClone(current.content.items??[]);for(const [position,entry] of page.items.entries()){const index=entry.index??position;if(used.has(index))throw new Error(`Slide ${page.number}: each item index must appear once.`);used.add(index);const old=content.items[index];if(!old)throw new Error(`Slide ${page.number}: item ${index+1} does not exist. Use prepare_template_update to change the item count.`);if(entry.heading!==undefined)old[0]=entry.heading;if(entry.body!==undefined)old[1]=entry.body;}}
+  const reflow=page.layout!==undefined&&page.layout!==current.layout||page.collection!==undefined&&page.collection!==current.collection||page.density!==undefined&&page.density!==current.content.density;
+  if(reflow){const prepared=await prepareTemplateUpdate(working,{slideId,...(page.layout?{layout:page.layout}:{}),...(page.collection?{collection:page.collection}:{}),...(page.density?{density:page.density}:{}),...(hasContent||page.chart?{content}:{}),...(page.notes!==undefined?{notes:page.notes}:{})});append(prepared.operations);slide=working.slides.find(s=>s.id===slideId)!;}
+  else if(hasContent){
+   if(!current.mapped||current.missingSlots.length)throw new Error(`Slide ${page.number} has no complete authored slots. Read its object IDs and use updates for text changes.`);
+   const fields=new Map<string,string>();if(page.heading!==undefined)fields.set('heading',page.heading);if(page.body!==undefined)fields.set('body',page.body);
+   for(const [position,entry] of (page.items??[]).entries()){const index=entry.index??position;if(entry.heading!==undefined)fields.set(`items.${index}.heading`,entry.heading);if(entry.body!==undefined)fields.set(`items.${index}.body`,entry.body);}
+   const ops:Operation[]=[];for(const [key,text] of fields){const slot=slide.template?.slots?.find(s=>s.key===key),target=slide.elements.find(e=>e.id===slot?.elementId);if(!target)throw new Error(`Slide ${page.number}: field ${key} has no live text object. Use a compatible template or an explicit object update.`);if(target.text!==text)ops.push({op:'update_element',slideId,elementId:target.id,patch:{text}});}append(ops);
+  }
+  if(page.chart&&!reflow){const target=slide.elements.find(e=>e.id===slide.template?.slots?.find(s=>s.key==='chart')?.elementId);if(!target||target.type!=='chart')throw new Error(`Slide ${page.number}: read its live chart object before updating data.`);if(JSON.stringify(target.chart)!==JSON.stringify(content.chart))append([{op:'update_element',slideId,elementId:target.id,patch:{chart:content.chart}}]);}
+  if(page.notes!==undefined&&!reflow&&page.notes!==slide.notes)append([{op:'update_slide',slideId,patch:{notes:page.notes}}]);
+  if(page.updates)append(page.updates.filter(u=>u.text!==undefined||Object.keys(u.box??{}).length||Object.keys(u.style??{}).length).map(u=>({op:'update_element',slideId,elementId:u.elementId,patch:simplePatch(u)})));
+  for(const asset of page.assets??[]){slide=working.slides.find(s=>s.id===slideId)!;const images=slide.elements.filter(e=>e.type==='image'&&!e.hidden&&!e.locked);const target=asset.elementId?images.find(e=>e.id===asset.elementId):images.length===1?images[0]:undefined;if(!target)throw new Error(`Slide ${page.number}: read_assets and supply the intended image's elementId.`);
+   if(asset.action==='style'&&asset.resourceId&&asset.resourceId!==target.resource?.id)throw new Error(`Slide ${page.number}: style must keep ${target.resource?.id}. Omit resourceId; do not swap artwork to satisfy a color request.`);
+   if(asset.action==='replace'&&(!asset.resourceId||asset.resourceId===target.resource?.id))throw new Error(`Slide ${page.number}: replace requires a different actual resourceId from search_resources.`);
+   try{const prepared=await prepareAssetReplacements(working,{baseRevision:working.revision,replacements:[{slideId,elementId:target.id,...(asset.action==='replace'?{resourceId:asset.resourceId}:{}),...(asset.color?{color:asset.color}:{}),...(asset.fit?{fit:asset.fit}:{})}]},services);append(prepared.operations);}catch(error){if(asset.action==='style'&&(error as Error).message.startsWith('This replacement is unchanged'))unchanged.push(`Artwork ${target.id} already matches the requested style.`);else throw error;}
+  }
+  coverage.push({number:page.number,slideId,changes:operations.length-start,unchanged});
+ }
+ // Resolve every target before changing structure. Apply inserts in request order,
+ // then deletions; a deleted anchor still has a well-defined original position.
+ const anchors=new Map<number,string>(),prepend:string[]=[];
+ for(const addition of input.additions??[]){const pages=await authoredTemplatePages(working,addition.layout,addition.collection??deck.templateCollection??'review',{heading:addition.heading,...(addition.body!==undefined?{body:addition.body}:{}),...(addition.items?{items:addition.items.map(i=>[i.heading,i.body])}:{}),...(addition.chart?{chart:addition.chart}:{}),...(addition.density?{density:addition.density}:{})},addition.afterNumber+1,addition.notes??'');
+  if(pages.length!==1)throw new Error('This insertion needs continuation pages. Shorten its content or add each requested page explicitly.');const newSlide=pages[0];const afterId=anchors.get(addition.afterNumber)??deck.slides[addition.afterNumber-1]?.id;
+  append([{op:'add_slide',slide:newSlide,...(afterId?{afterId}:{}),templateCollection:addition.collection??deck.templateCollection}]);anchors.set(addition.afterNumber,newSlide.id);if(addition.afterNumber===0)prepend.push(newSlide.id);
+ }
+ if(deletions.length)append(deletions.map(n=>({op:'delete_slide',slideId:deck.slides[n-1].id})));
+ if(prepend.length)append([{op:'reorder_slides',ids:[...prepend,...working.slides.filter(s=>!prepend.includes(s.id)).map(s=>s.id)]}]);
+ return {operations,coverage};
+}

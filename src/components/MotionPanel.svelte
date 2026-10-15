@@ -23,8 +23,8 @@
   let {onpreview, active = true,disabled=false,onexitpreview}: {onpreview: (fromId?:string) => void; active?: boolean;disabled?:boolean;onexitpreview?:()=>void} = $props();
   type Scope = 'page' | 'object' | 'sequence';
   let scope=$state<Scope>('page'), recipe=$state<MotionRecipe>('quiet');
-  let body=$state<HTMLDivElement>();
-  rememberPanelScroll(()=>active,()=>`${editor.deck?.id}:${editor.activeId}:${scope}:${editor.selected.join(',')}`,()=>[body]);
+  let body=$state<HTMLDivElement>(),root=$state<HTMLDivElement>();
+  rememberPanelScroll(()=>active,()=>`${editor.deck?.id}:${editor.activeId}:${scope}:${editor.selected.join(',')}`,()=>[root,body]);
   let lastSelection='';
   let disclosures=$state({matches:false,more:false,order:false,matching:false});
   let sequencePages=$state({auto:0,click:0}),expandedGroups=$state<Record<string,boolean>>({}),matchLimit=$state(20);
@@ -58,7 +58,7 @@
   function nextState(){if(!editor.deck||!editor.slide||disabled)return;try{const revision=editor.deck.revision,{slide,operations}=createNextMotionState(editor.deck,editor.slide);editor.commit(operations,'','manual',revision);if(editor.deck.slides.some(s=>s.id===slide.id)){editor.chooseSlide(slide.id);editor.sourceMode=false;scope='page';editor.notify('Next state created. Adjust objects, then preview smart animate.');}}catch(error){editor.error=error instanceof Error?error.message:'Could not create the next state. Try again.';}}
   async function chooseObject(id:string){editor.sourceMode=false;editor.choose(id);scope='object';await tick();document.querySelector<HTMLSelectElement>('.motion-panel [aria-label="Entrance effect"]')?.focus({preventScroll:true});}
 </script>
-<div class="inspector-content motion-panel" data-motion-scope={scope}>
+<div bind:this={root} class="inspector-content motion-panel" data-motion-scope={scope}>
   <div class="motion-scope"><SegmentedControl label="Motion scope" options={[{value:'page',label:'Slide',ariaLabel:'Slide transition'},{value:'object',label:'Object',ariaLabel:'Object entrance'},{value:'sequence',label:'Order',ariaLabel:'Order of entrance effects'}]} value={scope} onchange={value=>scope=value as Scope}/></div>
   <div class="motion-panel-body" bind:this={body} tabindex="-1">{#if active}{#if disabled}<Notice tone="info" message="Exit the AI preview to edit motion.">{#snippet actions()}<Button variant="secondary" onclick={onexitpreview}>Exit preview</Button>{/snippet}</Notice>{/if}<fieldset class="motion-controls" {disabled}>
     {#if scope==='page'}

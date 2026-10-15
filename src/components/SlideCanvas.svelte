@@ -32,6 +32,7 @@
   import AsyncFeature from './AsyncFeature.svelte';
   import type {Chart} from '../core/chart-schema';
   import ChartVisual from './ChartVisual.svelte';
+  import type {ChartTextTarget} from '../core/chart-text';
   import type {TableStyle} from '../core/table-schema';
   import { playElement, clickOrders,autoEntranceOrders } from '../core/motion';
   import { resolveSlideTextSizing, resolveTextElement, clearTextSizeCache, browserTextSize, manualTextSizing } from '../core/text-layout';
@@ -53,24 +54,28 @@
   // Saved layout-guide preferences also load them when the canvas opens.
   $effect(()=>{if(interactive&&(editor.selected.length||editor.layoutGuides))loadCanvasGuides();});
   import { editedTextStyle } from '../core/text-editing';
-  let {deck, slide: sourceSlide, interactive = false, original = false, playback = false, step = 0, replay = 0, reduced = false, paused = false, entering = false, restored = false, sharedIds = [], clientId = '', insertTool = null, insertImage = null, insertBlock = null, onplace, oninsertcancel, ontextdraft, onprototype, onprototypeinteraction}: {deck: Pick<Deck, 'width' | 'height'> & Partial<Pick<Deck, 'fonts' | 'onlineFonts' | 'designSystem'>>; slide: Slide; interactive?: boolean; original?: boolean; playback?: boolean; step?: number; replay?: number; reduced?: boolean; paused?: boolean; entering?: boolean; restored?: boolean; sharedIds?: string[]; clientId?: string; insertTool?: InsertTool|null; insertImage?: SlideElement|null; insertBlock?: DeckBlock|null; onplace?: (type:InsertTool, geometry:InsertGeometry, revision:number, slideId:string, text?:string, style?:Partial<SlideElement>) => void; oninsertcancel?: () => void; ontextdraft?: (active:boolean) => void; onprototype?: (element: SlideElement) => void; onprototypeinteraction?: (id: string, active: boolean) => void} = $props();
+  let {deck, slide: sourceSlide, interactive = false, original = false, playback = false, step = 0, replay = 0, reduced = false, paused = false, entering = false, restored = false, sharedIds = [], clientId = '', insertTool = null, insertImage = null, insertBlock = null, onplace, oninsertcancel, ontextdraft, oncellselection, onprototype, onprototypeinteraction}: {deck: Pick<Deck, 'width' | 'height'> & Partial<Pick<Deck, 'fonts' | 'onlineFonts' | 'designSystem'>>; slide: Slide; interactive?: boolean; original?: boolean; playback?: boolean; step?: number; replay?: number; reduced?: boolean; paused?: boolean; entering?: boolean; restored?: boolean; sharedIds?: string[]; clientId?: string; insertTool?: InsertTool|null; insertImage?: SlideElement|null; insertBlock?: DeckBlock|null; onplace?: (type:InsertTool, geometry:InsertGeometry, revision:number, slideId:string, text?:string, style?:Partial<SlideElement>) => void; oninsertcancel?: () => void; ontextdraft?: (active:boolean) => void; oncellselection?: (active:boolean) => void; onprototype?: (element: SlideElement) => void; onprototypeinteraction?: (id: string, active: boolean) => void} = $props();
   let fontEpoch = $state(0), dataEditorId = $state('');
   const dataElement = $derived(sourceSlide.elements.find(e=>e.id===dataEditorId));
+  let chartTextEditor=$state<{id:string;target:ChartTextTarget}|null>(null);
   let chartValueId=$state(''),chartValuePreview=$state<{id:string;chart:Chart}|null>(null);
+  $effect(()=>{if(chartTextEditor&&(!interactive||original||!editor.selected.includes(chartTextEditor.id))){chartTextEditor=null;chartValuePreview=null;}});
   let chartValueSequence=$state(0),chartInitialPoint=$state<{series:number;category:number}|null>(null),chartActivePoint=$state<{id:string;series:number;category:number}|null>(null);
   let TableColumnHandles=$state<typeof import('./CanvasTableColumnHandles.svelte').default>();
   let TableGrid=$state<typeof import('./CanvasTableGrid.svelte').default>(),ChartPointInteraction=$state<typeof import('./CanvasChartPointInteraction.svelte').default>();
   let columnHandlesRequest:Promise<void>|undefined;
   $effect(()=>{if(interactive&&!original&&editor.selection.length===1&&editor.selection[0]?.type==='table'&&!TableColumnHandles&&!columnHandlesRequest)columnHandlesRequest=Promise.all([import('./CanvasTableColumnHandles.svelte'),import('./CanvasTableGrid.svelte')]).then(([handles,grid])=>{TableColumnHandles=handles.default;TableGrid=grid.default;}).catch(()=>{columnHandlesRequest=undefined;});});
   $effect(()=>{if(interactive&&!original&&editor.selection.length===1&&editor.selection[0]?.type==='chart'&&!ChartPointInteraction)void import('./CanvasChartPointInteraction.svelte').then(m=>ChartPointInteraction=m.default);});
-  function openChartPoint(id:string,series?:number,category?:number){const target=sourceSlide.elements.find(e=>e.id===id);if(!interactive||original||!target||target.locked||target.designPattern)return;editor.choose(id,false,true);chartInitialPoint=series===undefined?null:{series,category:category??0};chartActivePoint=chartInitialPoint?{id,...chartInitialPoint}:null;chartValueSequence++;chartValueId=id;}
+  function openChartPoint(id:string,series?:number,category?:number){const target=sourceSlide.elements.find(e=>e.id===id);if(!interactive||original||!target||target.locked||target.designPattern)return;chartTextEditor=null;editor.choose(id,false,true);chartInitialPoint=series===undefined?null:{series,category:category??0};chartActivePoint=chartInitialPoint?{id,...chartInitialPoint}:null;chartValueSequence++;chartValueId=id;}
+  function openChartText(id:string,target:ChartTextTarget){const e=sourceSlide.elements.find(e=>e.id===id);if(!interactive||original||!e||e.locked||e.designPattern)return;editor.choose(id,false,true);chartValueId='';chartActivePoint=null;chartValuePreview=null;chartTextEditor={id,target};}
+  function chartTextNode(id:string,target:ChartTextTarget){return host?.querySelector<HTMLElement>(`[data-element-id="${id}"] [data-chart-text="${target.kind}"][data-chart-text-index="${target.index??''}"]`)??host?.querySelector<HTMLElement>(`[data-element-id="${id}"]`)??undefined;}
   function chartPointNode(id:string,series:number,category:number){return host?.querySelector<HTMLElement>(`[data-element-id="${id}"] [data-chart-point][data-chart-series="${series}"][data-chart-category="${category}"]`)??host?.querySelector<HTMLElement>(`[data-element-id="${id}"]`)??undefined;}
   function chartDraft(e:SlideElement){return chartValuePreview?.id===e.id?{...e,chart:chartValuePreview.chart}:e;}
   let tablePointerCell:{id:string;row:number;column:number}|null=null;
-  let cellEditor=$state<{id:string;row:number;column:number}|null>(null),cellPreview=$state<{id:string;row:number;column:number;value:string}|null>(null);
+  let cellEditor=$state<{id:string;row:number;column:number;initialValue?:string}|null>(null),cellPreview=$state<{id:string;row:number;column:number;value:string}|null>(null);
   let columnPreview=$state<{id:string;style:TableStyle}|null>(null);
   function cellNode(id:string,row:number,column:number){return host?.querySelector<HTMLElement>(`[data-element-id="${id}"] [data-table-row="${row}"][data-table-column="${column}"]`)??undefined;}
-  function openCell(id:string,row:number,column:number){if(!interactive||original||sourceSlide.elements.find(e=>e.id===id)?.locked)return;editor.choose(id,false,true);cellEditor={id,row,column};}
+  function openCell(id:string,row:number,column:number,initialValue?:string){if(!interactive||original||sourceSlide.elements.find(e=>e.id===id)?.locked)return;editor.choose(id,false,true);cellEditor={id,row,column,initialValue};}
   function tableDraft(e:SlideElement){const styled=columnPreview?.id===e.id?{...e,tableStyle:columnPreview.style}:e;if(cellPreview?.id!==e.id)return styled;const cells=(e.cells??[]).map(r=>[...r]);if(cells[cellPreview.row])cells[cellPreview.row][cellPreview.column]=cellPreview.value;return {...styled,cells};}
   let formattedText = $state<SlideElement | null>(null), formatVersion = $state(0);
   let formattingText = false;
@@ -154,8 +159,8 @@
     keepArtworkStill();
   }
   let pointerCapture: {target: HTMLElement; id: number} | null = null;
-  function capturePointer(event: PointerEvent) {
-    const current=event.currentTarget as HTMLElement,target=current.matches('.resize-handle,.rotation-handle')?current.closest<HTMLElement>('.interaction-overlay')??current:current;
+  function capturePointer(event: PointerEvent,override?:HTMLElement) {
+    const current=event.currentTarget as HTMLElement,target=override??(current.matches('.resize-handle,.rotation-handle')?current.closest<HTMLElement>('.interaction-overlay')??current:current);
     target.setPointerCapture(event.pointerId); pointerCapture = {target, id: event.pointerId};
   }
   function releasePointer() {
@@ -203,6 +208,7 @@
     else void focusCanvasSelection();
   }
   function textKey(event:KeyboardEvent, draft=false) {
+    if(!event.isComposing&&event.keyCode!==229&&!event.altKey&&(event.metaKey||event.ctrlKey)&&(!event.shiftKey&&['k',','].includes(event.key.toLowerCase())||event.shiftKey&&event.code==='Backslash'))return;
     event.stopPropagation();if(event.isComposing||event.keyCode===229)return;
     if(event.key==='Escape'){event.preventDefault();if(draft)finishTextDraft(true);else{finishTextEditing(true);void focusCanvasSelection();}}
     else if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();if(draft)finishTextDraft();else{finishTextEditing();void focusCanvasSelection();}}
@@ -301,7 +307,7 @@
     if(!(event.metaKey||event.ctrlKey||event.altKey&&(!anchor||Math.hypot(p.x-anchor.x,p.y-anchor.y)*scale>10)))return false;
     event.stopPropagation();beginMarquee(event);return true;
   }
-  function start(event: PointerEvent, e: SlideElement, mode: 'move' | 'resize' = 'move', corner: ResizeHandle = 'se', containerId='') {
+  function start(event: PointerEvent, e: SlideElement, mode: 'move' | 'resize' = 'move', corner: ResizeHandle = 'se', containerId='',captureTarget?:HTMLElement) {
     if (!interactive || original || e.designPattern || event.button !== 0) return;
     const control=(event.target as Element).closest('button,a,input,textarea,select,[contenteditable="true"]');
     if(mode==='move'&&control&&control!==event.currentTarget&&(event.currentTarget as Element).contains(control))return;
@@ -317,7 +323,7 @@
     const targetId=containerId||e.id,alreadySelected=containerId?descendants(slide,containerId).filter(e=>!e.hidden).every(e=>selectedIds.has(e.id)):selectedIds.has(e.id);
     const toggleSelection = mode === 'move' && !altPick && (event.shiftKey || editor.additiveSelection) && alreadySelected;
     if (mode === 'move' && !altPick && !toggleSelection && (!alreadySelected || containerId&&!selectionUnits.includes(containerId)&&!event.shiftKey&&!editor.additiveSelection || event.shiftKey || editor.additiveSelection || event.metaKey || event.ctrlKey)) editor.choose(targetId, event.shiftKey || editor.additiveSelection, !containerId&&(event.metaKey||event.ctrlKey));
-    (event.currentTarget as HTMLElement).focus({preventScroll: true});
+    (captureTarget??event.currentTarget as HTMLElement).focus({preventScroll: true});
     const current=slide.elements.find(item=>item.id===e.id);if(!current){cancelPointer();return;}e=current;
     if(mode==='move')holdToPick(event);
     if(editor.selectedContainer&&descendants(slide,editor.selectedContainer).some(e=>e.locked))return;
@@ -328,7 +334,7 @@
     canvasScene=null;canvasDrop=null;
     gesture = {id: e.id, targetId, ids, x: event.clientX, y: event.clientY, dx: 0, dy: 0, mode,context, corner, base: {...e}, pointerId: event.pointerId, pointerType: event.pointerType, active: false, proportional: keepsAspectRatio(e, event.shiftKey),revision:editor.deck!.revision,slideId:slide.id,deckId:editor.deck!.id,altPick,toggleSelection,clientX:event.clientX,clientY:event.clientY,startPoint:canvasPoint(event.clientX,event.clientY),shift:event.shiftKey,alt:event.altKey};
     snapGuides=[];snapScene=createSnapScene(deck,slide,ids,editor.selected,context);
-    capturePointer(event);
+    capturePointer(event,captureTarget);
   }
   function startScale(event:PointerEvent,corner:ResizeHandle){
     if(!interactive||original||editing||insertTool||event.button!==0||!scaleFrame||!scaleMembers.length||scaleMembers.length<2&&!editor.selectedContainer)return;
@@ -691,14 +697,14 @@
             <div class="shape-content" style:pointer-events={e.designPattern?'none':'auto'} style:background={e.fill} style:border="{e.strokeWidth}px solid {e.stroke}" style:border-radius={e.type === 'ellipse' ? '50%' : fmt(e.radius)}></div>
           {:else if e.type === 'table'}
             {#if TableGrid&&interactive&&!original&&!e.locked&&!e.designPattern&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!gesture}
-              <TableGrid element={tableDraft(e)} system={deck.designSystem} style={visual(e)} activeCell={cellEditor?.id===e.id?{row:cellPreview?.row??cellEditor.row,column:cellPreview?.column??cellEditor.column}:undefined} oncell={(row,column)=>openCell(e.id,row,column)}/>
+              <TableGrid element={tableDraft(e)} system={deck.designSystem} {scale} style={visual(e)} activeCell={cellEditor?.id===e.id?{row:cellPreview?.row??cellEditor.row,column:cellPreview?.column??cellEditor.column}:undefined} oncell={(row,column,initialValue)=>openCell(e.id,row,column,initialValue)} onselection={oncellselection} onmove={event=>start(event,e,'move','se','',host?.querySelector<HTMLElement>(`[data-element-id="${e.id}"]`)??undefined)}/>
             {:else}<TableVisual element={tableDraft(e)} system={deck.designSystem} style={visual(e)} editable={interactive&&!original&&!e.locked&&selectedIds.has(e.id)} activeCell={cellEditor?.id===e.id?{row:cellPreview?.row??cellEditor.row,column:cellPreview?.column??cellEditor.column}:undefined} oncell={(row,column)=>openCell(e.id,row,column)}/>{/if}
           {:else if e.type === 'chart'}
-            <ChartVisual element={chartDraft(e)} fonts={deck.fonts} editable={interactive&&!original&&!e.locked&&!e.designPattern&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!gesture} activePoint={chartActivePoint?.id===e.id?chartActivePoint:undefined} onpoint={(series,category)=>openChartPoint(e.id,series,category)}/>
+            <ChartVisual element={chartDraft(e)} fonts={deck.fonts} editable={interactive&&!original&&!e.locked&&!e.designPattern&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!gesture} activePoint={chartActivePoint?.id===e.id?chartActivePoint:undefined} onpoint={(series,category)=>openChartPoint(e.id,series,category)} ontext={target=>openChartText(e.id,target)}/>
           {/if}
           </div>
           </div>
-          {#if ChartPointInteraction&&interactive&&!original&&!e.locked&&!e.designPattern&&e.type==='chart'&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!gesture&&!editing}<ChartPointInteraction element={e} {scale} disabled={Boolean(chartValueId)} onpreview={chart=>chartValuePreview=chart?{id:e.id,chart}:null}/>{/if}
+          {#if ChartPointInteraction&&interactive&&!original&&!e.locked&&!e.designPattern&&e.type==='chart'&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!gesture&&!editing}<ChartPointInteraction element={e} {scale} onselection={oncellselection} disabled={Boolean(chartValueId||chartTextEditor)} onpreview={chart=>chartValuePreview=chart?{id:e.id,chart}:null}/>{/if}
           {#if TableColumnHandles&&interactive&&!original&&!e.locked&&!e.designPattern&&e.type==='table'&&selectedLeaves.has(e.id)&&editor.selected.length===1&&!editor.selectedContainer&&!cellEditor&&!gesture&&!editing}<TableColumnHandles element={e} {scale} system={deck.designSystem} onpreview={style=>columnPreview=style?{id:e.id,style}:null}/>{/if}
           {#if interactive&&!e.designPattern&&e.type==='line'}<svg class="line-hit" viewBox="0 0 {e.w} {e.h}" aria-hidden="true"><line x1="0" y1={e.h===1?.5:0} x2={e.w} y2={e.h===1?.5:e.h} stroke="transparent" stroke-width={Math.max(e.strokeWidth||2,16/scale)} style:pointer-events="stroke" /></svg>{/if}
         </div>
@@ -772,7 +778,7 @@
 {/if}
 
 {#if interactive&&cellEditor}
-  {#key cellEditor.id}{@const target=cellEditor}<AsyncFeature feature="table-cell" props={{elementId:cellEditor.id,initialRow:cellEditor.row,initialColumn:cellEditor.column,anchor:(row,column)=>cellNode(target.id,row,column),onpreview:(row,column,value)=>cellPreview=value===null?null:{id:target.id,row,column,value},onclose:()=>{cellPreview=null;cellEditor=null;},onfull:()=>dataEditorId=editor.selected[0]}}/>{/key}
+  {#key cellEditor.id}{@const target=cellEditor}<AsyncFeature feature="table-cell" props={{elementId:cellEditor.id,initialRow:cellEditor.row,initialColumn:cellEditor.column,initialValue:cellEditor.initialValue,anchor:(row,column)=>cellNode(target.id,row,column),onpreview:(row,column,value)=>cellPreview=value===null?null:{id:target.id,row,column,value},onclose:()=>{cellPreview=null;cellEditor=null;},onfull:()=>dataEditorId=editor.selected[0]}}/>{/key}
 {/if}
 
 {#if interactive&&chartValueId}{#key chartValueSequence}{@const id=chartValueId}{@const sequence=chartValueSequence}{@const initial=chartInitialPoint}
@@ -863,3 +869,5 @@
   @media(pointer:coarse){.resize-handle{width:calc(44 * var(--handle-unit));height:calc(44 * var(--handle-unit))}.resize-handle::after{inset:auto;width:calc(10 * var(--handle-unit));height:calc(10 * var(--handle-unit))}.resize-handle.nw,.resize-handle.sw{left:calc(-38 * var(--handle-unit))}.resize-handle.ne,.resize-handle.se{right:calc(-38 * var(--handle-unit))}.resize-handle.nw,.resize-handle.ne{top:calc(-38 * var(--handle-unit))}.resize-handle.sw,.resize-handle.se{bottom:calc(-38 * var(--handle-unit))}.resize-handle.nw::after,.resize-handle.sw::after{left:calc(33 * var(--handle-unit))}.resize-handle.ne::after,.resize-handle.se::after{right:calc(33 * var(--handle-unit))}.resize-handle.nw::after,.resize-handle.ne::after{top:calc(33 * var(--handle-unit))}.resize-handle.sw::after,.resize-handle.se::after{bottom:calc(33 * var(--handle-unit))}}
 
 </style>
+
+{#if interactive&&chartTextEditor}{#key chartTextEditor}{@const target=chartTextEditor}<AsyncFeature feature="chart-text" props={{elementId:target.id,target:target.target,anchor:location=>chartTextNode(target.id,location),onpreview:chart=>chartValuePreview=chart?{id:target.id,chart}:null,onclose:()=>{chartValuePreview=null;chartTextEditor=null;}}}/>{/key}{/if}

@@ -45,9 +45,9 @@
   <div class="welcome-intro">
     <h1 id="welcome-title">Start a document</h1>
     <div class="welcome-actions">
-      <Button variant="primary" size="lg" disabled={creating} onclick={() => ontemplates()}><LayoutTemplate size={16} />Choose a template</Button>
+      <Button variant="primary" size="lg" disabled={creating} onclick={onai}><Sparkles size={16} />Create with AI</Button>
+      <Button size="lg" disabled={creating} onclick={() => ontemplates()}><LayoutTemplate size={16} />Choose a template</Button>
       <Button variant="secondary" size="lg" busy={creating} onclick={startBlank}><Plus size={16} />Start blank</Button>
-      <Button size="lg" disabled={creating} onclick={onai}><Sparkles size={16} />Create with AI</Button>
     </div>
   </div>
 

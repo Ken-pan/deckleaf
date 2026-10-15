@@ -1,15 +1,12 @@
 import {editor} from './core/editor.svelte';
-import {tick} from 'svelte';
 import {clipboardText,pasteOffset} from './core/clipboard';
-import {focusCanvasSelection} from './editor-focus';
+import {focusCanvasSelection,focusSlideSelection} from './editor-focus';
 import {insertedElement} from './core/insertion';
-import {ClipboardQueue} from './core/clipboard-queue';
 import {yieldForInput} from './core/text-layout';
-import {stamp,unchanged,pasteFailure,type PasteData,type ClipboardPasteOptions} from './clipboard-context';
-const pasteQueue=new ClipboardQueue();
+import {stamp,unchanged,type PasteData,type ClipboardPasteOptions} from './clipboard-context';
 async function focusPastedContent(){
   if(editor.clipboardContent?.kind==='objects')return focusCanvasSelection();
-  await tick();const current=document.querySelector<HTMLButtonElement>('.slide-thumb.current');current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest'});
+  return focusSlideSelection();
 }
 async function pasteData(data:PasteData,placement:ClipboardPasteOptions,captured=stamp()):Promise<string> {
   unchanged(captured);
@@ -44,10 +41,9 @@ async function pasteData(data:PasteData,placement:ClipboardPasteOptions,captured
   const after=stamp();if(changed)await focusCanvasSelection();return after;
 }
 
-export function queuePaste(data:PasteData|Promise<PasteData>,placement:ClipboardPasteOptions,captured=stamp()):Promise<void>{
+export async function applyPaste(data:PasteData|Promise<PasteData>,placement:ClipboardPasteOptions,current=stamp()):Promise<string>{
   // Attach a rejection handler immediately, even while an earlier paste is running.
   const prepared=Promise.resolve(data).then(value=>({value}),error=>({error}));
-  return pasteQueue.run(captured,stamp,async current=>{
     unchanged(current);
     const timer=setTimeout(()=>editor.notify('Pasting…','info'),150);
     try{
@@ -61,5 +57,4 @@ export function queuePaste(data:PasteData|Promise<PasteData>,placement:Clipboard
       }
       return await pasteData(value,placement,current);
     }finally{clearTimeout(timer);}
-  }).catch(pasteFailure);
 }

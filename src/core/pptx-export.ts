@@ -1,6 +1,6 @@
 import {readableChartRange} from './chart-range';
 import {chartLabelLayout} from './chart-layout';
-import {tableAppearance,tablePresentation,tableCellStyle} from './table-appearance';
+import {tableAppearance,tablePresentation,tableCellStyle,tableCellSpan} from './table-appearance';
 import type {Deck} from './model';
 import { chartFromElement, chartDescription, displayedChartSeries, isRoundChart,presentationChart } from './charts';
 import {fitTableElement,tableRowHeights} from './table-fit';
@@ -58,11 +58,12 @@ export async function buildPptx(deck: Deck, original = false, imageDimensions: I
         slide.addText(`${e.name}\n${e.prototype.url}`, {...base, fontFace: 'Arial', fontSize: 18, color: c(e.fill), hyperlink: {url: e.prototype.url}, margin: 12});
       } else if (e.type === 'table') {
         const p=tablePresentation(e,deck.designSystem);
-        const rows=(e.cells??[]).map((row,i)=>Array.from({length:p.widths.length},(_,j)=>{
+        const rows=(e.cells??[]).map((row,i)=>Array.from({length:p.widths.length},(_,j)=>j).filter(j=>!tableCellSpan(p,i,j).covered).map(j=>{
+          const span=tableCellSpan(p,i,j);
           const style=tableCellStyle(p,i,j),fill=style.background==='transparent'?{color:'FFFFFF',transparency:100}:{color:c(style.background)};
           type CellBorder={type:'none'|'solid';pt:number;color:string};
           const border=[style.borderTop,style.borderRight,style.borderBottom,style.borderLeft].map(v=>({type:v==='0'?'none':'solid',pt:v==='0'?0:p.borderWidth*.75,color:c(p.line)})) as [CellBorder,CellBorder,CellBorder,CellBorder];
-          return {text:row[j]??'',options:{fill,bold:p.headerRow&&i===0,color:c(style.color),align:style.textAlign,valign:p.verticalAlign,border}};
+          return {text:row[j]??'',options:{fill,bold:style.fontWeight>=600,italic:style.fontStyle==='italic',color:c(style.color),align:style.textAlign,valign:style.verticalAlign,border,rowspan:span.rowSpan,colspan:span.columnSpan}};
         }));
         slide.addTable(rows,{...base,fontFace:e.fontFamily,fontSize:e.fontSize*.75,color:c(p.text),colW:p.widths.map(w=>e.w*w/96),margin:p.padding*.75,rowH:p.heights?p.heights.map(h=>h*e.h/96):e.tableFit?tableRowHeights(e).map(h=>h/96):undefined,autoPage:false});
       } else if (e.type === 'chart') {
@@ -85,12 +86,12 @@ export async function buildPptx(deck: Deck, original = false, imageDimensions: I
           ...base, h: Math.max(.1, base.h - (visibleSource ? size * 1.8 / 72 : 0)),
           barDir: chart.type === 'bar' ? 'bar' : 'col', barGrouping: chart.stacked ? 'stacked' : ['line','area'].includes(chart.type)?'standard':'clustered', holeSize: chart.visual?.donutHole??60,
           showValue: !isRoundChart(chart)&&chart.showValues, showPercent: isRoundChart(chart)&&chart.showValues,
-          showLegend: chart.legend, legendPos: 'b', legendFontFace: e.fontFamily, legendFontSize: size, legendColor: c(chart.textColor),
+          showLegend: chart.legend, legendPos: chart.legendPosition==='top'?'t':chart.legendPosition==='right'?'r':chart.legendPosition==='left'?'l':'b', legendFontFace: e.fontFamily, legendFontSize: size, legendColor: c(chart.textColor),
           showTitle: Boolean(heading || chart.subtitle), title: [heading, chart.subtitle].filter(Boolean).join('\n'), titleFontFace: e.fontFamily, titleFontSize: size * 1.3, titleColor: c(chart.textColor),
-          catAxisLabelFontFace: e.fontFamily, catAxisLabelFontSize: size, catAxisLabelColor: c(chart.textColor),
+          catAxisLabelFontFace: e.fontFamily, catAxisLabelFontSize: (chart.axisStyle?.fontSize??e.fontSize)*.75,catAxisLabelRotate:chart.axisStyle?.rotation,catAxisLabelColor: c(chart.textColor),catAxisLabelPos:chart.axisStyle?.showLabels===false?'none':undefined,
           catAxisLabelFrequency:String(chartLabelLayout(e,chart).step),
-          valAxisLabelFontFace: e.fontFamily, valAxisLabelFontSize: size, valAxisLabelColor: c(chart.textColor),
-          fontSize:size,fontFace:e.fontFamily,dataLabelFontSize:size,dataLabelFontFace:e.fontFamily,dataLabelFormatCode:format,dataLabelColor:c(chart.textColor),dataLabelPosition:chart.stacked?'ctr':'bestFit',
+          valAxisLabelFontFace: e.fontFamily, valAxisLabelFontSize: (chart.axisStyle?.fontSize??e.fontSize)*.75,valAxisLabelPos:chart.axisStyle?.showLabels===false?'none':undefined, valAxisLabelColor: c(chart.textColor),
+          fontSize:size,fontFace:e.fontFamily,dataLabelFontSize:chart.dataLabels?.fontSize?chart.dataLabels.fontSize*.75:size,dataLabelFontFace:e.fontFamily,dataLabelFormatCode:format,dataLabelColor:c(chart.dataLabels?.color??chart.textColor),dataLabelFontBold:chart.dataLabels?.bold,dataLabelPosition:chart.dataLabels?.position==='inside'?(['line','area'].includes(chart.type)?'b':'ctr'):chart.dataLabels?.position==='outside'?(['line','area'].includes(chart.type)?'t':'outEnd'):chart.stacked?'ctr':'bestFit',
           valAxisMajorUnit:chart.type==='bar'?range.step:undefined,
           showLabel:false,showSerName:false,
           catAxisTitle: chart.categoryTitle, showCatAxisTitle: Boolean(chart.categoryTitle),

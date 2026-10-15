@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { TRANSITION_IDS } from './transition-ids';
 import { CharacterRecipeSchema } from './character-recipe-schema';
 import {GraphicRecipeSchema} from './graphic-recipe';
-import {TableStyleSchema} from './table-schema';
+import {TableStyleSchema,validateTableStyle} from './table-schema';
 import {BlockRecipeSchema} from './deck-block-schema';
 import { ChartSchema, validateChart } from './chart-schema';
 import { COLOR_ROLES, DesignSystemSchema, StyleBindingSchema, DEFAULT_DESIGN_SYSTEM } from './design-system-schema';
@@ -247,6 +247,8 @@ export function assertDeckInvariants(deck: Deck, trustedSlides?: ReadonlySet<Sli
       if (e.type === 'prototype' && !e.prototype) throw new Error('A prototype needs a share link');
       if (e.chart && e.type !== 'chart') throw new Error('Only chart objects support chart data.');
       if (e.chart) validateChart(e.chart);
+      if(e.tableStyle&&e.type!=='table')throw new Error('Only table objects support table styles.');
+      if(e.type==='table')validateTableStyle(e.cells??[],e.tableStyle);
       if(e.layoutItem){
         for(const axis of ['Width','Height'] as const)if((e.layoutItem[`min${axis}`]??1)>(e.layoutItem[`max${axis}`]??20000))throw new Error(`Minimum ${axis.toLowerCase()} must not exceed maximum ${axis.toLowerCase()}.`);
         if(e.rotation%360!==0&&(e.layoutItem.widthMode==='fill'||e.layoutItem.heightMode==='fill'))throw new Error('Reset object rotation before using Fill.');

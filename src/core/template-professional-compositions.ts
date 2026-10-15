@@ -8,6 +8,7 @@ import {inlineTextWidth} from './inline-text-width';
 import {templateChartCaption} from './chart-caption';
 import {formatChartValue} from './chart-style';
 import {resolveGroupLayouts} from './object-layout';
+import {templatePageGrid} from './template-page-grid';
 
 const supported=new Set(['cover','summary','evidence','content','annotation','dashboard','category-chart','trend','composition','comparison','workstreams','matrix','hierarchy','case-study','decision','action-plan','appendix','freeform','agenda','insights','team','process','solution','timeline','gallery','table','quote','split','before-after','roadmap','metrics','risks']);
 export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:LayoutId,d:TemplatePainter,o:TemplateOptions={}):boolean{
@@ -21,8 +22,8 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
   const fields=o.items??p.fields??p.columns??[];
   const items=Array.from({length:n},(_,i)=>fields[i]??[`Checkpoint ${i+1}`,'Confirm the outcome and record the next decision.'] as [string,string]);
   s.template={prototype:id,variant:o.noImage?'no-image':o.mirror?'image-left':String(n),density:reading?'reading':'presentation'};
-  s.layout={margins:{left:84,right:80,top:138,bottom:96},columns:12,gutter:20};
   s.transition={effect:'fade',duration:c.id==='proposal'?380:300,easing:'linear'};
+  const pageGrid=templatePageGrid(c.id,id);
   const layouts=s.autoLayouts??=[];s.groups??=[];
   const flow=(name:string,es:SlideElement[],x:number,y:number,w:number,h:number,gap=16,parent?:string)=>{
     const group=uid('flow');s.groups!.push({id:group,name,...(parent?{parent,layoutItem:{widthMode:'fill' as const,heightMode:'fixed' as const}}:{})});
@@ -41,9 +42,10 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
   const grid=(name:string,values:[string,string][],kind:'parallel'|'steps'|'metrics'='parallel')=>{
     const start=s.elements.length;
     if(kind!=='metrics'&&values.length>=4&&values.some(([a,b])=>a.length>24||b.length>70)){
+      s.template!.variant=`list-${values.length}`;
       const h=396/values.length;values.forEach(([a,b],i)=>stage(()=>{const y=300+i*h;rule(84,y,1276);label(String(i+1).padStart(2,'0'),84,y+16,90,'accent');flow(`Insight ${i+1}`,[t(a,220,y+14,292,30)],220,y+14,292,h-18,0);flow(`Insight explanation ${i+1}`,[t(b,552,y+14,808,26,'muted')],552,y+14,808,h-18,0);},i));return;
     }
-    const count=values.length,cols=count===4?2:Math.min(count,3),rows=Math.ceil(count/cols),gap=rows>1?32:40,x=84,y=kind==='metrics'?286:310,w=1276,h=kind==='metrics'?412:382,cellW=(w-(cols-1)*gap)/cols,cellH=(h-(rows-1)*32)/rows;
+    const count=values.length,cols=count===4?2:Math.min(count,3),rows=Math.ceil(count/cols),gap=pageGrid.layout.gutter,x=84,y=kind==='metrics'?286:310,w=1276,h=kind==='metrics'?412:382,cellW=(w-(cols-1)*gap)/cols,cellH=(h-(rows-1)*32)/rows;
     const parent=uid('flow');s.groups!.push({id:parent,name});const children:string[]=[];
     values.forEach(([a,b],i)=>stage(()=>{const px=x+i%cols*(cellW+gap),py=y+Math.floor(i/cols)*(cellH+32);rule(px,py,cellW);
       const [value,...context]=b.split(/[\n\t]/);
@@ -52,7 +54,6 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     },i));
     layouts.push({id:parent,name,direction:'grid',columns:3,adaptiveColumns:true,gridSizing:'equal',gap,lineGap:32,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',x,y:y+16,w,h:h-16,widthMode:'fixed',heightMode:'fixed',order:children});
     if(kind==='metrics')for(const e of s.elements.slice(start))if(e.animation)e.animation={...e.animation,trigger:'auto',order:1,duration:260,withTransition:false};
-    s.layout!.columns=cols;s.layout!.gutter=gap;
   };
   const nativeTable=(cells:string[][],y=286,h=412,box={x:84,w:1276})=>{
     const e=element('table',{name:'Editable detail table',...box,y,h,fontFamily:c.body,fontSize:reading?26:28,lineHeight:1.2,fill:c.system.colors.ink,stroke:c.system.colors.line,cells,tableFit:{minimumFontSize:24,padding:8},design:{text:'body',textScale:(reading?26:28)/30,fill:'ink',stroke:'line',overrides:['lineHeight']}});s.elements.push(e);return e;
@@ -93,8 +94,10 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     title();
     if(id==='action-plan')nativeTable(o.cells??[['Action','Owner','Due','Done when'],['Test dispatch flow','Research','Oct 20','All priority tasks completed'],['Verify handoff','Engineering','Oct 27','No blocking issues remain'],['Review pilot data','Product','Nov 03','Baseline and target compared'],...(o.count&&o.count>3?Array.from({length:o.count-3},(_,i)=>[`Follow-up ${i+1}`,'Product',`Nov ${10+i*7}`,'Decision recorded']):[])],284,412);
     else if(id==='decision'){
-      flow('Decision recommendation',[text(o.body??'Approve the focused pilot',84,310,502,180,'heading',56),...(!o.body?[t('Decision owner: Product lead\nInvestment: 2 weeks\nRisk: limited pilot coverage',84,526,502,28,'muted')]:[])],84,310,502,370,30);
-      (o.items??[['Evidence','The revised task flow reduced avoidable handoffs.'],['Scope','A focused cohort keeps the first release measurable.'],['Cost','Two weeks of delivery fit the current team’s capacity.']]).slice(0,o.count??3).forEach(([a,b],i)=>{const y=308+i*126;rule(686,y,674);flow(`Decision reason ${i+1}`,[t(a,686,y+18,674,32),t(b,686,y+67,674,28,'muted')],686,y+18,674,108,12);});
+      const paragraph=Boolean(o.body&&o.body.length>100);
+      flow('Decision recommendation',[text(o.body??'Approve the focused pilot',84,310,502,180,paragraph?'body':'heading',paragraph?30:56),...(!o.body?[t('Decision owner: Product lead\nInvestment: 2 weeks\nRisk: limited pilot coverage',84,526,502,28,'muted')]:[])],84,310,502,370,30);
+      const reasons=o.items??[['Evidence','The revised task flow reduced avoidable handoffs.'],['Scope','A focused cohort keeps the first release measurable.'],['Cost','Two weeks of delivery fit the current team’s capacity.']],h=396/reasons.length;
+      reasons.forEach(([a,b],i)=>{const y=308+i*h;rule(686,y,674);flow(`Decision reason ${i+1}`,[t(a,686,y+18,674,32),t(b,686,y+67,674,28,'muted')],686,y+18,674,h-20,12);});
     }else{
       const values=o.items??(id==='case-study'?[['Challenge','Dispatchers needed to find the next urgent task across several lists.'],['Action','The team tested a single task view and a visible handoff state.'],['Result','Completion increased from 42% to 68% in the illustrative pilot.'],['Proof','Compare the same tasks and cohort before extending the release.']].slice(0,o.count??4) as [string,string][]:id==='appendix'?(o.items??[['Method','Compare the same tasks, cohort and time period. This example uses synthetic data.'],['Definition','Completion means a task reached the agreed final state within the pilot period.'],['References','Atlas sample research plan; pilot measurement sheet; release decision log.']]):items);
       const h=406/values.length;values.forEach(([a,b],i)=>stage(()=>{const y=288+i*h;rule(84,y,1276);label(String(i+1).padStart(2,'0'),84,y+18,90,'accent');flow(`Point label ${i+1}`,[t(a,220,y+16,280,30)],220,y+16,280,h-20,0);flow(`Point explanation ${i+1}`,[t(b,540,y+16,820,reading?26:28,'muted')],540,y+16,820,h-20,0);},i));
@@ -141,14 +144,15 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     if(c.id!=='report')note(o.source??'Illustrative editable evidence structure · Replace with verified observations');
   }else if(id==='annotation'){
     title(o.heading??'Keep context, ownership and evidence together');
-    const start=s.elements.length;mockup(84,286,500,318);
+    const left=pageGrid.span(0,5),right=pageGrid.span(6,6);
+    const start=s.elements.length;mockup(left.x,286,left.w,318);
     const full=s.elements.slice(start),group=full[0].group;
     const owner=full.find(e=>e.text==='Review the design');if(owner){owner.text='Owner: Maya · Due: Oct 20';owner.name='Handoff owner and date';}
-    text('Evidence: pilot task record',111,484,440,32,'body',20,'muted',{group,textSizing:'fixed',name:'Evidence link'});
+    text('Evidence: pilot task record',left.x+27,484,left.w-60,32,'body',20,'muted',{group,textSizing:'fixed',name:'Evidence link'});
     const values=o.items??[['Task context','The active task stays visible.'],['Named owner','A person and a review date define the handoff.'],['Linked evidence','The recommendation retains its source.'],['Next action','Continue after checking the decision.']].slice(0,o.count??3) as [string,string][];
-    const targets=[[608,383],[608,436],[608,484],[608,528]];const offset=o.itemOffset??0;
-    values.forEach(([a,b],i)=>stage(()=>{const y=286+i*414/values.length;shape(736,y+4,32,32,'accent',{type:'ellipse',name:`Callout ${i+1}`});text(String(offset+i+1),738,y+5,28,30,'caption',22,'background',{align:'center',textSizing:'fixed'});flow(`Callout ${i+1}`,[t(a,792,y,568,26),t(b,792,y+42,568,24,'muted')],792,y,568,414/values.length-10,8);rule(584,targets[(offset+i)%4][1]+14,24);shape(targets[(offset+i)%4][0],targets[(offset+i)%4][1],28,28,'accent',{type:'ellipse',name:`Full view marker ${i+1}`});text(String(offset+i+1),targets[(offset+i)%4][0]+2,targets[(offset+i)%4][1]+1,24,26,'caption',19,'background',{align:'center',textSizing:'fixed'});},i));
-    label('EVIDENCE / ENLARGED DETAIL',84,620,500,'accent');shape(84,658,500,40,'surface',{name:'Separate enlarged evidence detail'});text('Evidence: pilot task record',104,659,460,40,'body',30,'ink',{textSizing:'fixed'});
+    const targets=[[left.x+left.w+24,383],[left.x+left.w+24,436],[left.x+left.w+24,484],[left.x+left.w+24,528]];const offset=o.itemOffset??0;
+    values.forEach(([a,b],i)=>stage(()=>{const y=286+i*414/values.length;shape(right.x-56,y+4,32,32,'accent',{type:'ellipse',name:`Callout ${i+1}`});text(String(offset+i+1),right.x-54,y+5,28,30,'caption',22,'background',{align:'center',textSizing:'fixed'});flow(`Callout ${i+1}`,[t(a,right.x,y,right.w,26),t(b,right.x,y+42,right.w,24,'muted')],right.x,y,right.w,414/values.length-10,8);rule(left.x+left.w,targets[(offset+i)%4][1]+14,24);shape(targets[(offset+i)%4][0],targets[(offset+i)%4][1],28,28,'accent',{type:'ellipse',name:`Full view marker ${i+1}`});text(String(offset+i+1),targets[(offset+i)%4][0]+2,targets[(offset+i)%4][1]+1,24,26,'caption',19,'background',{align:'center',textSizing:'fixed'});},i));
+    label('EVIDENCE / ENLARGED DETAIL',left.x,620,left.w,'accent');shape(left.x,658,left.w,48,'surface',{name:'Separate enlarged evidence detail'});text('Evidence: pilot task record',left.x+20,659,left.w-40,48,'body',30,'ink',{textSizing:'fixed'});
     note('Illustrative editable interface · Full view retained; detail is separate');
   }else if(id==='gallery'){
     title(o.heading??(c.id==='report'?'Report folio and material studies':c.id==='pitch'?heading:'Studies in light, form and rhythm'));
@@ -187,7 +191,7 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     if(!o.noImage)title(o.heading??'A flexible foundation');note('Source and context');
     if(!o.noImage)flow('Content foundation',[t(o.body??'Use this themed space for a special diagram, external evidence or supporting material.',84,316,1040,32,'muted')],84,316,1040,380,0);
   }
-  s.notes=`${p.purpose}. ${contract.capacity}. ${contract.fallback} Illustrative Atlas example; no real research or commercial results are claimed. Images are project-owned AI material. ${n} items. Next reveals a complete point; Previous reverses it.`;
+  s.notes=`${p.purpose}. ${contract.capacity}. ${contract.fallback} ${o.items||o.chart||o.cells||o.body?'Review supplied content and retain verified data and media sources.':'Illustrative Atlas example; no real research or commercial results are claimed. Images are project-owned AI material.'} ${n} items. Next reveals a complete point; Previous reverses it.`;
   for(const [i,e] of s.elements.entries()){const chrome=e.y<110||e.y>=736;e.motionMatch=chrome?'off':'auto';e.motionKey=chrome?undefined:`template:${c.id}:${id}:${i}`;}
   if(c.id==='portfolio'&&['split','evidence','before-after'].includes(id)){
     const box=s.elements.find(e=>e.name==='Updated sample interface');if(box?.group){const groups=new Set([box.group]),keys=new Map<string,number>();for(let n=0;n<8;n++)for(const g of s.groups??[])if(g.parent&&groups.has(g.parent))groups.add(g.id);for(const e of s.elements.filter(e=>e.group&&groups.has(e.group)&&e.type!=='line').sort((a,b)=>a.y-b.y||a.x-b.x)){const key=`workspace-${e.type}-${e.name}`,n=keys.get(key)??0;keys.set(key,n+1);e.motionKey=`template:portfolio:${key}:${n}`;e.motionMatch='auto';}if(id==='before-after')s.transition={effect:'smart',duration:560,easing:'cinematic'};}

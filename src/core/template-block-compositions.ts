@@ -6,6 +6,7 @@ import {createDeckBlock,defaultBlockOptions,placeDeckBlock,blockFingerprint} fro
 import {DEFAULT_DASHBOARD_ITEMS,defaultTemplateCount,templateContract,type TemplateOptions} from './template-contracts';
 import {uid} from './model';
 import {resolveGroupLayouts} from './object-layout';
+import {templatePageGrid} from './template-page-grid';
 
 /** Manual insertion and template pages share the same native layout and style contract. */
 export function composeTemplateBlock(c:TemplateCollection,p:TemplatePage,id:LayoutId,d:TemplatePainter,o:TemplateOptions={}):boolean {
@@ -36,7 +37,8 @@ export function composeTemplateBlock(c:TemplateCollection,p:TemplatePage,id:Layo
   title.group=titleGroup;title.layoutItem={widthMode:'fill',heightMode:'fixed',basisFontSize:title.fontSize};s.groups.push({id:titleGroup,name:'Page title'});
   s.autoLayouts.push({id:titleGroup,name:'Page title',direction:'vertical',gap:0,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',columns:1,x:84,y:138,w:body?800:1276,h:134,textFitHeight:134,widthMode:'fixed',heightMode:'hug',order:[title.id]});
   if(body){const e=text(body,924,138,436,134,'body',24,'muted',{textSizing:'auto-height'}),g=uid('flow');e.group=g;e.layoutItem={widthMode:'fill',heightMode:'fixed',basisFontSize:24};s.groups.push({id:g,name:'Page introduction'});s.autoLayouts.push({id:g,name:'Page introduction',direction:'vertical',gap:0,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',columns:1,x:924,y:138,w:436,h:134,textFitHeight:134,widthMode:'fixed',heightMode:'hug',order:[e.id]});}
-  const frame={x:84,y:294,w:1276,h:402},block=createDeckBlock(kind,options,page,s,frame),placed=placeDeckBlock(block,frame,s.id);
+  const reading=templatePageGrid(c.id,id);
+  const frame={...reading.full,y:294,h:402},block=createDeckBlock(kind,options,page,s,frame),placed=placeDeckBlock(block,frame,s.id);
   if(block.fitIssues.length)throw new Error(`${block.fitIssues[0]} Choose Reading density or continue on another slide.`);
   for(const op of placed.operations){if(op.op==='set_group')s.groups.push(op.group);else if(op.op==='add_element')s.elements.push(op.element);}
   const group=s.groups.find(g=>g.id===placed.groupId)!;
@@ -48,7 +50,7 @@ export function composeTemplateBlock(c:TemplateCollection,p:TemplatePage,id:Layo
   const source=o.source??(id==='dashboard'?'Illustrative Atlas data · Replace values, cohort and reporting period':kind==='timeline'?'Dated milestones · Spacing shows sequence, not proportional time':kind==='funnel'?'Illustrative values · Stage widths do not represent numeric proportions':kind==='gantt'?'Planned periods · Confirm owners, dates and dependencies':'Editable example · Replace with your project content');
   text(source,84,716,1196,32,'caption',20,'muted',{textSizing:'auto-height'});
   s.template={prototype:id,variant:`block-${kind}-${options.layout}`,density:o.density??'presentation',collection:c.id};
-  s.layout={margins:{left:84,right:80,top:138,bottom:96},columns:kind==='process'?(options.layout==='vertical'?1:Math.min(count,3)):kind==='timeline'&&count<=4?count:kind==='roadmap'||id==='team'?Math.min(count,3):12,gutter:24};s.transition={effect:'fade',duration:300,easing:'linear'};
-  s.notes=`${p.purpose}. ${contract.capacity}. ${contract.fallback} Native ${kind} block; use Edit block to change layout, content and appearance. All values are illustrative.`;
+  s.transition={effect:'fade',duration:300,easing:'linear'};
+  s.notes=`${p.purpose}. ${contract.capacity}. ${contract.fallback} Native ${kind} block; use Edit block to change layout, content and appearance. ${o.items||o.dates?'Review supplied values, sources and assumptions before presenting.':'All values are illustrative.'}`;
   Object.assign(s,resolveGroupLayouts(s));return true;
 }

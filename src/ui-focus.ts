@@ -1,15 +1,16 @@
 const modal = () => Array.from(document.querySelectorAll<HTMLElement>('dialog:modal')).filter(node=>node.dataset.uiLeaving !== 'true').at(-1);
 const focusSelector = 'a[href],button,input,select,textarea,summary,iframe,[tabindex],[contenteditable="true"]';
-export function availableFocus(node?: Element | null): node is HTMLElement {
-  return node instanceof HTMLElement && node !== document.body && node.isConnected && !node.matches(':disabled') && !node.closest('[inert],[hidden],dialog:not([open])') && node.getClientRects().length > 0 && getComputedStyle(node).visibility !== 'hidden';
+export type FocusElement=HTMLElement|SVGElement;
+export function availableFocus(node?: Element | null): node is FocusElement {
+  return (node instanceof HTMLElement||node instanceof SVGElement&&node.hasAttribute('tabindex')) && node !== document.body && node.isConnected && !node.matches(':disabled') && !node.closest('[inert],[hidden],dialog:not([open])') && node.getClientRects().length > 0 && getComputedStyle(node).visibility !== 'hidden';
 }
-export function tabStops(scope: ParentNode): HTMLElement[] {
-  return Array.from(scope.querySelectorAll<HTMLElement>(focusSelector)).filter(node => node.tabIndex >= 0 && availableFocus(node));
+export function tabStops(scope: ParentNode): FocusElement[] {
+  return Array.from(scope.querySelectorAll<FocusElement>(focusSelector)).filter(node => node.tabIndex >= 0 && availableFocus(node));
 }
-export function restoreFocus(...choices: Array<HTMLElement | null | undefined>) {
+export function restoreFocus(...choices: Array<FocusElement | null | undefined>) {
   const currentModal = modal();
   const target = choices.find(node => availableFocus(node) && (!currentModal || currentModal.contains(node))) ?? (currentModal ? tabStops(currentModal)[0] : [document.querySelector<HTMLElement>('.canvas-stage'), document.querySelector<HTMLElement>('.property-panel')].find(availableFocus));
-  if (availableFocus(target)) target.focus({preventScroll: true});
+  if (availableFocus(target)) target.focus({preventScroll:true});
 }
 const plainTab = (event: KeyboardEvent) => event.key === 'Tab' && !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey;
 
@@ -32,7 +33,7 @@ export function modalFocus(node: HTMLDialogElement, returnTo?:()=>HTMLElement|un
   return {update(next:typeof returnTo){returnTo=next;},destroy() { node.removeEventListener('keydown', key, true);node.removeEventListener('outrostart',release); }};
 }
 
-type PopupFocus = {close: () => void; origin?: () => HTMLElement | null | undefined};
+type PopupFocus = {close: () => void; origin?: () => FocusElement | null | undefined;focus?:(target:FocusElement)=>void};
 // Nonmodal popovers let Tab continue the invoking control's sequence. Closing
 // after focus leaves never pulls focus back from the next field or panel.
 export function popoverFocus(node: HTMLElement, options: PopupFocus) {
@@ -52,7 +53,7 @@ export function popoverFocus(node: HTMLElement, options: PopupFocus) {
     const at = outside.indexOf(invoker as HTMLElement), next = at + (event.shiftKey ? -1 : 1);
     options.close();
     if (at < 0) { event.preventDefault(); restoreFocus(invoker); }
-    else if (modal || next >= 0 && next < outside.length) { event.preventDefault(); outside[(next + outside.length) % outside.length]?.focus(); }
+    else if (modal || next >= 0 && next < outside.length) { event.preventDefault();const target=outside[(next + outside.length) % outside.length];if(target)(options.focus??(target=>target.focus({preventScroll:true})))(target); }
     else invoker?.focus({preventScroll: true});
   };
   const leave = () => queueMicrotask(() => {
@@ -60,7 +61,7 @@ export function popoverFocus(node: HTMLElement, options: PopupFocus) {
     tabbing = false;
   });
   const toggled = (event: ToggleEvent) => {
-    if (event.newState !== 'closed' || !node.contains(document.activeElement)) return;
+    if (event.newState !== 'closed' || tabbing || !node.contains(document.activeElement)) return;
     const previous = origin();
     queueMicrotask(() => { if (document.hasFocus() && (document.activeElement === document.body || node.contains(document.activeElement))) restoreFocus(previous); });
   };

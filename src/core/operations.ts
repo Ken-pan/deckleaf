@@ -192,7 +192,7 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
     }
   }
   const textEdits=new Set(operations.flatMap(op=>op.op==='update_element'&&op.patch.text!==undefined?[op.elementId]:[]));
-  next.slides=next.slides.map(s=>{if(!writable.has(s))return s;const deleted=operations.some(op=>op.op==='delete_element'&&op.slideId===s.id&&deck.slides.find(v=>v.id===s.id)?.elements.some(e=>e.id===op.elementId&&e.type==='image'));const result=adaptTemplateText(s,textEdits,deleted);writable.add(result);return result;});
+  next.slides=next.slides.map(s=>{if(!writable.has(s))return s;const deleted=operations.some(op=>op.op==='delete_element'&&op.slideId===s.id&&deck.slides.find(v=>v.id===s.id)?.elements.some(e=>e.id===op.elementId&&e.type==='image'));const result=adaptTemplateText(s,textEdits,deleted,next);writable.add(result);return result;});
   for(const s of next.slides)if(writable.has(s)) {
     // Remove empty containers bottom-up, then reconcile direct membership in one transaction.
     let groups=s.groups??[];
@@ -215,6 +215,9 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
       const previous = before?.autoLayouts?.find(v => v.id === l.id);
       const members = before?descendants(before,l.id).filter(e=>!e.hidden):[];
       if (!previous || !members.length) return l;
+      // Native content adaptation has already positioned its saved frame.
+      // Applying the child delta again would translate a one-item flow twice.
+      if(Math.abs(l.x-previous.x)+Math.abs(l.y-previous.y)>.0001)return l;
       const first = s.elements.find(e => e.id === members[0].id);
       if (!first) return l;
       const dx = first.x - members[0].x, dy = first.y - members[0].y;
@@ -228,7 +231,7 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
   // Imported tables and geometry-only layout proposals retain their source structure.
   const tableEdits=new Set(operations.flatMap(op=>op.op==='update_element'&&op.patch.cells?[op.elementId]:op.op==='add_slide'?op.slide.elements.filter(e=>e.tableFit).map(e=>e.id):[]));
   if(tableEdits.size){
-    next.slides=next.slides.map(s=>adaptTemplateTable(s,tableEdits));
+    next.slides=next.slides.map(s=>adaptTemplateTable(s,tableEdits,next));
     next.slides=next.slides.flatMap(s=>{let slides=[s];for(const e of s.elements.filter(e=>e.type==='table'&&e.tableFit&&tableEdits.has(e.id)))slides=slides.flatMap(v=>continueTable(v,e.id,measure));return slides;});
   }
   const chartEdits=new Set(operations.flatMap(op=>op.op==='update_element'&&op.patch.chart?[op.elementId]:[]));

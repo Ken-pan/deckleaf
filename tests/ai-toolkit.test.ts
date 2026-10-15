@@ -46,6 +46,12 @@ test('context pagination keeps original font/image/source bytes out of model inp
  assert.throws(()=>media.hydrate('deck-studio-media:missing'),/expired/);
 });
 
+test('AI page outlines identify the authored heading instead of the page number',()=>{
+ const deck=fixture(),slide=deck.slides[1];slide.elements=[element('text',{name:'Page number',text:'02',pageElement:{kind:'page-number'}}),element('text',{name:'Slide heading',text:'Actual delivery page'})];
+ const outline=readAIContext(deck,new EditMedia(),{detail:'outline',slideIds:[slide.id]});assert.equal(outline.slides[0].number,2);assert.equal(outline.slides[0].heading,'Actual delivery page');
+ const content=readAIContext(deck,new EditMedia(),{slideIds:[slide.id]});assert.equal(content.slides[0].heading,'Actual delivery page');
+});
+
 test('scope validation protects selection, global operations, locked objects and sources atomically',()=>{
  const deck=fixture(),slide=deck.slides[0],scope={slideIds:[slide.id],elementIds:['title']};
  const p=(operations:any[])=>({baseRevision:0,summary:'Fixture',operations});
@@ -63,6 +69,23 @@ test('prepared resources preserve attribution, hydrate locally and allow one ato
  const kit=editingToolkit(async()=>deck,services),prepared=await invoke(kit,'prepare_resource',{id:resource.id});assert(!JSON.stringify(prepared).includes('base64'));
  const proposal=await invoke(kit,'propose_edit',{proposalJson:JSON.stringify({baseRevision:0,summary:'Add icon',operations:[{op:'add_element',slideId:deck.slides[0].id,element:{id:'new-icon',type:'image',name:'Circle',x:10,y:10,w:40,h:40,...prepared}}]})});
  const next=applyOperations(deck,proposal.operations,0,'ai');assert.deepEqual(next.slides[0].elements.at(-1)?.resource,resource);assert.equal(next.slides[0].elements.at(-1)?.src,'data:image/svg+xml;base64,PHN2Zy8+');assert.equal(deck.slides[0].elements.length,2);
+});
+
+test('resource placement preserves credits directly and an incompatible icon style offers explicit alternatives',async()=>{
+ const deck=fixture(),resource={id:'iconify:lucide:file-code',kind:'icon' as const,provider:'Lucide',title:'File code',creator:'Lucide',sourceUrl:'https://lucide.dev/icons/file-code',license:'ISC',licenseUrl:'https://lucide.dev/license',attribution:'Lucide',attributionRequired:false};
+ const services:EditingServices={resourceCatalog:async()=>({}),searchResources:async params=>({items:params.get('style')==='solid'?[]:[{...resource,previewUrl:'/preview'}],page:1,hasMore:false}),importResource:async()=>({src:'data:image/svg+xml;base64,PHN2Zy8+',resource})};
+ const kit=editingToolkit(async()=>deck,services,{slideIds:[deck.slides[1].id],elementIds:[]});
+ const found=await invoke(kit,'search_resources',{kind:'icon',query:'file-code',set:'lucide',style:'solid'});assert.equal(found.items.length,0);assert.equal(found.alternatives.items[0].id,resource.id);assert.match(found.alternatives.guidance,/outline/);
+ const recipe=await invoke(kit,'prepare_resource',{id:resource.id,placement:{slideId:deck.slides[1].id,box:{x:80,y:320,w:64,h:64}}});assert.equal(recipe.changes,1);assert(!JSON.stringify(recipe).includes('base64'));
+ const proposal=await invoke(kit,'propose_prepared_edits',{baseRevision:0,summary:'Insert icon',recipeIds:[recipe.recipeId]});const after=applyOperations(deck,proposal.operations,0,'ai');const image=after.slides[1].elements[0];assert.deepEqual(image.resource,resource);assert.equal(image.src,'data:image/svg+xml;base64,PHN2Zy8+');assert.equal(image.x,80);assert.equal(image.w,64);assert.equal(deck.slides[1].elements.length,0);
+ await assert.rejects(()=>invoke(kit,'prepare_resource',{id:resource.id,placement:{slideId:deck.slides[0].id,box:{x:0,y:0,w:64,h:64}}}),/scope/);
+});
+
+test('prepared submission combines typed copy updates and deletions in one reviewable transaction',async()=>{
+ const deck=fixture();deck.slides[0].elements.push(element('text',{id:'remove-me',text:'Old number'}));const kit=editingToolkit(async()=>deck);
+ const recipe=await invoke(kit,'prepare_elements',{slideId:deck.slides[1].id,elements:[{type:'rect',box:{x:80,y:100,w:64,h:64}}]});
+ const proposal=await invoke(kit,'propose_prepared_edits',{baseRevision:0,summary:'Complete change',recipeIds:[recipe.recipeId],updates:[{slideId:deck.slides[0].id,elementId:'title',text:'Updated'}],removeElements:[{slideId:deck.slides[0].id,elementId:'remove-me'}]});
+ const after=applyOperations(deck,proposal.operations,0,'ai');assert.equal(proposal.operations.length,3);assert.equal(after.slides[0].elements[0].text,'Updated');assert(!after.slides[0].elements.some(e=>e.id==='remove-me'));assert.equal(after.slides[1].elements.length,1);assert(deck.slides[0].elements.some(e=>e.id==='remove-me'));
 });
 
 test('prepared slide duplication remaps all IDs, retains source content and can be refined in the same proposal',async()=>{

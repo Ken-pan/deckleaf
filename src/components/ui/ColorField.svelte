@@ -8,6 +8,7 @@
   let error=$state(''),input=$state<HTMLInputElement>(),submitted:string|undefined,frame:number|undefined,disposed=false;
   let pending:{color:string;scope:string|undefined}|undefined;
   const displayed=$derived(mixed?'':propertyColor(value)??value);
+  const help=$derived(mixed?'Multiple colors.':value==='transparent'?'No color.':'');
   function cancelPick(){if(frame!==undefined)cancelAnimationFrame(frame);frame=undefined;pending=undefined;}
   $effect(()=>{const next=displayed;label;scope=editScope?.();error='';submitted=undefined;cancelPick();if(input)input.value=next;untrack(()=>onvaliditychange?.(true));});
   onDestroy(()=>{disposed=true;cancelPick();});
@@ -41,10 +42,11 @@
 </script>
 <div class="color-property">
   <div class="color-field" class:has-error={Boolean(error)}>
-    <input class="color-swatch" class:empty={value==='transparent'||mixed} style:--property-color={value} type="color" value={nativePropertyColor(value)} aria-label={label} title={label} oninput={event=>picked(event.currentTarget.value)} onchange={event=>picked(event.currentTarget.value,true)}/>
-    <input bind:this={input} class="color-hex" data-document-value={displayed} spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="{label} hex" aria-invalid={Boolean(error)} aria-describedby={error?`${id}-error`:undefined} value={displayed} placeholder={mixed?'Mixed':undefined} oninput={event=>{if(!current())return;error='';const color=propertyColor(event.currentTarget.value);onvaliditychange?.(Boolean(color&&(!opaque||color!=='transparent'&&color.length===7))||mixed&&!event.currentTarget.value.trim());}} onchange={commit} onkeydown={key}/>
+    <input class="color-swatch" class:empty={value==='transparent'||mixed} style:--property-color={value} type="color" value={nativePropertyColor(value)} aria-label={label} aria-describedby={help?`${id}-help`:undefined} title={label} oninput={event=>picked(event.currentTarget.value)} onchange={event=>picked(event.currentTarget.value,true)}/>
+    <input bind:this={input} class="color-hex" data-document-value={displayed} spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="{label} hex" aria-invalid={Boolean(error)} aria-describedby={[error?`${id}-error`:'',help?`${id}-help`:''].filter(Boolean).join(' ')||undefined} value={displayed} placeholder={mixed?'Mixed':undefined} oninput={event=>{if(!current())return;error='';const color=propertyColor(event.currentTarget.value);onvaliditychange?.(Boolean(color&&(!opaque||color!=='transparent'&&color.length===7))||mixed&&!event.currentTarget.value.trim());}} onchange={commit} onkeydown={key}/>
     {#if allowClear}<button type="button" class="color-clear" aria-label="No {label.toLowerCase()}" title="No {label.toLowerCase()}" disabled={value==='transparent'&&!mixed} onclick={()=>{cancelPick();if(input)input.value='transparent';apply('transparent');}}><Ban size={14} aria-hidden="true"/></button>{/if}
   </div>
+  {#if help}<span id="{id}-help" class="sr-only">{help}</span>{/if}
   {#if onrole&&roles.length}<label class="color-role-row"><span>Style</span><select aria-label={`${label} style`} value={roleValue} onchange={event=>onrole?.(event.currentTarget.value)}>{#if roleValue==='mixed'}<option value="mixed" disabled>Mixed links</option>{/if}<option value="">Custom</option>{#each roles as item}<option value={item.value}>{item.label}</option>{/each}</select></label>{/if}
   {#if error}<p id="{id}-error" role="alert">{error}</p>{/if}
 </div>

@@ -1,6 +1,6 @@
 # Data and privacy
 
-Decksprig is a personal open-source project maintained by Ken Pan. This describes version 0.1.0, released on 14 October 2026. Ken Pan operates the official demonstration at https://decksprig-kens-toolbox.netlify.app, hosted by Netlify. For a privacy question, use https://github.com/Ken-pan/decksprig/issues without personal data; request a private contact route before sharing sensitive details. Other hosts must identify their own operator and practices.
+Decksprig is a personal open-source project maintained by Ken Pan. This describes version 0.1.0, released on 14 October 2026. Ken Pan operates the official demonstration at https://decksprig.kens-toolbox.com, hosted by Netlify. For a privacy question, use https://github.com/Ken-pan/decksprig/issues without personal data; request a private contact route before sharing sensitive details. Other hosts must identify their own operator and practices.
 
 Local editing requires no account. The Node edition stores documents, history and imported originals in `.data` on your computer. The browser edition stores documents and history in IndexedDB; settings, recovery drafts and preferences also use browser storage. Export a Deck JSON backup before clearing site data. Use the document library to delete documents; deleting a working document does not erase separately retained imported originals or your exported backups. Remove the corresponding local copies yourself when you no longer need them.
 

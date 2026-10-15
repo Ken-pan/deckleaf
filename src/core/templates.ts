@@ -1,4 +1,4 @@
-import { element, blankSlide, newDeck, type Deck, type Slide, type SlideElement } from './model';
+import { element,uid, blankSlide, newDeck, type Deck, type Slide, type SlideElement } from './model';
 import { type ColorRole, type TextRole } from './design-system-schema';
 import {TEMPLATE_MEDIA} from './template-media';
 import {TEMPLATE_PAGES} from './template-blueprints';
@@ -17,6 +17,8 @@ import { applyDeckDesignSystem } from './deck-design-system';
 import {DEFAULT_PAGE_ELEMENTS,hidePageElements,refreshPageElements} from './page-elements';
 import {matchSmartLayers} from './smart-motion';
 import {portableTemplateOwnership} from './template-ownership';
+import {inlineTextWidth} from './inline-text-width';
+import {templatePageGrid,placeTemplateOnGrid} from './template-page-grid';
 
 import {COLLECTIONS,LAYOUTS,type LayoutId,type CollectionId} from './template-collections';
 export {COLLECTIONS,LAYOUTS,PALETTE,TEMPLATE_ARTWORK,type LayoutId,type CollectionId} from './template-collections';
@@ -26,6 +28,8 @@ export function createLayout(id: LayoutId, index = 1, collectionId: string = 'po
   const base=TEMPLATE_PAGES[c.id][id]??TEMPLATE_PAGES.portfolio[id];
   const p={...base,heading:options.heading??base.heading,body:options.body??base.body,fields:options.items??base.fields,columns:options.items??base.columns};
   const s=blankSlide();s.background=system.colors.background;s.backgroundStyle='background';
+  const pageGrid=templatePageGrid(c.id,id);s.layout=pageGrid.layout;
+  const finish=(slide:Slide)=>placeTemplateOnGrid(slide,c.id,id,pageGrid);
   const text=(value:string,x:number,y:number,w:number,h:number,role:TextRole='body',size=system.typography[role].fontSize,color:ColorRole='ink',extra:Partial<SlideElement>={})=>{
     const style=system.typography[role],e=element('text',{text:value,name:value.split('\n')[0].slice(0,60),x,y,w,h,...style,fontSize:size,fill:system.colors[color],textSizing:role==='title'||role==='heading'?'auto-width':'auto-height',...extra});
     e.design={text:role,textScale:size/style.fontSize,fill:color,overrides:(['fontFamily','fontWeight','lineHeight','letterSpacing'] as const).filter(key=>e[key]!==style[key])};s.elements.push(e);return e;
@@ -83,10 +87,10 @@ export function createLayout(id: LayoutId, index = 1, collectionId: string = 'po
     if(body)text(body,84,250,1180,86,'body',30,'muted');
   };
   const painter={s,text,shape,label,rule,photo,spot,image,mockup,table,chart};
-  if(composeTemplateBlock(c,p,id,painter,options))return s;
+  if(composeTemplateBlock(c,p,id,painter,options))return finish(s);
   // Keep the collection's authored story as the default. Task-library pages and
   // explicitly chosen variants use the configurable professional composition.
-  if((PROFESSIONAL_LAYOUTS.some(layout=>layout.id===id)||Object.keys(options).length>0)&&composeProfessional(c,p,id,painter,options)){s.template={...s.template!,collection:c.id};return s;}
+  if((PROFESSIONAL_LAYOUTS.some(layout=>layout.id===id)||Object.keys(options).length>0)&&composeProfessional(c,p,id,painter,options)){s.template={...s.template!,collection:c.id};return finish(s);}
   if(id!=='cover'&&(composeInterior(c,p,id,painter)||composeExpanded(c,p,id,painter))){
     // Each collection owns its reading structure.
   }else if(id==='cover'){
@@ -102,7 +106,8 @@ export function createLayout(id: LayoutId, index = 1, collectionId: string = 'po
     }else if(c.id==='proposal'){
       text(p.heading,76,202,760,272,'title',104);
       text(p.body,84,526,680,76,'body',36);
-      shape(824,156,536,504,'surface',{name:'Artwork mount'});photo(852,184,480,448,'material');
+      const group=uid('artwork');(s.groups??=[]).push({id:group,name:'Cover artwork'});
+      shape(824,156,536,504,'surface',{name:'Artwork mount',group});photo(852,184,480,448,'material').group=group;
       text('Prepared by your name',84,644,680,58,'body',28,'muted');
     }else if(c.id==='pitch'){
       text(p.heading,76,204,790,150,'title',98);
@@ -238,7 +243,7 @@ export function createLayout(id: LayoutId, index = 1, collectionId: string = 'po
   const configured=configureTemplateBehavior(s,c.id,id);
   configured.template={prototype:id,variant:options.noImage?'no-image':'standard',density:options.density??'presentation',collection:c.id};
   if(id==='cover'&&options.noImage){configured.elements=configured.elements.filter(e=>e.type!=='image'&&e.name!=='Artwork mount');const flow=configured.autoLayouts?.find(l=>/introduction|author|promise/i.test(l.name));if(flow){flow.w=1276;for(const e of configured.elements.filter(e=>e.group===flow.id)){e.w=1100;if(e.layoutItem)e.layoutItem.maxWidth=1100;}}}
-  return configured;
+  return finish(configured);
 }
 
 export function templateLayouts(collectionId:string){
@@ -272,15 +277,27 @@ export const templateLibraryDeck=(collectionId:string,options:Record<string,Temp
 
 /** A task can produce continuations without losing input or manually rebuilding the grid. */
 export function createTemplatePages(id:LayoutId,index=1,collectionId='portfolio',options:TemplateOptions={}):Slide[]{
+  const collection=COLLECTIONS.find(c=>c.id===collectionId)??COLLECTIONS[0];
+  const sideIntro=templateBlockId(id)||['content','annotation','category-chart','trend','composition','comparison','matrix','case-study','action-plan','appendix','gallery','table','evidence','metrics','risks','insights','before-after'].includes(id);
+  if(options.body&&sideIntro&&inlineTextWidth(options.body,24,collection.body)>436*3){
+    const context=createLayout('content',index,collectionId,{heading:options.heading??TEMPLATE_PAGES[collectionId][id].heading,items:[['Context',options.body]],density:'reading',source:options.source});
+    return [context,...createTemplatePages(id,index+1,collectionId,{...options,body:''})];
+  }
   if(options.cells&&['table','action-plan'].includes(id)){
     const [header,...rows]=options.cells,capacity=Math.max(1,options.count??defaultTemplateCount(id));
     if(rows.length>capacity){const pages:Slide[]=[];const size=Math.ceil(rows.length/Math.ceil(rows.length/capacity));for(let offset=0;offset<rows.length;offset+=size)pages.push(...createTemplatePages(id,index+pages.length,collectionId,{...options,cells:[header,...rows.slice(offset,offset+size)],heading:offset?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading}));return pages;}
   }
   const contract=templateContract(id),values=options.items,limit=contract.counts.length?Math.max(...contract.counts):Infinity;
   const capacity=values&&options.count?Math.max(1,Math.min(limit,options.count)):limit;
-  const max=values&&(['gantt','workstreams','funnel'].includes(id)&&values.some(([,body])=>body.length>90)||id==='dashboard'&&values.some(([,body])=>body.split(/[\n\t]/).length>2))?Math.min(capacity,3):values&&['process','solution','timeline','annotation'].includes(id)&&values.some(([a,b])=>a.length>24||b.length>(id==='timeline'?55:id==='annotation'?100:70))?Math.min(capacity,id==='annotation'?2:id==='timeline'?4:3):capacity;
-  if(values&&values.length>max){const pages=Math.ceil(values.length/max),balanced=Boolean(templateBlockId(id)),size=balanced?Math.floor(values.length/pages):max,extra=balanced?values.length%pages:0;return Array.from({length:pages},(_,i)=>{const offset=i*size+Math.min(i,extra),end=offset+size+(i<extra?1:0);return createLayout(id,index+i,collectionId,{...options,items:values.slice(offset,end),dates:options.dates?.slice(offset,end),itemOffset:(options.itemOffset??0)+offset,heading:i?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading});});}
-  const s=createLayout(id,index,collectionId,options),table=s.elements.find(e=>e.tableFit),chart=s.elements.find(e=>e.chart?.adaptive);return table?continueTable(s,table.id):chart?continueChart(s,chart.id):[s];
+  const max=values&&id==='gallery'&&values.some(([a,b])=>a.length>24||b.length>70)?1:values&&id==='decision'&&values.some(([,body])=>body.length>70)?Math.min(capacity,2):values&&(['gantt','workstreams','funnel','roadmap','kanban'].includes(id)&&values.some(([,body])=>body.length>90||['gantt','workstreams'].includes(id)&&inlineTextWidth(body,1,collection.body)>24)||id==='dashboard'&&values.some(([,body])=>body.split(/[\n\t]/).length>2))?Math.min(capacity,3):values&&['process','solution','timeline','annotation'].includes(id)&&values.some(([a,b])=>a.length>24||b.length>(id==='timeline'?55:id==='annotation'?100:70))?Math.min(capacity,id==='annotation'?2:id==='timeline'?4:3):capacity;
+  try{
+    if(values&&values.length>max){const pages=Math.ceil(values.length/max),balanced=Boolean(templateBlockId(id)),size=balanced?Math.floor(values.length/pages):max,extra=balanced?values.length%pages:0;return Array.from({length:pages},(_,i)=>{const offset=i*size+Math.min(i,extra),end=offset+size+(i<extra?1:0);return createLayout(id,index+i,collectionId,{...options,items:values.slice(offset,end),dates:options.dates?.slice(offset,end),itemOffset:(options.itemOffset??0)+offset,heading:i?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading});});}
+    const s=createLayout(id,index,collectionId,options),table=s.elements.find(e=>e.tableFit),chart=s.elements.find(e=>e.chart?.adaptive);return table?continueTable(s,table.id):chart?continueChart(s,chart.id):[s];
+  }catch(error){
+    const kind=templateBlockId(id);
+    if(error instanceof Error&&error.message.startsWith('Shorten “')&&kind&&!['architecture','organization','swot'].includes(kind)&&values&&values.length>1&&max>1)return createTemplatePages(id,index,collectionId,{...options,count:Math.min(values.length-1,max-1)});
+    throw error;
+  }
 }
 
 /** Small-page insertion respects schema minimums; the caller keeps the slide style bindings. */

@@ -47,7 +47,7 @@
   function request(event: MouseEvent | KeyboardEvent) {
     if (!(event.target instanceof HTMLElement || event.target instanceof SVGElement)) return;
     const target = event.target instanceof HTMLElement ? event.target : event.target.parentElement;
-    if (!target) return;
+    if (!target||target.closest('.canvas-cell-grid')) return;
     event.preventDefault(); event.stopPropagation();
     if (menu.contains(target) && open) return;
     const keyboard = event instanceof KeyboardEvent || event instanceof MouseEvent && event.button === 0 && !event.clientX && !event.clientY;

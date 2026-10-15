@@ -37,19 +37,28 @@ function tablePresentation(e:SlideElement,system?:DesignSystem){
   });
   return {...colors,headerText:header,headerRow:s?.headerRow??true,banded:s?.banded??false,stripe:s?.stripeFill??mix(background,ink,.035),
     borders:s?.borders??'grid',borderWidth:s?.borderWidth??1,padding:s?.padding??e.tableFit?.padding??12,verticalAlign:s?.verticalAlign??'top',
-    widths:weights.map(w=>w/total),heights:rowWeights?.map(h=>h/rowTotal),alignments,bodyWeight:e.fontWeight};
+    widths:weights.map(w=>w/total),heights:rowWeights?.map(h=>h/rowTotal),alignments,bodyWeight:e.fontWeight,italic:e.italic,merges:s?.merges??[],cellStyles:s?.cellStyles??[]};
+}
+function tableCellSpan(p:ReturnType<typeof tablePresentation>,row:number,column:number){
+  const m=p.merges.find(m=>row>=m.row&&row<m.row+m.rowSpan&&column>=m.column&&column<m.column+m.columnSpan);
+  return {covered:Boolean(m&&(m.row!==row||m.column!==column)),rowSpan:m?.rowSpan??1,columnSpan:m?.columnSpan??1};
 }
 function tableCellStyle(p:ReturnType<typeof tablePresentation>,row:number,column:number){
   const header=p.headerRow&&row===0,line=`${p.borderWidth}px solid ${p.line}`,grid=p.borders==='grid',rows=p.borders==='rows';
-  return {color:header?p.headerText:p.text,background:header?p.header:p.banded&&(row-(p.headerRow?1:0))%2===1?p.stripe:p.background,
-    fontWeight:header?600:p.bodyWeight,textAlign:p.alignments[column]??'left',verticalAlign:p.verticalAlign,padding:`${p.padding}px`,
+  const local=p.cellStyles.find(s=>s.row===row&&s.column===column);
+  return {color:local?.color??(header?p.headerText:p.text),background:local?.fill??(header?p.header:p.banded&&(row-(p.headerRow?1:0))%2===1?p.stripe:p.background),
+    fontWeight:local?.fontWeight??(header?600:p.bodyWeight),fontStyle:(local?.italic??p.italic)?'italic':'normal',textAlign:local?.align??p.alignments[column]??'left',verticalAlign:local?.verticalAlign??p.verticalAlign,padding:`${p.padding}px`,
     borderTop:grid?line:'0',borderRight:grid?line:'0',borderBottom:grid||rows?line:'0',borderLeft:grid?line:'0'};
 }
 
-return {tablePresetStyle,tableAppearance,tablePresentation,tableCellStyle};
+return {tablePresetStyle,tableAppearance,tablePresentation,tableCellStyle,tableCellSpan};
 }
-export const {tablePresetStyle,tableAppearance,tablePresentation,tableCellStyle}=tableRendering();
+export const {tablePresetStyle,tableAppearance,tablePresentation,tableCellStyle,tableCellSpan}=tableRendering();
 export type TablePresentation=ReturnType<typeof tablePresentation>;
+/** Changing a preset keeps authored structure, sizing and local cell overrides. */
+export function tablePresetForElement(e:SlideElement,id:NonNullable<TableStyle['preset']>):TableStyle{
+  const s=e.tableStyle;return {...tablePresetStyle(id),columnWidths:s?.columnWidths,columnAlign:s?.columnAlign,rowHeights:s?.rowHeights,merges:s?.merges,cellStyles:s?.cellStyles};
+}
 export function tablePresetMatches(style:TableStyle|undefined,id:NonNullable<TableStyle['preset']>){
   if(style?.preset!==id)return false;const base=tablePresetStyle(id);
   return Object.entries(base).every(([key,value])=>style[key as keyof TableStyle]===value)&&!['headerFill','headerText','bodyFill','stripeFill','lineColor'].some(key=>style[key as keyof TableStyle]!==undefined);

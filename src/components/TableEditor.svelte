@@ -8,6 +8,7 @@
   import TableStyleChoices from './TableStyleChoices.svelte';
   import NumberField from './ui/NumberField.svelte';
   import ColorField from './ui/ColorField.svelte';
+  import {changeTableAxis} from '../core/table-structure';
   import {tablePresentation,tablePresetStyle} from '../core/table-appearance';
   import type {TableStyle} from '../core/table-schema';
   import {uiDisclosure} from '../ui-motion';
@@ -57,13 +58,13 @@
     if(event.key==='Enter'){event.preventDefault();const next=row+(event.shiftKey?-1:1);if(next>=0&&next<cells.length)void focus(next,column);}
     else if(event.key==='Tab'){const next=row*columns+column+(event.shiftKey?-1:1);if(next>=0&&next<cells.length*columns){event.preventDefault();void focus(Math.floor(next/columns),next%columns);}}
   }
-  function add(axis:'row'|'column'){const next=cells.map(r=>[...r]);if(axis==='row'&&cells.length<100){next.push(Array(columns).fill(''));cells=next;void focus(cells.length-1,0);}else if(axis==='column'&&columns<20){next.forEach(r=>{while(r.length<columns)r.push('');r.push('');});cells=next;void focus(0,columns-1);}error='';}
-  function remove(axis:'row'|'column',index:number){if(axis==='row'&&cells.length>1){cells=cells.filter((_,i)=>i!==index);if(tableStyle?.rowHeights)tableStyle={...tableStyle,rowHeights:tableStyle.rowHeights.filter((_,i)=>i!==index)};void focus(Math.min(index,cells.length-1),0);}else if(axis==='column'&&columns>1){cells=cells.map(row=>Array.from({length:columns},(_,j)=>row[j]??'').filter((_,j)=>j!==index));if(tableStyle)tableStyle={...tableStyle,columnWidths:tableStyle.columnWidths?.filter((_,j)=>j!==index),columnAlign:tableStyle.columnAlign?.filter((_,j)=>j!==index)};selectedColumn=Math.min(selectedColumn,columns-1);void focus(0,Math.min(index,columns-1));}error='';}
+  function add(axis:'row'|'column'){try{const index=axis==='row'?cells.length:columns,next=changeTableAxis(preview,axis,index,1,true);cells=next.cells;tableStyle=next.tableStyle;void focus(axis==='row'?index:0,axis==='column'?index:0);error='';}catch(e){error=(e as Error).message;}}
+  function remove(axis:'row'|'column',index:number){try{const next=changeTableAxis(preview,axis,index,1,false);cells=next.cells;tableStyle=next.tableStyle;selectedColumn=Math.min(selectedColumn,Math.max(0,columns-1));void focus(axis==='row'?Math.min(index,cells.length-1):0,axis==='column'?Math.min(index,columns-1):0);error='';}catch(e){error=(e as Error).message;}}
   function changeStyle(patch:Partial<TableStyle>){tableStyle={...(tableStyle??{headerRow:true,padding:seed.tableFit?.padding??12,borders:'grid'}),...patch};}
   function columnAlignment(value:string){const columnAlign=Array.from({length:columns},(_,j)=>tableStyle?.columnAlign?.[j]??'auto');columnAlign[selectedColumn]=value as NonNullable<TableStyle['columnAlign']>[number];changeStyle({columnAlign});}
   function columnWidth(value:string|number){const n=Number(value);if(columns<=1||!Number.isFinite(n)||n<1||n>seed.w-(columns-1))return;const other=1-presentation.widths[selectedColumn];const columnWidths=presentation.widths.map((w,j)=>j===selectedColumn?n:(seed.w-n)*w/other);changeStyle({columnWidths});}
   function rangePaste(event:ClipboardEvent,row:number,column:number){const text=event.clipboardData?.getData('text/plain')??'';if(!/[\t\r\n]/.test(text))return;event.preventDefault();try{const result=pasteTableCells(cells,text,row,column);cells=result.cells;status=`Pasted ${result.rows} × ${result.columns} cells`;error='';}catch(e){error=`${(e as Error).message} Current data is unchanged.`;}}
-  function replace(text=paste,source='Replaced data'){try{cells=parseTableData(text);pasteOpen=false;error='';status=`${source} · ${cells.length} rows · ${columns} columns`;void focus(0,0);}catch(e){error=`${(e as Error).message} Current data is unchanged.`;}}
+  function replace(text=paste,source='Replaced data'){try{cells=parseTableData(text);if(tableStyle)tableStyle={...tableStyle,merges:undefined,cellStyles:tableStyle.cellStyles?.filter(s=>s.row<cells.length&&s.column<Math.max(...cells.map(r=>r.length)))};pasteOpen=false;error='';status=`${source} · ${cells.length} rows · ${columns} columns`;void focus(0,0);}catch(e){error=`${(e as Error).message} Current data is unchanged.`;}}
   async function importFile(file?:File){if(!file)return;importing=true;try{if(file.size>250_000)throw new Error('Use a data file smaller than 250 KB.');replace(decodeDataFile(new Uint8Array(await file.arrayBuffer())),`Imported ${file.name}`);}catch(e){error=`${(e as Error).message} Current data is unchanged.`;}finally{importing=false;if(fileInput)fileInput.value='';}}
   async function togglePaste(){pasteOpen=!pasteOpen;await tick();if(pasteOpen)pasteInput?.focus();else workspace?.querySelector<HTMLButtonElement>('[data-paste-trigger]')?.focus();}
   function showPreview(){expanded=false;previewOpen=true;workspace?.scrollTo({top:0});}
@@ -94,7 +95,7 @@
           <p>Enter moves down · Tab moves across · Alt+Enter adds a line break. Paste a spreadsheet range into any cell to update or extend the table.</p>
           <p>Up to 250 KB, 100 rows and 20 columns.</p>
         {:else}
-          <TableStyleChoices element={preview} system={base.designSystem} onchoose={style=>tableStyle=style}/>
+          <TableStyleChoices element={preview} system={base.designSystem} onchoose={style=>tableStyle={...style,merges:tableStyle?.merges,cellStyles:tableStyle?.cellStyles,rowHeights:tableStyle?.rowHeights,columnWidths:tableStyle?.columnWidths}}/>
           <div class="style-basics"><label class="field-label">Text size (px)<input aria-label="Table text size" type="number" min="4" max="500" step="any" bind:value={fontSize} aria-invalid={!sizeValid}/></label><label class="field-label">Lines<select aria-label="Table lines" value={presentation.borders} onchange={event=>changeStyle({borders:event.currentTarget.value as TableStyle['borders']})}><option value="rows">Rows</option><option value="grid">Grid</option><option value="none">None</option></select></label></div>
           {#if !sizeValid}<Notice tone="error" message="Enter a text size from 4 to 500 px."/>{/if}
           <div class="style-toggles"><label><input type="checkbox" checked={presentation.headerRow} onchange={event=>changeStyle({headerRow:event.currentTarget.checked})}/>Header row</label><label><input type="checkbox" checked={presentation.banded} onchange={event=>changeStyle({banded:event.currentTarget.checked})}/>Banded rows</label><label><input type="checkbox" checked={tableStyle?.numericAlign??false} onchange={event=>changeStyle({numericAlign:event.currentTarget.checked})}/>Align numbers right</label></div>

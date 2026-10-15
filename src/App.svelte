@@ -16,7 +16,9 @@
   import type { DeckBlock, BlockId } from './core/deck-blocks';
   import { insertedElement, insertLabels, insertionSizeLabel, placementHistoryMatch, type InsertTool, type PrimitiveInsertTool, type InsertGeometry } from './core/insertion';
   import {availableFocus,restoreFocus} from './ui-focus';
-  import { focusCanvasSelection, objectAction } from './editor-focus';
+  import { focusCanvasSelection, focusSlideSelection, containerAction, objectAction } from './editor-focus';
+  import {editorCommands} from './core/clipboard-queue';
+  import {stamp} from './clipboard-context';
   import {clipboardScope,copySelection,pasteEvent,pasteFromClipboard} from './editor-clipboard';
   import { holdPointerCursor } from './pointer-cursor';
   import { onMount, tick } from 'svelte';
@@ -39,11 +41,17 @@
   import Dialog from './components/LazyDialog.svelte';
   import BrandLockup from './components/BrandLockup.svelte';
   import { BRAND, syncBrowserBrand, installBrowserBrand } from './branding';
-  import { Button, DialogFooter, SegmentedControl, ActionMenu, CommandSearch, PopoverPanel, EmptyState } from './components/ui';
+  import Button from './components/ui/Button.svelte';
+  import DialogFooter from './components/ui/DialogFooter.svelte';
+  import SegmentedControl from './components/ui/SegmentedControl.svelte';
+  import ActionMenu from './components/ui/ActionMenu.svelte';
+  import PopoverPanel from './components/ui/PopoverPanel.svelte';
+  import EmptyState from './components/ui/EmptyState.svelte';
+  import CommandSearch from './components/LazyCommandSearch.svelte';
   import {resourceCredits} from './core/resource-credits';
   import {publishEditorContext} from './core/editor-context-client';
-  import {WorkflowRequestSchema,workflowLabel,type WorkflowRequest,type WorkflowOutcome,type WorkflowReceipt} from './core/workflows';
-  import {claimWorkflow,resolveWorkflow} from './core/workflow-client';
+  import type {WorkflowRequest,WorkflowOutcome,WorkflowReceipt} from './core/workflows';
+  import {workflowLabel} from './core/workflow-label';
   import { editor, api } from './core/editor.svelte';
   import NotificationOutlet from './components/NotificationOutlet.svelte';
   import { notificationUI } from './notification-ui.svelte';
@@ -184,6 +192,7 @@
     document.getElementById(`editor-tab-${panelTabs[index].id}`)?.focus({preventScroll: true});
   }
   function nextSlide(direction: number) {
+    if(proposalDeck){const index=proposalDeck.slides.findIndex(s=>s.id===previewActiveId);previewActiveId=proposalDeck.slides[Math.max(0,Math.min(proposalDeck.slides.length-1,index+direction))].id;return;}
     const slide = editor.deck?.slides[activeIndex + direction];
     if (slide) {editor.chooseSlide(slide.id);void focusCanvasSelection();}
   }
@@ -250,7 +259,7 @@
   function changeZoom(delta:number){setZoom(Math.round(Math.max(.1,Math.min(4,currentScale+delta))*100)/100);}
 
   let canvasHandle=$state<{beginMarquee(event:PointerEvent):void; cancelPointer():void; finishTextDraft(cancel?:boolean):void;finishTextEditing(cancel?:boolean):void;getTextFormatState():TextFormatState|null;formatText(patch:TextFormatPatch,range?:TextRange):Promise<void>}>();
-  let insertTool = $state<InsertTool | null>(null), insertingText = $state(false);
+  let insertTool = $state<InsertTool | null>(null), insertingText = $state(false), canvasCellsSelected = $state(false);
   type QueuedImage = {image:SlideElement;item?:ResourceItem};
   let imageQueue = $state<QueuedImage[]>([]), imagePlaced = $state(0), imageTotal = $state(0);
   let imagePlacements: QueuedImage[] = [];
@@ -322,7 +331,7 @@
   }
   let workflowRequest=$state.raw<WorkflowRequest|null>(null),workflowQueue:WorkflowRequest[]=[];
   let workflowBusy=$state(false),publishIncludeNotes=$state(false),hostingConnectOnly=$state(false);
-  async function workflowResult(status:'completed'|'waiting_for_user'|'failed'|'dismissed',result?:WorkflowReceipt,request=workflowRequest){if(!request)return;const resolved=await resolveWorkflow(request,status,result);if(workflowRequest?.id===request.id)workflowRequest=resolved;return resolved;}
+  async function workflowResult(status:'completed'|'waiting_for_user'|'failed'|'dismissed',result?:WorkflowReceipt,request=workflowRequest){if(!request)return;const resolved=await (await import('./core/workflow-client')).resolveWorkflow(request,status,result);if(workflowRequest?.id===request.id)workflowRequest=resolved;return resolved;}
   function receiveWorkflow(outcome:WorkflowOutcome){if(outcome.failures?.length)editor.notify('Some actions could not be prepared: '+outcome.failures.map(item=>item.error).join(' '),'warning');workflowRequest=outcome.request;workflowQueue=outcome.additionalRequests??[];showPanel('ai');}
   async function dismissWorkflow(){if(!workflowRequest||workflowBusy)return;if(!['completed','dismissed'].includes(workflowRequest.status))await workflowResult('dismissed',{message:'Action dismissed'});workflowRequest=workflowQueue.shift()??null;}
   async function runWorkflow(){
@@ -331,7 +340,7 @@
     try{
       if(!editor.deck||editor.deck.id!==request.deckId||editor.deck.revision!==request.baseRevision)throw new Error('The document changed. Request this action again.');
       if(proposalDeck||editor.pending)throw new Error('Apply or discard the document proposal before running this action.');
-      workflowRequest=await claimWorkflow(request);const action=request.action;
+      workflowRequest=await (await import('./core/workflow-client')).claimWorkflow(request);const action=request.action;
       if(action.kind==='import'){cloudTab=action.source;cloudUrl=action.url??'';modal='import';await workflowResult('waiting_for_user',{message:action.source==='file'?'Choose a file to import.':'Complete source authorization and choose Import.',state:'awaiting_import'});}
       if(action.kind==='export'){
         exportView=action.version;const result=await exporting(action.format);
@@ -370,6 +379,7 @@
   function reportEditorContext(){if(typeof document==='undefined')return;publishEditorContext({deckId:editor.deck?.id??null,revision:editor.deck?.revision??0,activeSlideId:editor.activeId||undefined,selectedIds:[...editor.selected],focused:document.hasFocus(),visible:!document.hidden,dirty:editor.dirty,sourceMode:editor.sourceMode,presenting,pendingProposal:Boolean(editor.pending)});}
   $effect(()=>{reportEditorContext();});
   let previewProposal = $state(false);
+  let previewActiveId=$state(''),previewRevision=0,previewDocumentId='';
   let proposalDeck = $derived.by(() => {
     if (!previewProposal || !editor.pending || !editor.deck || editor.pending.baseRevision !== editor.deck.revision) return null;
     try { return applyOperations(editor.operationDocument(), editor.pending.operations, editor.pending.baseRevision, 'ai'); } catch { return null; }
@@ -377,16 +387,17 @@
   let task = $derived(editorTask({previewing: Boolean(proposalDeck), reference: editor.sourceMode, editing: Boolean(editor.editingId) || insertingText, selected: editor.selection.length, allLocked: editor.selection.every(element => element.locked)}));
   $effect(() => { if (insertTool && (modal || presenting || proposalDeck || editor.sourceMode || insertOrigin?.deckId !== editor.deck?.id || insertOrigin?.slideId !== editor.slide?.id || insertOrigin?.revision !== editor.deck?.revision)) cancelInsertion(); });
   $effect(() => { if (insertTool !== 'image' && imageQueue.length) imageQueue = []; });
-  $effect(() => { if (previewProposal && (!editor.pending || editor.pending.baseRevision !== editor.deck?.revision || !proposalDeck)) previewProposal = false; });
+  $effect(() => { if (previewProposal && (!editor.pending || editor.pending.baseRevision !== editor.deck?.revision || !proposalDeck)){if(editor.deck?.id===previewDocumentId&&editor.deck.revision>previewRevision&&editor.deck.slides.some(s=>s.id===previewActiveId))editor.chooseSlide(previewActiveId);previewProposal = false;} });
+  $effect(()=>{if(proposalDeck&&!proposalDeck.slides.some(s=>s.id===previewActiveId)){const oldIndex=editor.deck?.slides.findIndex(s=>s.id===editor.activeId)??0;previewActiveId=proposalDeck.slides[Math.max(0,Math.min(proposalDeck.slides.length-1,oldIndex))].id;}});
   function enterEditable() { editor.sourceMode = false; if (innerWidth <= 760) rightOpen = false; void focusCanvasSelection(); }
   function returnCurrentVersion() { previewProposal = false; if (innerWidth > 760 || !rightOpen || canvasFocus) void focusCanvasSelection(); }
   function toggleProposalPreview() {
     if (proposalDeck) { returnCurrentVersion(); return; }
     if (!editor.pending || editor.pending.baseRevision !== editor.deck?.revision) return;
-    editor.additiveSelection = false; editor.editingId = ''; previewProposal = true; if (innerWidth <= 760) { rightOpen = false; void focusCanvasSelection(); }
+    editor.additiveSelection = false; editor.editingId = '';previewActiveId=editor.activeId;previewRevision=editor.deck?.revision??0;previewDocumentId=editor.deck?.id??''; previewProposal = true; if (innerWidth <= 760) { rightOpen = false; void focusCanvasSelection(); }
   }
   let source = $derived(editor.slide?.source);
-  let displayedSlide = $derived(proposalDeck?.slides.find(s=>s.id===editor.slide?.id) ?? resourcePreviewSlide ?? editor.slide);
+  let displayedSlide = $derived(proposalDeck?(proposalDeck.slides.find(s=>s.id===previewActiveId)??proposalDeck.slides[0]):resourcePreviewSlide ?? editor.slide);
   let hiddenSlideCount = $derived(editor.deck?.slides.filter(s=>s.hidden).length ?? 0);
   let displayedDeck = $derived(proposalDeck ?? editor.deck);
   let hasImportReport = $derived(Boolean(editor.deck?.provenance || editor.deck?.slides.some(slide => slide.source)));
@@ -485,7 +496,13 @@
     if (imageQueue.length) { insertOrigin = {deckId:editor.deck!.id,slideId:editor.slide!.id,revision:editor.deck!.revision}; void tick().then(() => stage?.focus({preventScroll:true})); }
     else { const reopen=returnToResources, expanded=returnToResourceDialog; cancelInsertion(); if(reopen) { if(expanded)modal='resources';else openResources(undefined,resourceInitialKind); } else void focusCanvasSelection(); }
   }
-  function historyAction(direction: 'undo' | 'redo', event?: MouseEvent) {
+  function historyAction(direction: 'undo' | 'redo', event?: MouseEvent, ordered=false) {
+    if(!ordered&&editorCommands.busy){
+      void editorCommands.run(stamp(),stamp,async()=>{
+        if(!proposalDeck&&!presenting&&!modal)historyAction(direction,event,true);
+        return stamp();
+      }).catch(e=>editor.notify(e.message,'warning'));return;
+    }
     const queued = insertTool === 'image' ? direction === 'undo' ? imagePlacements.at(-1) : imageQueue[0] : undefined;
     const next = direction === 'undo' ? editor.past.at(-1) : editor.future.at(-1);
     if (queued && editor.deck && editor.slide && placementHistoryMatch(editor.deck, next, editor.slide.id, queued.image.id, direction)) {
@@ -496,9 +513,9 @@
     }
     cancelInsertion();
     const pageHistory=next&&editor.deck&&next.slides.map(slide=>slide.id).join(',')!==editor.deck.slides.map(slide=>slide.id).join(',');
-    if((pageHistory||document.activeElement?.closest('.slide-rail'))&&!slidesHidden&&!canvasFocus&&!footerObscured){
+    if(pageHistory||document.activeElement?.closest('.slide-rail,.focus-page-controls')){
       direction==='undo'?editor.undo():editor.redo();
-      void tick().then(()=>{const current=document.querySelector<HTMLButtonElement>('.slide-thumb.current');if(availableFocus(current)){current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest'});}});return;
+      void focusSlideSelection();return;
     }
     if (!event && document.activeElement?.closest('.property-panel')) {
       const origin = document.activeElement;
@@ -744,7 +761,7 @@
     let tooltipLoad:Promise<void>|undefined;
     const tooltip=(event:Event)=>{if(EditorTooltip||!(event.target instanceof Element)||!event.target.closest('button[title],button.icon-btn[aria-label]'))return;tooltipLoad??=import('./components/EditorTooltip.svelte').then(module=>{EditorTooltip=module.default;}).catch(()=>{tooltipLoad=undefined;});};
     const launch=async(event:MouseEvent|KeyboardEvent)=>{
-      if(contextBridge?.ready()||!(event.target instanceof Element))return;
+      if(contextBridge?.ready()||!(event.target instanceof Element)||event.target.closest('.canvas-cell-grid'))return;
       const keyboard=event instanceof KeyboardEvent;
       if(keyboard&&(event.isComposing||!(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10')))return;
       event.preventDefault();event.stopPropagation();
@@ -764,7 +781,10 @@
     const target = event.target as HTMLElement;
     const typing = target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])');
     const cmd = event.metaKey || event.ctrlKey;
-    if (cmd && !event.shiftKey && event.key.toLowerCase() === 's') {
+    const key = event.key.toLowerCase();
+    const history = cmd && (key === 'z' || key === 'y' && !event.shiftKey);
+    const historyDirection = key === 'y' || event.shiftKey ? 'redo' : 'undo';
+    if (cmd && !event.shiftKey && key === 's') {
       event.preventDefault();
       if (presenting || modal || document.querySelector('dialog:modal,[popover]:popover-open:not([role="tooltip"])')) return;
       const field = typing instanceof HTMLElement ? typing : null;
@@ -776,8 +796,8 @@
       return;
     }
     if (presenting || modal || document.querySelector('dialog:modal')) return;
-    if (cmd && event.key.toLowerCase() === 'k') { event.preventDefault(); if (!event.repeat) toggleCommandSearch(); return; }
-    if (cmd && event.key === ',') { event.preventDefault(); if (!event.repeat) void toggleSettingsMenu(); return; }
+    if (cmd && !event.shiftKey && key === 'k') { event.preventDefault(); if (!event.repeat) toggleCommandSearch(); return; }
+    if (cmd && !event.shiftKey && key === ',') { event.preventDefault(); if (!event.repeat) void toggleSettingsMenu(); return; }
     // A native popover owns dismissal and navigation before the editor does.
     if (document.querySelector('[popover]:popover-open:not([role="tooltip"])')) return;
     if (event.key === 'Escape' && proposalDeck && !typing) { event.preventDefault(); returnCurrentVersion(); return; }
@@ -787,7 +807,8 @@
     if (event.key === 'Escape') { if (modal || typing) return; if(editor.additiveSelection)editor.additiveSelection=false;else if(editor.exitGroup()){event.preventDefault();void focusCanvasSelection();}else if(editor.selectedContainer&&editor.slide&&ancestorIds(editor.slide,editor.selectedContainer)[0]){editor.chooseGroup(ancestorIds(editor.slide,editor.selectedContainer)[0]);event.preventDefault();}else if(!editor.selectedContainer&&editor.slide&&editor.selected.length===1&&ancestorIds(editor.slide,editor.selected[0])[0]){editor.chooseGroup(ancestorIds(editor.slide,editor.selected[0])[0]);event.preventDefault();}else if (editor.selected.length) { editor.selected = []; if(target.closest('.canvas-stage'))void focusCanvasSelection(); } else if (canvasFocus) { event.preventDefault(); void setCanvasFocus(false); } return; }
     // Clean property fields undo the committed document; unfinished drafts keep native text undo.
     const committedProperty = typing instanceof HTMLInputElement && typing.dataset.documentValue !== undefined && typing.value === typing.dataset.documentValue && typing.validity.valid && typing.getAttribute('aria-invalid') !== 'true';
-    if (cmd && event.key.toLowerCase() === 'z' && committedProperty && editor.deck && !proposalDeck) { event.preventDefault(); historyAction(event.shiftKey ? 'redo' : 'undo'); return; }
+    if (history && committedProperty && editor.deck && !proposalDeck) { event.preventDefault(); historyAction(historyDirection); return; }
+    if (cmd && event.shiftKey && event.code === 'Backslash') { event.preventDefault(); finishInlineText(); void setCanvasFocus(!canvasFocus); return; }
     if (modal || typing || !editor.deck || !editor.slide) return;
     if (['Delete','Backspace'].includes(event.key) && (insertTool || event.repeat)) {
       event.preventDefault();
@@ -795,27 +816,26 @@
       return;
     }
     if (insertTool && ((cmd && !['z','meta','control','shift'].includes(event.key.toLowerCase())) || ['Delete','Backspace','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))) cancelInsertion();
-    if (cmd && event.shiftKey && event.code === 'Backslash') { event.preventDefault(); void setCanvasFocus(!canvasFocus); return; }
     const canvas = Boolean(target.closest('.canvas-stage')) && !target.closest('button,a');
-    const objects = !editor.sourceMode && Boolean(target.closest('.canvas-stage,.layer-browser,.object-properties'));
-    const key = event.key.toLowerCase();
-    if (proposalDeck && (Boolean(target.closest('.slide-rail'))&&['backspace','delete'].includes(key)||(cmd && ['z', 'd', 'a', 'x', 'v', 'g'].includes(key)) || (canvas && ((!cmd && event.shiftKey && key === 'a') || ['t', 'r', 'backspace', 'delete', 'arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(key))))) { event.preventDefault(); return; }
+    const scope = clipboardScope(target), slides = scope === 'slide';
+    const objects = !editor.sourceMode && scope === 'objects';
+    if (proposalDeck && (slides&&['backspace','delete'].includes(key)||(cmd && ['z', 'y', 'd', 'a', 'x', 'v', 'g'].includes(key)) || objects&&['backspace','delete'].includes(key) || (canvas && ((!cmd && event.shiftKey && key === 'a') || ['t', 'r', 'arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(key))))) { event.preventDefault(); return; }
     if(objects&&!cmd&&key==='enter'&&event.shiftKey){event.preventDefault();editor.selectParent();void focusCanvasSelection();}
     else if(canvas&&!cmd&&key==='enter'&&editor.selectedContainer){event.preventDefault();editor.enterGroup();editor.selectAll();void focusCanvasSelection();}
-    else if (cmd && key === 'z') { event.preventDefault(); historyAction(event.shiftKey ? 'redo' : 'undo'); }
-    else if (cmd && !event.shiftKey && ['b','i','u'].includes(key) && objects && editor.selection.length && editor.selection.every(e=>e.type==='text')) event.preventDefault();
-    else if (cmd && key === 'g' && objects && editor.selected.length) { event.preventDefault(); if (!event.repeat) editor.group(event.shiftKey); }
+    else if (history) { event.preventDefault(); historyAction(historyDirection); }
+    else if (cmd && !event.shiftKey && ['b','i','u'].includes(key) && objects) event.preventDefault();
+    else if (cmd && key === 'g' && objects) { event.preventDefault(); if (!event.repeat && editor.selected.length) void containerAction(()=>editor.group(event.shiftKey),target); }
     else if (canvas && objects && !cmd && event.shiftKey && key === 'a' && editor.selected.length) { event.preventDefault(); editor.autoLayout(); }
     else if (cmd && event.shiftKey && key === 'h') { event.preventDefault(); if(!event.repeat)toggleSelectedSlidesHidden(); }
-    else if (cmd && key === 'd' && (objects || target.closest('.slide-rail'))) {event.preventDefault();if(!event.repeat){if(target.closest('.slide-rail')){editor.duplicateSlides();void tick().then(()=>document.querySelector<HTMLButtonElement>('.slide-thumb.current')?.focus({preventScroll:true}));}else void objectAction(()=>editor.selected.length?editor.duplicateSelection():duplicateSlide());}}
-    else if (!cmd&&target.closest('.slide-rail')&&(key==='delete'||key==='backspace')){event.preventDefault();if(!event.repeat){editor.deleteSlides();void tick().then(()=>document.querySelector<HTMLButtonElement>('.slide-thumb.current')?.focus({preventScroll:true}));}}
-    else if (cmd && key === 'a' && objects) { event.preventDefault(); editor.selectAll(); }
+    else if (cmd && !event.shiftKey && key === 'd' && (objects || slides)) {event.preventDefault();if(!event.repeat){if(slides){editor.duplicateSlides();void focusSlideSelection();}else void objectAction(()=>editor.selected.length?editor.duplicateSelection():duplicateSlide());}}
+    else if (!cmd&&slides&&(key==='delete'||key==='backspace')){event.preventDefault();if(!event.repeat){editor.deleteSlides();void focusSlideSelection();}}
+    else if (cmd && !event.shiftKey && key === 'a' && objects) { event.preventDefault(); editor.selectAll(); }
     else if (cmd && event.shiftKey && key === 'v' && objects) { event.preventDefault(); if (!event.repeat) void pasteFromClipboard({inPlace:true}); }
-    else if (canvas && objects && (key === 'backspace' || key === 'delete') && editor.selected.length) { event.preventDefault(); void objectAction(() => editor.remove()); }
+    else if (objects && !cmd && (key === 'backspace' || key === 'delete') && editor.selected.length) { event.preventDefault(); void objectAction(() => editor.remove()); }
     else if (canvas && !cmd && !editor.sourceMode && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) && editor.selected.length) { event.preventDefault(); const n = event.shiftKey ? 10 : 1; editor.commit(moveElements(editor.operationDocument(), editor.slide!.id, editor.selected, event.key === 'ArrowLeft' ? -n : event.key === 'ArrowRight' ? n : 0, event.key === 'ArrowUp' ? -n : event.key === 'ArrowDown' ? n : 0,editor.selectionScope), 'nudge'); }
     else if (canvas && !cmd && key === 't') { event.preventDefault(); if (!event.repeat) insert('text'); }
     else if (canvas && !cmd && key === 'r') { event.preventDefault(); if (!event.repeat) insert('rect'); }
-    else if (canvas && key === '?') modal = 'help';
+    else if (canvas && !cmd && key === '?') modal = 'help';
   }
   function clipboard(event:ClipboardEvent){
     if(event.defaultPrevented||presenting||modal||document.querySelector('dialog:modal,[popover]:popover-open:not([role="tooltip"])'))return;
@@ -879,7 +899,7 @@
       resizeFrame = requestAnimationFrame(measureStage);
     });
     let workflowPolling=false;
-    const workflowInterval=setInterval(()=>{reportEditorContext();if(document.hidden||!editor.deck||workflowPolling||workflowBusy||workflowRequest&&!(presenting&&workflowRequest.status==='completed'&&workflowRequest.action.kind==='presentation'))return;const deckId=editor.deck.id;workflowPolling=true;void api(`/api/workflows?deckId=${encodeURIComponent(deckId)}`).then((items:unknown[])=>{if(disposed||editor.deck?.id!==deckId||!items.length)return;const next=items.map(item=>WorkflowRequestSchema.parse(item)).find(w=>['pending','waiting_for_user','failed'].includes(w.status)||w.status==='running'&&(w.leaseUntil??0)<Date.now());if(!next)return;workflowRequest=next;if(next.action.kind==='presentation')void runWorkflow();else showPanel('ai');}).catch(()=>{}).finally(()=>workflowPolling=false);},1000);
+    const workflowInterval=setInterval(()=>{reportEditorContext();if(document.hidden||!editor.deck||workflowPolling||workflowBusy||workflowRequest&&!(presenting&&workflowRequest.status==='completed'&&workflowRequest.action.kind==='presentation'))return;const deckId=editor.deck.id;workflowPolling=true;void api(`/api/workflows?deckId=${encodeURIComponent(deckId)}`).then(async(items:unknown[])=>{if(disposed||editor.deck?.id!==deckId||!items.length)return;const {WorkflowRequestSchema}=await import('./core/workflows');if(disposed||editor.deck?.id!==deckId)return;const next=items.map(item=>WorkflowRequestSchema.parse(item)).find(w=>['pending','waiting_for_user','failed'].includes(w.status)||w.status==='running'&&(w.leaseUntil??0)<Date.now());if(!next)return;workflowRequest=next;if(next.action.kind==='presentation')void runWorkflow();else showPanel('ai');}).catch(()=>{}).finally(()=>workflowPolling=false);},1000);
     let polling = false;
     const interval = setInterval(() => {
       if (document.hidden || !editor.deck || editor.pending || polling) return;
@@ -952,7 +972,7 @@
     <span id="editor-toolbar-help" hidden>Tab enters/leaves; arrows navigate buttons; Home/End jump to ends.</span>
     <div class="workspace" class:selecting-slides={slideSelecting} class:left-hidden={!editor.deck || slidesHidden || canvasFocus} class:right-hidden={!editor.deck || !rightOpen || canvasFocus} class:is-resizing={resizing} style:--ui-rail-width={`${leftWidth}px`} style:--ui-panel-width={`${displayedRightWidth()}px`}>
       <aside id="slides-panel" class="slide-rail" aria-label="Slides" inert={!editor.deck || slidesHidden || canvasFocus || footerObscured}><div class="rail-content">
-        {#if SlideRail}<SlideRail proposalDeck={Boolean(proposalDeck)} {viewportWidth} {leftWidth} {draggedSlide} {draggedSlides} {dropSlide} {dropAfter} onDragStart={startSlideDrag} {slideDragOver} onDragLeave={event=>{if(!(event.relatedTarget instanceof Node)||!(event.currentTarget as HTMLElement).contains(event.relatedTarget))dropSlide='';}} {slideDrop} onDragEnd={clearDropFeedback} {toggleSlideHidden} {setSelectedSlidesHidden} onAdd={()=>modal='layout'} {duplicateSlide} slideOrder={step=>slideOrder(step)}/>{/if}
+        {#if SlideRail}<SlideRail proposalDeck={Boolean(proposalDeck)} previewDocument={proposalDeck} {previewActiveId} onPreviewSelect={id=>previewActiveId=id} {viewportWidth} {leftWidth} {draggedSlide} {draggedSlides} {dropSlide} {dropAfter} onDragStart={startSlideDrag} {slideDragOver} onDragLeave={event=>{if(!(event.relatedTarget instanceof Node)||!(event.currentTarget as HTMLElement).contains(event.relatedTarget))dropSlide='';}} {slideDrop} onDragEnd={clearDropFeedback} {toggleSlideHidden} {setSelectedSlidesHidden} onAdd={()=>modal='layout'} {duplicateSlide} slideOrder={step=>slideOrder(step)}/>{/if}
       </div><!-- Keyboard adjustable split-pane separator. -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 <div class="pane-resizer left-resizer" class:gesture-pane={resizing&&paneGesture?.side==='left'} role="separator" tabindex="0" aria-label="Resize slides panel" aria-orientation="vertical" aria-valuemin="140" aria-valuemax="320" aria-valuenow={leftWidth} onpointerdown={event=>resizePane(event,'left')} onpointermove={movePane} onpointerup={finishPane} onpointercancel={cancelPane} onlostpointercapture={cancelPane} onkeydown={event=>paneKey(event,'left')}></div></aside>
@@ -963,7 +983,7 @@
           {#if fileDropActive}<div class="canvas-drop-feedback" aria-hidden="true"><span>Drop files here</span></div>{/if}
           <div class="canvas-meta" class:has-hidden-slide={displayedSlide?.hidden} hidden={!displayedSlide?.hidden && !canvasFocus && (!source?.render || Boolean(proposalDeck))}>{#if displayedSlide?.hidden}<SlideVisibilityNotice allHidden={Boolean(displayedDeck?.slides.every(s=>s.hidden))} preview={Boolean(proposalDeck)} onunhide={()=>toggleSlideHidden()}/>{/if}{#if canvasFocus}<span class="focus-document">{editor.deck?.title}<span class="focus-separator">/</span>{slideLabel(activeIndex)}</span>{/if}{#if source?.render && !proposalDeck}<div use:uiIndicator class="seg canvas-version" aria-label="Document version"><button disabled={Boolean(proposalDeck)} aria-pressed={editor.sourceMode} onclick={() => { editor.sourceMode = true; editor.selected = []; editor.additiveSelection=false;editor.layerPickerId=''; }}>Source reference</button><button disabled={Boolean(proposalDeck)} aria-pressed={!editor.sourceMode} onclick={() => editor.sourceMode = false}>Editable version</button></div>{/if}</div>
           {#if editor.deck && editor.slide}
-            <div class="stage-canvas" use:uiChange={`${editor.deck.id}:${editor.slide.id}:${editor.sourceMode}:${Boolean(proposalDeck)}`} style:width="{stageWidth}px" data-shadow-owner="slide-canvas">{#if SlideCanvas}<SlideCanvas bind:this={canvasHandle} deck={editor.deck} slide={displayedSlide!} interactive={!editor.sourceMode && !proposalDeck && !resourcePreviewSlide} original={editor.sourceMode && !proposalDeck} {insertTool} {insertImage} {insertBlock} onplace={placeElement} oninsertcancel={cancelInsertion} ontextdraft={active => {insertingText=active; if(active)insertTool=null;}} onprototype={openPrototype} />{:else}<div role="status">Loading canvas…</div>{/if}</div>
+            <div class="stage-canvas" use:uiChange={`${editor.deck.id}:${editor.slide.id}:${editor.sourceMode}:${Boolean(proposalDeck)}`} style:width="{stageWidth}px" data-shadow-owner="slide-canvas">{#if SlideCanvas}<SlideCanvas bind:this={canvasHandle} deck={editor.deck} slide={displayedSlide!} interactive={!editor.sourceMode && !proposalDeck && !resourcePreviewSlide} original={editor.sourceMode && !proposalDeck} {insertTool} {insertImage} {insertBlock} onplace={placeElement} oninsertcancel={cancelInsertion} oncellselection={active=>canvasCellsSelected=active} ontextdraft={active => {insertingText=active; if(active)insertTool=null;}} onprototype={openPrototype} />{:else}<div role="status">Loading canvas…</div>{/if}</div>
           {:else if initializing}
             <EmptyState busy title="Opening workspace…" description="Preparing the editor and your document." />
           {:else if workspaceError}
@@ -973,7 +993,7 @@
           {/if}
           {#if editor.editingGroup&&!editor.sourceMode&&!proposalDeck&&!insertTool}<AsyncFeature feature="group-navigation" props={{}}/>{/if}
           {#if !editor.sourceMode}<PhotoCredits slide={editor.slide} />{/if}
-          {#if !editor.sourceMode && !proposalDeck && !insertTool && (insertingText || editor.selection.length || editor.additiveSelection)}
+          {#if !canvasCellsSelected && !editor.sourceMode && !proposalDeck && !insertTool && (insertingText || editor.selection.length || editor.additiveSelection)}
             <div class="selection-context" use:editorToolbar use:selectionToolbar={{ids: editor.selected, editingId: editor.editingId, revision: editor.deck?.revision, scale: currentScale, draft: insertingText}} role="toolbar" aria-label="Selected object actions">
               <span title={editor.selection.length===1?editor.selection[0].name:undefined}>{insertingText ? 'Text' : editor.selection.length === 1 ? elementLabel(editor.selection[0]) : editor.selection.length ? countLabel(editor.selection.length, "object") : 'Select objects'}</span>
               {#if !editor.editingId && !insertingText && editor.selection.length>1}<AsyncFeature feature="selection-actions" props={{onproperties:()=>showPanel('design'),mode:'primary'}}/>{/if}
@@ -1001,7 +1021,7 @@
         <footer class="stage-footer" class:compact-panel-layout={compactPanelOpen && !footerObscured} class:panel-obscured={footerObscured} inert={footerObscured} style:--compact-canvas-width={`${Math.max(0,compactCanvasWidth)}px`} aria-label="Canvas view tools">
           <div class="canvas-utility-left">
             {#if !canvasFocus && !proposalDeck}<button class="text-btn" class:active={notesOpen} aria-label="Notes" title="Notes" aria-pressed={notesOpen} onclick={() => notesOpen = !notesOpen}><FileText size={14} /><span>Notes</span></button>{/if}
-          {#if canvasFocus || slidesHidden}<div class="focus-page-controls"><button class="icon-btn small" aria-label="Previous slide" disabled={activeIndex <= 0} onclick={() => nextSlide(-1)}><ArrowLeft /></button><span class="slide-count">{activeIndex + 1} / {editor.deck?.slides.length ?? 0}</span><button class="icon-btn small" aria-label="Next slide" disabled={activeIndex >= (editor.deck?.slides.length ?? 1) - 1} onclick={() => nextSlide(1)}><ArrowRight /></button></div>{#if canvasFocus}<div class="divider"></div>{/if}{/if}
+          {#if canvasFocus || slidesHidden}<div class="focus-page-controls" tabindex="-1" role="group" aria-label="Slide navigation"><button class="icon-btn small" aria-label="Previous slide" disabled={activeIndex <= 0} onclick={() => nextSlide(-1)}><ArrowLeft /></button><span class="slide-count">{activeIndex + 1} / {editor.deck?.slides.length ?? 0}</span><button class="icon-btn small" aria-label="Next slide" disabled={activeIndex >= (editor.deck?.slides.length ?? 1) - 1} onclick={() => nextSlide(1)}><ArrowRight /></button></div>{#if canvasFocus}<div class="divider"></div>{/if}{/if}
 
           </div>
           {#if editor.deck && !editor.sourceMode && !proposalDeck}

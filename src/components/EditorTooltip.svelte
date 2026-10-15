@@ -12,8 +12,9 @@
     let showTimer: ReturnType<typeof setTimeout>, hideTimer: ReturnType<typeof setTimeout>;
     let oldDescription: string | null = null;
     let pointerHeld = false, hoverPoint: {x: number; y: number} | null = null;
+    let overBubble = false, bubbleBounds: {left:number;right:number;top:number;bottom:number} | undefined;
     function hide() {
-      clearTimeout(showTimer); clearTimeout(hideTimer); if (!disposed) visible = false;
+      clearTimeout(showTimer); clearTimeout(hideTimer); overBubble=false; bubbleBounds=undefined; if (!disposed) visible = false;
       if (bubble.matches(':popover-open')) bubble.hidePopover();
       if (anchor) { if (oldDescription === null) anchor.removeAttribute('aria-describedby'); else anchor.setAttribute('aria-describedby', oldDescription); }
       document.body.append(bubble);
@@ -49,6 +50,7 @@
       const r = el.getBoundingClientRect(), b = bubble.getBoundingClientRect();
       x = Math.max(8, Math.min(innerWidth - b.width - 8, r.left + r.width / 2 - b.width / 2));
       y = r.bottom + b.height + 10 <= innerHeight ? r.bottom + 6 : Math.max(8, r.top - b.height - 6);
+      bubbleBounds={left:x,right:x+b.width,top:y,bottom:y+b.height};
       el.setAttribute('aria-describedby', [oldDescription, id].filter(Boolean).join(' '));
     }
     function schedule(el: HTMLElement, delay: number) {
@@ -57,8 +59,14 @@
       if (anchor === el) return;
       hide(); anchor = el; oldDescription = el.getAttribute('aria-describedby'); showTimer = setTimeout(() => void show(el), delay);
     }
-    function track(event: PointerEvent) { if (event.pointerType !== 'touch') hoverPoint = {x: event.clientX, y: event.clientY}; }
-    function over(event: PointerEvent) { if (event.pointerType === 'touch') return; track(event); const el = target(event); if (el && !event.buttons) schedule(el, 450); }
+    function track(event: PointerEvent) {
+      if(event.pointerType==='touch')return;
+      hoverPoint={x:event.clientX,y:event.clientY};
+      const within=visible&&bubbleBounds&&event.clientX>=bubbleBounds.left&&event.clientX<=bubbleBounds.right&&event.clientY>=bubbleBounds.top&&event.clientY<=bubbleBounds.bottom;
+      if(within){overBubble=true;clearTimeout(hideTimer);}
+      else if(overBubble){overBubble=false;if(!anchor?.matches(':focus-visible'))deferHide();}
+    }
+    function over(event: PointerEvent) { if (event.pointerType === 'touch') return; track(event); if(overBubble)return; const el = target(event); if (el && !event.buttons) schedule(el, 450); }
     function out(event: PointerEvent) { if (anchor && event.target instanceof Node && anchor.contains(event.target) && (!(event.relatedTarget instanceof Node) || !anchor.contains(event.relatedTarget))) deferHide(); }
     // Native focus events also fire while Svelte removes or restores controls.
     // Update tooltip state after that render, and ignore superseded anchors.
@@ -91,13 +99,13 @@
     function loseWindow() { pointerHeld = false; hoverPoint = null; hide(); }
     const gestureObserver = new MutationObserver(() => { if (isPointerGestureActive()) hide(); else resumeHover(); });
     gestureObserver.observe(document.documentElement, {attributes: true, attributeFilter: ['data-pointer-cursor']});
-    const retain = () => { clearTimeout(hideTimer); };
+    // Keep noninteractive help hoverable without intercepting the control beneath it.
     // The help layer is loaded on demand; include the hover/focus that loaded it.
     const focused = document.activeElement;
     const hovered = document.querySelector<HTMLElement>('button[data-tooltip]:hover,button.icon-btn[aria-label]:hover');
     if (focused instanceof HTMLElement && focused.matches(':focus-visible') && focused.matches('button[data-tooltip],button.icon-btn[aria-label]')) schedule(focused, 150);
     else if (hovered) schedule(hovered, 450);
-    bubble.addEventListener('pointerenter', retain); bubble.addEventListener('pointerleave', deferHide);
+
     document.addEventListener('pointerover', over); document.addEventListener('pointerout', out);
     document.addEventListener('focusin', focus); document.addEventListener('focusout', blur);
     document.addEventListener('pointermove', track, true);
@@ -123,7 +131,7 @@
 
 <style>
   .editor-tooltip{position:fixed;inset:auto;margin:0;z-index:200;max-width:min(280px,calc(100vw - 16px));padding:8px 12px;border-radius:var(--r-sm);border:1px solid var(--overlay-border);background:var(--surface-overlay);color:var(--text-primary);box-shadow:var(--shadow-md);font:var(--ui-meta)/1.5 var(--font-ui);letter-spacing:normal;visibility:hidden;opacity:0;pointer-events:none;transition:opacity var(--ui-motion-feedback) ease,translate var(--ui-motion-feedback) var(--ui-ease-out),visibility 0s var(--ui-motion-feedback);translate:0 3px;white-space:pre-wrap}
-  .editor-tooltip.visible{visibility:visible;opacity:1;pointer-events:auto;translate:0 0;transition-delay:0s}
+  .editor-tooltip.visible{visibility:visible;opacity:1;pointer-events:none;translate:0 0;transition-delay:0s}
   @media(prefers-reduced-motion:reduce){.editor-tooltip{transition:none}}
   @media print{.editor-tooltip{display:none}}
 </style>

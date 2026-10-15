@@ -48,7 +48,10 @@ export const browserTextSize: TextSizeMeasure = (e, deck) => {
   host.replaceChildren(flow);
   const rect = host.getBoundingClientRect();
   const bound = (n: number) => Math.min(20000, Math.max(1, Math.ceil(n * 10) / 10));
-  const size = {w: intrinsic ? bound(rect.width) : e.w, h: bound(rect.height)};
+  // CJK and display glyphs can extend below a short line box. Include their
+  // scroll extent so fitted native text is not clipped after the font loads.
+  const padding=e.padding?.top??0,bottom=e.padding?.bottom??0;
+  const size = {w: intrinsic ? bound(rect.width) : e.w, h: bound(Math.max(rect.height,flow.scrollHeight+padding+bottom))};
   // Keep useful measurements instead of clearing the whole cache mid-document.
   // Bound both entry count and retained text/style key size.
   if (key.length <= MAX_CACHE_CHARACTERS) {

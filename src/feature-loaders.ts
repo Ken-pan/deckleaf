@@ -31,6 +31,7 @@ export const loaders = {
   'page-elements': () => import('./components/PageElementsEditor.svelte'),
   chart: () => import('./components/ChartEditor.svelte'),
   table: () => import('./components/TableEditor.svelte'),
+  'chart-text':()=>import('./components/CanvasChartTextEditor.svelte'),
   'chart-values': () => import('./components/CanvasChartValueEditor.svelte'),
   'table-cell': () => import('./components/CanvasTableCellEditor.svelte'),
   'table-columns': () => import('./components/CanvasTableColumnHandles.svelte'),

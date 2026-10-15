@@ -1,19 +1,24 @@
 import {editor} from './core/editor.svelte';
 import {clipboardFormats,CLIPBOARD_MIME,type ClipboardContent} from './core/clipboard';
-import {focusCanvasSelection} from './editor-focus';
+import {focusCanvasSelection,focusSlideSelection} from './editor-focus';
+import {editorCommands} from './core/clipboard-queue';
 import {stamp,unchanged,pasteFailure,type PasteData,type ClipboardPasteOptions} from './clipboard-context';
 export type {ClipboardPasteOptions} from './clipboard-context';
 let pasteModule:Promise<typeof import('./clipboard-paste')>|undefined;
 function enqueue(data:PasteData|Promise<PasteData>,placement:ClipboardPasteOptions){
   const captured=stamp();if(data instanceof Promise)void data.catch(()=>{});
   pasteModule??=import('./clipboard-paste').catch(error=>{pasteModule=undefined;throw error;});
-  return pasteModule.then(module=>module.queuePaste(data,placement,captured)).catch(pasteFailure);
+  void pasteModule.catch(()=>{});
+  return editorCommands.run(captured,stamp,async current=>{
+    const module=await pasteModule!;unchanged(current);
+    return module.applyPaste(data,placement,current);
+  }).catch(pasteFailure);
 }
 const fields='input,textarea,select,[contenteditable]:not([contenteditable="false"])';
 export function clipboardScope(target:EventTarget|null):'objects'|'slide'|undefined {
   if(!(target instanceof Element)||target.closest(fields))return;
   if(target.closest('.slide-rail,.focus-page-controls'))return 'slide';
-  if(target.closest('.canvas-stage,.layer-browser,.object-properties'))return 'objects';
+  if(target.closest('.canvas-stage,.layer-browser,.object-properties,.property-panel[data-panel="design"]'))return 'objects';
 }
 function removeCopied(content:ClipboardContent){
   if(!editor.deck||editor.deck.id!==content.deckId)return;
@@ -40,7 +45,7 @@ export async function copySelection(options:{event?:ClipboardEvent;cut?:boolean;
     }
     const label=content.kind==='slides'?`${content.slides!.length} slides`:content.kind==='slide'?'Slide':'Objects';
     if(!cut)editor.notify(`${label} copied`);
-    if(cut){unchanged(captured);const revision=editor.deck?.revision;removeCopied(content);if(editor.deck?.revision===revision)throw Error();editor.notify(`${label} cut · Undo available`);await focusCanvasSelection();}
+    if(cut){unchanged(captured);const revision=editor.deck?.revision;removeCopied(content);if(editor.deck?.revision===revision)throw Error();editor.notify(`${label} cut · Undo available`);await (content.kind==='objects'?focusCanvasSelection():focusSlideSelection());}
   }catch(error){
     editor.notify(cut?'Could not cut. The originals are unchanged. Use the keyboard shortcut.':error instanceof Error&&/too large|source reference/.test(error.message)?error.message:'Copied locally. Use the keyboard shortcut to copy to other tabs or apps.','warning');
   }

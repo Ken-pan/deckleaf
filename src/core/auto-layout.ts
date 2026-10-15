@@ -1,3 +1,4 @@
+import {contentBounds,pageLayout} from './page-layout';
 import type { Deck, Slide, SlideElement } from './model';
 import { applyOperations, ProposalSchema, type Operation, type Proposal } from './operations';
 import { scaledTextStyle } from './text-sizing';
@@ -315,11 +316,12 @@ export function createLayoutCandidate(deck: Deck, slideId: string, id: AutoLayou
   if (!units.length) return result;
   if (units.length > 24) { issue('This slide has too much content. Group related objects or split it into multiple slides.'); return result; }
   const scale = Math.min(deck.width / 1440, deck.height / 810), spacing = {compact: .7, balanced: 1, airy: 1.4}[options.spacing];
-  const margin = deck.width * .065 * spacing, gap = 28 * scale * spacing;
+  const reading=contentBounds(deck,slide),configured=pageLayout(deck,slide);
+  const gap = slide.layout?configured.gutter:28 * scale * spacing;
   const chromeText = fixed.filter(e => layoutObjectRole(e, deck) !== 'empty' && chrome(e, deck));
-  const top = Math.max(deck.height * .125, margin, ...chromeText.filter(e => e.y < deck.height / 2).map(e => e.y + e.h + gap / 2));
-  const bottom = Math.max(deck.height * .115, margin, ...chromeText.filter(e => e.y >= deck.height / 2).map(e => deck.height - e.y + gap / 2));
-  const area = safeArea({x: margin, y: top, w: deck.width - margin * 2, h: deck.height - top - bottom}, fixed, deck, gap);
+  const top = Math.max(reading.y, ...chromeText.filter(e => e.y < deck.height / 2).map(e => e.y + e.h + gap / 2));
+  const bottom = Math.max(deck.height-reading.y-reading.h, ...chromeText.filter(e => e.y >= deck.height / 2).map(e => deck.height - e.y + gap / 2));
+  const area = safeArea({x:reading.x,y:top,w:reading.w,h:deck.height-top-bottom}, fixed, deck, gap);
   if (area.w < 160 * scale || area.h < 140 * scale) { issue('Locked objects occupy most of the space. Unlock the objects you want to include.'); return result; }
   const texts = units.filter(u => u.kind === 'text'), visuals = units.filter(u => u.kind === 'visual');
   const title = headingUnit(units, deck);

@@ -9,6 +9,8 @@
   onDestroy(()=>disposed=true);
   const Icon=$derived(icon);
   const displayed=$derived(mixed?'':String(value??''));
+  const unitNames:Record<string,string>={px:'pixels','%':'percent','°':'degrees',ms:'milliseconds','×':'multiplier'};
+  const help=$derived([mixed?'Multiple values.':automatic?'Automatic value.':'',unit?`Unit: ${unitNames[unit]??unit}.`:'',hint??''].filter(Boolean).join(' '));
   $effect(()=>{const next=displayed;label;automatic;scope=editScope?.();error='';submitted=undefined;if(input)input.value=next;untrack(()=>onvaliditychange?.(true));});
   function commit(event:Event){
     commitInput(event.currentTarget as HTMLInputElement);
@@ -39,9 +41,10 @@
 <div class="number-property">
   <label class="number-field" class:has-error={Boolean(error)} class:word-prefix={!Icon && prefix.length >= 5} title={hint??`${label}${unit?` (${unit})`:''}`}>
     <span class="field-prefix">{#if Icon}<Icon size={14} aria-hidden="true" />{:else}{prefix}{/if}{#if automatic}<small>Auto</small>{/if}</span>
-    <input bind:this={input} type="number" data-document-value={displayed} aria-label={label} aria-invalid={Boolean(error)} aria-describedby={error?`${id}-error`:undefined} {min} {max} {step} {disabled} value={displayed} placeholder={mixed?'Mixed':automatic?'Auto':undefined} oninput={event=>{if(disposed||scope!==editScope?.())return;error='';const input=event.currentTarget;onvaliditychange?.(Boolean(input.value.trim())&&input.validity.valid||mixed&&!input.value.trim());}} onchange={commit} onkeydown={key}/>
+    <input bind:this={input} type="number" data-document-value={displayed} aria-label={label} aria-invalid={Boolean(error)} aria-describedby={[error?`${id}-error`:'',help?`${id}-help`:''].filter(Boolean).join(' ')||undefined} {min} {max} {step} {disabled} value={displayed} placeholder={mixed?'Mixed':automatic?'Auto':undefined} oninput={event=>{if(disposed||scope!==editScope?.())return;error='';const input=event.currentTarget;onvaliditychange?.(Boolean(input.value.trim())&&input.validity.valid||mixed&&!input.value.trim());}} onchange={commit} onkeydown={key}/>
     {#if unit}<span class="field-unit" aria-hidden="true">{unit}</span>{/if}
   </label>
+  {#if help}<span id="{id}-help" class="sr-only">{help}</span>{/if}
   {#if error}<p id="{id}-error" class="field-error" role="alert">{error}</p>{/if}
 </div>
 <style>

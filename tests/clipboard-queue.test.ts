@@ -22,3 +22,17 @@ test('a failed paste does not poison later requests or merge their undo boundari
   const good=queue.run(context,()=>context,async()=>{commits++;return context='1';});
   const result=await Promise.allSettled([bad,good]);assert.equal(result[0].status,'rejected');assert.equal(result[1].status,'fulfilled');assert.equal(commits,1);
 });
+test('paste, history and another paste preserve the arrival order during a cold load',async()=>{
+  const queue=new ClipboardQueue(),gate=deferred();let context='0';const order:string[]=[];
+  const run=(name:string,wait=false)=>queue.run(context,()=>context,async()=>{if(wait)await gate.promise;order.push(name);return context=String(Number(context)+1);});
+  const paste=run('paste',true),undo=run('undo'),pasteAgain=run('paste again'),redo=run('redo');
+  assert.equal(queue.busy,true);gate.resolve();await Promise.all([paste,undo,pasteAgain,redo]);
+  assert.deepEqual(order,['paste','undo','paste again','redo']);assert.equal(queue.busy,false);
+});
+test('a pending container edit and its Undo are both rejected after changing documents',async()=>{
+  const queue=new ClipboardQueue('Context changed'),gate=deferred();let context='document one';const order:string[]=[];
+  const first=queue.run(context,()=>context,async current=>{await gate.promise;if(context!==current)throw Error('Context changed');order.push('group');return context;});
+  const undo=queue.run(context,()=>context,async()=>{order.push('undo');return context;});
+  await Promise.resolve();context='document two';gate.resolve();const result=await Promise.allSettled([first,undo]);
+  assert(result.every(r=>r.status==='rejected'));assert.deepEqual(order,[]);assert.equal(queue.busy,false);
+});
