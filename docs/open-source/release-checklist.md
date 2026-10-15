@@ -17,7 +17,7 @@ Initial release prepared on 14 October 2026. Public source: https://github.com/K
 
 For maintainers preparing subsequent releases:
 
-1. Select/create the public repository, inspect its initial commit, enable secret scanning/push protection and private vulnerability reporting. Use the reviewed source candidate, not the dirty development directory. No Git history exists in this checkout yet; future commits still need scanning.
+1. Select/create the public repository, inspect its initial commit, enable secret scanning/push protection and private vulnerability reporting. Use the reviewed source candidate, not the dirty development directory. Review the public repository history and scan each new source candidate before packaging.
 2. Confirm the selected repository/website/contact route in launch drafts. Public name screening and its country/database limits are recorded in [name-change.md](name-change.md); this is **not trademark clearance**, domain availability or worldwide registration advice. Check relevant software classes and markets before major spending or registration.
 3. If hosting the browser demo, confirm its actual operator/privacy contact, log retention, provider production eligibility and billing alerts. Test the configured photo shutdown switch and inspect Netlify's deployment log to confirm the edge rule was applied. Per-IP throttling is not an absolute global spend cap; disable photo search if an operator has no acceptable hosting budget controls.
 4. Treat Google OAuth production verification, Figma publication and native conversion on a user's machine as separate provider/device gates. They are optional for local editing.
@@ -28,3 +28,7 @@ For maintainers preparing subsequent releases:
 ## Rebrand release 0.1.1
 
 Decksprig, Duoquill and Clovlets were confirmed by the owner after dated public naming screening. Main checks: 0 type errors/warnings, 885 passing tests, local and browser builds, edit/undo/presentation, Deck/PPTX/HTML exports, reload, prior-document preservation and 390/320-width checks. Galleries: 8 and 6 passing tests, original hash-checked downloads, selection ZIPs and fresh extracted-pack installation/build checks. Original artwork and generation records are preserved. Re-recorded actual editor demonstration and updated light/dark screenshots accompany this version. Publication readback is recorded separately from local acceptance.
+
+## Consistency release 0.1.3
+
+Current source, browser edition and local download use Decksprig 0.1.3. Speaker/OAuth copy, project-owned demonstration labels, website templates, crawler metadata and launch links use the current name and working public URLs. Self-host origin verification includes sitemap, robots, presentation credits and downloadable template metadata. Original artwork, SVG source comments, hashes and compatibility IDs are preserved. Local verification: 0 type errors/warnings, 960 passing tests, native and browser builds passed. Publication acceptance also checks the actual source/browser packages and desktop/mobile first-use, export and reload flows.

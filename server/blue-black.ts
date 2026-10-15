@@ -12,7 +12,7 @@ export async function blueBlackLibrary(): Promise<BlueBlackAsset[]> {
 }
 export function blueBlackItem(asset: BlueBlackAsset): ResourceItem {
   const resource = {id: `blue-black:${asset.id}`, kind: 'illustration' as const, provider: 'Duoquill', title: asset.title,
-    creator: 'Decksprig · AI-generated', sourceUrl: 'http://127.0.0.1:4310/resources/blue-black-v1/index.html',
+    creator: 'Decksprig · AI-generated', sourceUrl: 'https://duoquill.kens-toolbox.com/',
     license: 'CC0 1.0', licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
     attributionRequired: false, attribution: '', licenseNotice: `Project-generated AI artwork dedicated by Ken Pan under CC0 1.0, to the extent he holds rights. Original SHA-256: ${asset.sha256}`,
     originalSha256: asset.sha256, color: ORIGINAL_ACCENT};

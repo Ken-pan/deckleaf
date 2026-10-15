@@ -6,9 +6,9 @@ These drafts are ready to adapt; no social or community post has been sent.
 
 中文：我把自己做演示与产品设计时积累的 204 张蓝黑插图整理成了独立素材库 Duoquill：92 张场景、100 张小插图和 12 张人物。保留原始透明 PNG，提供搜索、背景预览和蓝色改色。素材是 AI 生成、由我整理，按 CC0 在我持有权利的范围内开放，欢迎商业使用与修改，不需要署名。部分浅色边缘在浅色背景上效果更好。
 
-English: I made Duoquill, a collection of 204 duoquill illustrations for slides, websites and visual thinking. It includes 92 scenes, 100 spots and 12 characters, with original transparent PNGs, a searchable gallery and blue accent recoloring. The artwork was made with AI and curated by me, and is shared under CC0 to the extent I hold rights. Commercial reuse and modification are welcome; credit is optional.
+English: I made Duoquill, a collection of 204 blue and black illustrations for slides, websites and visual thinking. It includes 92 scenes, 100 spots and 12 characters, with original transparent PNGs, a searchable gallery and blue accent recoloring. The artwork was made with AI and curated by me, and is shared under CC0 to the extent I hold rights. Commercial reuse and modification are welcome; credit is optional.
 
-Gallery: https://ken-pan.github.io/duoquill/
+Gallery: https://duoquill.kens-toolbox.com/
 Source and downloads: https://github.com/Ken-pan/duoquill
 
 ## Clovlets
@@ -17,7 +17,7 @@ Source and downloads: https://github.com/Ken-pan/duoquill
 
 English: Meet Clovlets: 60 soft clay stickers for chats, notes and small everyday moments. Five groups cover reactions, little buddies, work, cozy things and nature. Every sticker includes its original 1254px PNG and a compact 512px WebP. Made with AI and curated by me, shared under CC0 to the extent I hold rights; commercial reuse is welcome and credit is optional.
 
-Gallery: https://ken-pan.github.io/clovlets/
+Gallery: https://clovlets.kens-toolbox.com/
 Source and downloads: https://github.com/Ken-pan/clovlets
 
 ## Posting sequence

@@ -11,7 +11,15 @@ export function graphicLibrary(): Promise<GraphicRecord[]> {
 }
 export function graphicItem(record: GraphicRecord): ResourceItem {
   const id = `deck-graphics:${record.category === 'accent' ? 'accent-' : ''}${record.id}`;
-  const resource = {...record, ...graphicInfo(record), id, kind: 'illustration' as const, attribution: ''};
+  // The preserved manifest and SVG bytes retain their original provenance. Use
+  // the current public name and a working local source link in the editor.
+  const currentCredits = record.attributionRequired ? {} : {
+    provider: 'Decksprig Graphics', creator: 'Decksprig',
+    sourceUrl: 'http://127.0.0.1:4310/resources/deck-graphics-v1/README.md',
+    licenseNotice: record.licenseNotice?.replaceAll('Deck Studio', 'Decksprig') +
+      (record.creator === 'Deck Studio' ? ' Original creation credit: Deck Studio (previous project name).' : ''),
+  };
+  const resource = {...record, ...currentCredits, ...graphicInfo(record), id, kind: 'illustration' as const, attribution: ''};
   return {...resource, collection: 'deck-graphics', attribution: attributionText(resource), previewUrl: `/api/resources/preview?id=${encodeURIComponent(id)}`};
 }
 export async function graphicImage(id: string, color: string, raw?:GraphicRecipe, detail=false) {

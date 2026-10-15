@@ -18,7 +18,20 @@ for (const [from,to] of [
 const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/website/dist');
 await mkdir(out, { recursive: true });
 await cp(source, out, { recursive: true });
-await writeFile(resolve(out,'index.html'),(await readFile(resolve(out,'index.html'),'utf8')).replaceAll('https://decksprig.kens-toolbox.com',origin));
+// Apply the deployment origin to every website document, including downloadable
+// templates, attribution in the presentation, and crawler metadata.
+async function updateOrigin(dir) {
+  for (const entry of await readdir(dir, {withFileTypes: true})) {
+    const path = resolve(dir, entry.name);
+    if (entry.isDirectory()) await updateOrigin(path);
+    else if (/\.(?:html|json|xml|txt)$/.test(entry.name)) {
+      const source = await readFile(path, 'utf8');
+      const updated = source.replaceAll('https://decksprig.kens-toolbox.com', origin);
+      if (updated !== source) await writeFile(path, updated);
+    }
+  }
+}
+await updateOrigin(out);
 for (const name of ['privacy.html','licenses.html','legal.css','licenses']) await cp(resolve(root,'public',name),resolve(out,name),{recursive:true});
 await mkdir(resolve(out,'fonts'),{recursive:true});
 for (const name of ['inter.ttf','Inter-OFL.txt']) await cp(resolve(root,'public/fonts',name),resolve(out,'fonts',name));
