@@ -14,6 +14,18 @@ for (const [from,to] of [
   ['public/fonts/Inter-OFL.txt','Inter-OFL.txt'],['public/fonts/Manrope-OFL.txt','Manrope-OFL.txt'],
   ['public/fonts/Bodoni-Moda-OFL.txt','Bodoni-Moda-OFL.txt'],
 ]) await cp(resolve(root,from),resolve(source,'assets',to));
+// Every published media revision gets a fresh URL, including dynamically
+// selected starter downloads. Keep the version stable for identical inputs.
+const revision = createHash('sha256');
+async function fingerprint(dir, prefix = '') {
+  for (const entry of (await readdir(dir, {withFileTypes: true})).sort((a,b) => a.name.localeCompare(b.name, 'en'))) {
+    const path = resolve(dir, entry.name), name = prefix + entry.name;
+    if (entry.isDirectory()) await fingerprint(path, name + '/');
+    else if (entry.isFile()) revision.update(name + '\0').update(await readFile(path));
+  }
+}
+await fingerprint(source);
+const assetRevision = revision.digest('hex').slice(0, 12);
 // Public marketing assets only; the browser build adds its separate editor entry.
 const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/website/dist');
 await mkdir(out, { recursive: true });
@@ -24,9 +36,11 @@ async function updateOrigin(dir) {
   for (const entry of await readdir(dir, {withFileTypes: true})) {
     const path = resolve(dir, entry.name);
     if (entry.isDirectory()) await updateOrigin(path);
-    else if (/\.(?:html|json|xml|txt)$/.test(entry.name)) {
+    else if (/\.(?:html|json|xml|txt|js|css)$/.test(entry.name)) {
       const source = await readFile(path, 'utf8');
-      const updated = source.replaceAll('https://decksprig.kens-toolbox.com', origin);
+      const updated = source.replaceAll('https://decksprig.kens-toolbox.com', origin)
+        .replace(/([?&])v=\d{8}-[\w-]+/g, `$1v=${assetRevision}`)
+        .replace(/(?<![\w-])(assets\/[\w./-]+\.(?:png|jpe?g|webp|svg|mp4|ttf|woff2?|deck\.json))(?=["')\s])/g, `$1?v=${assetRevision}`);
       if (updated !== source) await writeFile(path, updated);
     }
   }
