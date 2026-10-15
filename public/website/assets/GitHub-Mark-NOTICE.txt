@@ -1,0 +1,4 @@
+GitHub Invertocat logo. Copyright GitHub, Inc. All rights reserved.
+Official unmodified SVG files from https://brand.github.com/GitHub_Logos.zip
+Usage: https://brand.github.com/foundations/logo
+Used only to identify links to the Decksprig GitHub project. Not covered by this project MIT or artwork licenses.

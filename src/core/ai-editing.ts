@@ -19,6 +19,17 @@ export function validateEditScope(deck: Deck, scope: EditScope) {
 export function validateAIProposal(deck: Deck, raw: unknown, scope: EditScope = {slideIds:deck.slides.map(s => s.id),elementIds:[]}) {
   validateEditScope(deck, scope);
   const proposal = ProposalSchema.parse(raw);
+  // Models sometimes echo the current frame with a text replacement. Repeating
+  // w/h would turn automatic text and fill sizing into fixed sizing. Keep an
+  // explicit sizing change, or a compound transaction, under canonical rules.
+  if (proposal.operations.every(op => op.op === 'update_element')) {
+    const counts = new Map<string,number>();
+    for (const op of proposal.operations) if (op.op === 'update_element') counts.set(op.elementId,(counts.get(op.elementId) ?? 0)+1);
+    for (const op of proposal.operations) if (op.op === 'update_element' && counts.get(op.elementId) === 1 && op.patch.text !== undefined && op.patch.textSizing === undefined && op.patch.layoutItem === undefined) {
+      const current = deck.slides.find(s => s.id === op.slideId)?.elements.find(e => e.id === op.elementId);
+      if (current?.type === 'text') for (const key of ['x','y','w','h'] as const) if (op.patch[key] === current[key]) delete op.patch[key];
+    }
+  }
   const allowed = new Set(scope.slideIds), whole = allowed.size === deck.slides.length && !scope.elementIds.length;
   if (whole) for (const op of proposal.operations) if (op.op === 'add_slide') allowed.add(op.slide.id);
   const documentOps = new Set(['rename_deck','reorder_slides','add_slide','set_design_system','set_illustration_accent','register_local_font','register_online_font']);

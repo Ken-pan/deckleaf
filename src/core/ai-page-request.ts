@@ -24,9 +24,14 @@ function preservedArtwork(clause:string):ArtworkField[]{
  }
  return [...fields];
 }
-const withoutQuotedCopy=(text:string)=>text.replace(/「[^」]*」|“[^”]*”|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,s=>' '.repeat(s.length));
+const copyQuotes=()=>/「([^」]*)」|“([^”]*)”|"((?:\\.|[^"\\])*)"|(?<![A-Za-z0-9])'((?:\\.|(?<=[A-Za-z])'(?=[A-Za-z])|[^'\\])*)'(?![A-Za-z0-9])/g;
+const withoutQuotedCopy=(text:string)=>text.replace(copyQuotes(),s=>' '.repeat(s.length));
 const positiveActions=(text:string)=>withoutQuotedCopy(text).replace(/(?:不得|不要|禁止|不允许|不能|不(?=新增|添加|删除|更换|替换|修改|调整)|do not|never|without)[^，,。；;\n]*/gi,'');
-const quotedTexts=(text:string)=>[...text.matchAll(/「([^」]+)」|“([^”]+)”/g)].map(m=>m[1]??m[2]);
+const quotedTexts=(text:string)=>{
+ const quotes=[...text.matchAll(copyQuotes())];
+ // A quoted replacement source identifies existing copy; only its destination must remain.
+ return quotes.filter((m,i)=>!quotes[i+1]||!/^\s*(?:改为|改成|修改为|更新为|替换为|替换成|换成|变成|→|->|with|to|for)\s*$/i.test(text.slice(m.index!+m[0].length,quotes[i+1].index))).map(m=>m[1]??m[2]??(m[3]??m[4]).replace(/\\(["'\\])/g,'$1'));
+};
 const escape=(text:string)=>text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 function templateIntent(intent:string){
  const tokens=[...intent.matchAll(new RegExp(`\\b(${AI_TEMPLATE_LAYOUTS.join('|')})\\b`,'gi'))];

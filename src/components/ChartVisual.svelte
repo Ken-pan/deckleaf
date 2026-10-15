@@ -1,13 +1,14 @@
 <script lang="ts">
   import { untrack,tick } from 'svelte';
   import {chartPointTarget} from '../ui-chart-hit';
+  import {restoreFocus} from '../ui-focus';
   import type {ChartTextTarget} from '../core/chart-text';
   import {Button} from './ui';
   import type { SlideElement } from '../core/model';
   import { loadLibraryFont } from '../core/font-loading';
   let {element,fonts,editable=false,activePoint,onpoint,ontext}:{element:SlideElement;fonts?:import('../core/model').Deck['fonts'];editable?:boolean;activePoint?:{series:number;category:number};onpoint?:(series:number,category:number)=>void;ontext?:(target:ChartTextTarget)=>void}=$props();
   let root=$state<HTMLDivElement>(),focusedPoint=$state<{series:number;category:number}|null>(null),hoverPoint=$state<{series:number;category:number}|null>(null);
-  let attempt = $state(0),lastChart=$state<{svg:string;description:string}>();
+  let attempt = $state(0),lastChart=$state<{svg:string;description:string}>(),failed=$state(false);
   const signature = $derived(JSON.stringify([element.chart, element.values, element.w, element.h, element.fontSize, element.fontFamily, element.fill, element.name,editable]));
   const request = $derived.by(() => {
     signature;
@@ -16,7 +17,18 @@
     const interactive=untrack(()=>editable);
     return Promise.all([import('../core/chart-render'), loadLibraryFont(snapshot.fontFamily, imported).catch(() => {})]).then(([render]) => ({svg: render.renderChartSvg(snapshot,interactive), description: render.chartAlt(snapshot)}));
   });
-  $effect(()=>{let active=true;void request.then(result=>{if(active)lastChart=result;}).catch(()=>{});return()=>active=false;});
+  $effect(()=>{let active=true;failed=false;void request.then(async result=>{
+    if(!active)return;
+    const focused=root?.contains(document.activeElement)?document.activeElement:null;
+    const point=focused?.hasAttribute('data-chart-point')?indices(focused):null;
+    const text=focused?.hasAttribute('data-chart-text')?{kind:focused.getAttribute('data-chart-text')!,index:focused.getAttribute('data-chart-text-index')}:null;
+    lastChart=result;
+    if(!point&&!text)return;
+    await tick();
+    if(!active||document.activeElement!==document.body&&document.activeElement!==focused)return;
+    const target=point?root?.querySelector<HTMLElement>(`[data-chart-point][data-chart-series="${point.series}"][data-chart-category="${point.category}"]`):root?.querySelector<HTMLElement>(`[data-chart-text="${CSS.escape(text!.kind)}"]${text!.index===null?'':`[data-chart-text-index="${CSS.escape(text!.index!)}"]`}`);
+    restoreFocus(target,root?.closest<HTMLElement>('[data-element-id]'));
+  }).catch(()=>{if(active)failed=true;});return()=>active=false;});
   function indices(node:Element){return {series:Number(node.getAttribute('data-chart-series')),category:Number(node.getAttribute('data-chart-category'))};}
   function target(event:Event){return editable?chartPointTarget(root,event):null;}
   function textTarget(event:Event){
@@ -59,13 +71,13 @@
     {#if editable&&!element.chart?.title}<div class="add-chart-title" role="group" onpointerdown={e=>{e.preventDefault();e.stopPropagation();}}><Button variant="quiet" onclick={e=>{e.stopPropagation();ontext?.({kind:'title'});}}>Add title</Button></div>{/if}
   </div>
 {/snippet}
-{#await request}
-  {#if lastChart}{@render visual(lastChart)}{:else}<div class="chart-state" role="status">Rendering chart…</div>{/if}
-{:then chart}
-  {@render visual(chart)}
-{:catch}
+{#if failed}
   <div class="chart-state" role="status">Chart unavailable<button onclick={() => attempt++}>Retry</button></div>
-{/await}
+{:else if lastChart}
+  {@render visual(lastChart)}
+{:else}
+  <div class="chart-state" role="status">Rendering chart…</div>
+{/if}
 <style>
   .chart-visual{width:100%;height:100%;pointer-events:none;position:relative}.chart-visual :global(svg){width:100%;height:100%;display:block}
   .add-chart-title{position:absolute;top:0;left:0;pointer-events:auto;transform:scale(calc(1 / var(--canvas-scale,1)));transform-origin:top left}.add-chart-title :global(button){background:var(--surface-overlay);color:var(--text-secondary);min-height:36px;padding:6px 10px;border:1px solid var(--component-border);border-radius:var(--r-control);font-size:var(--ui-label)}

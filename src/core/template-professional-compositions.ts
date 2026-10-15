@@ -165,8 +165,9 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
       const x=84+(n===4?i%2*(cellW+32):n===1?0:i*(cellW+32)),y=n===4?286+Math.floor(i/2)*212:286;
       const frameW=n===4?288:n===2?438:cellW,h=n===1?408:n===4?192:292;
       const imageW=o.imageShape==='portrait'?h*.75:frameW,imageX=x+(n===2?cellW:frameW)/2-imageW/2;
-      if(c.id==='pitch')mockup(imageX,y,imageW,h,i===0?'before':i===1?'after':'result');
-      else image(keys[i%4],imageX,y,imageW,h,o.imageFit??(reading||n===1||n===4?'contain':'cover'));
+      const artworkIndex=(o.itemOffset??0)+i;
+      if(c.id==='pitch')mockup(imageX,y,imageW,h,artworkIndex===0?'before':artworkIndex===1?'after':'result');
+      else image(keys[artworkIndex%4],imageX,y,imageW,h,o.imageFit??(reading||n===1||n===4?'contain':'cover'));
       const cx=paired?(n===1?924:x+332):x,cy=paired?y+24:y+h+16,cw=paired?(n===1?436:290):cellW,ch=paired?h-40:112;
       if(paired)rule(cx,y,cw);
       flow(`Visual caption ${i+1}`,[t(caption,cx,cy,cw,n===1?36:26),t(detail,cx,cy+62,cw,n===1?28:24,'muted')],cx,cy,cw,ch,paired?24:10);

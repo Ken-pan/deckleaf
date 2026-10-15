@@ -18,7 +18,7 @@
   import { createPlaybackGestures } from '../core/player-gestures';
   import { matchSmartLayers } from '../core/smart-motion';
   import { createPresentationClock, formatPresentationTime, presentationSlideNumber, navigatePresentationCue, type SpeakerSession } from '../core/presentation-session';
-  let {deck, original: sourceView = false, clientId = '', startId, onclose}: {deck: Deck; original?: boolean; clientId?: string; startId?:string; onclose: () => void} = $props();
+  let {deck, original: sourceView = false, clientId = '', startId, returnTo, onclose}: {deck: Deck; original?: boolean; clientId?: string; startId?:string; returnTo?:HTMLElement; onclose: () => void} = $props();
   // svelte-ignore state_referenced_locally
   const original = sourceView;
   // svelte-ignore state_referenced_locally
@@ -241,13 +241,13 @@
       epoch++; pageRun?.cancel(); observer.disconnect(); clearInterval(clockInterval); clearTimeout(hideTimer); clearTimeout(numberTimer); disposeSpeakerWindow();
       mq.removeEventListener('change',preference); pointerQuery.removeEventListener('change',input); document.removeEventListener('visibilitychange',visibility); document.removeEventListener('fullscreenchange',fullscreenChange);
       if (ownedFullscreen && document.fullscreenElement) void document.exitFullscreen().catch(() => {});
-      const wasOpen=viewer?.open;viewer?.close();if(wasOpen)restoreFocus(previous);
+      const wasOpen=viewer?.open;viewer?.close();if(wasOpen)restoreFocus(returnTo,previous);
     };
   });
   import {modalFocus,restoreFocus} from '../ui-focus';
 </script>
 <svelte:window onkeydown={keyboard} />
-<dialog bind:this={viewer} use:modalFocus aria-modal="true" transition:uiPresence={{y:0}} class="presentation" class:blackout class:speaker class:chrome-visible={chrome || !finePointer || Boolean(panel)} aria-label="Present document" onfocusin={e => { if ((e.target as HTMLElement).closest('.presentation-header,.presentation-controls,.player-panel,.speaker-panel')) reveal(); }} oncancel={e => { e.preventDefault(); if (panel) closePanel(); else if (blackout) toggleBlackout(); else void close(); }}>
+<dialog bind:this={viewer} use:modalFocus={()=>returnTo} aria-modal="true" transition:uiPresence={{y:0}} class="presentation" class:blackout class:speaker class:chrome-visible={chrome || !finePointer || Boolean(panel)} aria-label="Present document" onfocusin={e => { if ((e.target as HTMLElement).closest('.presentation-header,.presentation-controls,.player-panel,.speaker-panel')) reveal(); }} oncancel={e => { e.preventDefault(); if (panel) closePanel(); else if (blackout) toggleBlackout(); else void close(); }}>
   <span id="player-keyboard-help" hidden>Arrow keys or Space advance slides and builds. Swipe on touch screens. G opens all slides, N shows speaker notes, B toggles a black screen, F toggles full screen, R replays, P pauses motion. Press ? for all shortcuts. Type a slide number and press Enter to jump.</span>
   <div class="presentation-workspace" inert={Boolean(panel)}>
     <!-- svelte-ignore a11y_no_static_element_interactions -->

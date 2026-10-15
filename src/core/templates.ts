@@ -18,6 +18,7 @@ import {DEFAULT_PAGE_ELEMENTS,hidePageElements,refreshPageElements} from './page
 import {matchSmartLayers} from './smart-motion';
 import {portableTemplateOwnership} from './template-ownership';
 import {inlineTextWidth} from './inline-text-width';
+import {galleryCaptionParts} from './template-gallery-continuation';
 import {templatePageGrid,placeTemplateOnGrid} from './template-page-grid';
 
 import {COLLECTIONS,LAYOUTS,type LayoutId,type CollectionId} from './template-collections';
@@ -288,6 +289,15 @@ export function createTemplatePages(id:LayoutId,index=1,collectionId='portfolio'
     if(rows.length>capacity){const pages:Slide[]=[];const size=Math.ceil(rows.length/Math.ceil(rows.length/capacity));for(let offset=0;offset<rows.length;offset+=size)pages.push(...createTemplatePages(id,index+pages.length,collectionId,{...options,cells:[header,...rows.slice(offset,offset+size)],heading:offset?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading}));return pages;}
   }
   const contract=templateContract(id),values=options.items,limit=contract.counts.length?Math.max(...contract.counts):Infinity;
+  if(id==='gallery'&&values){
+    const width=templatePageGrid(collection.id,'gallery').span(8,4).w;
+    const parts=values.map(([title,body])=>({title,parts:galleryCaptionParts(body,collection.body,width)}));
+    if(parts.some(item=>item.parts.length>1)){
+      const pages:Slide[]=[];
+      parts.forEach((item,i)=>item.parts.forEach(part=>pages.push(createLayout(id,index+pages.length,collectionId,{...options,items:[[item.title,part]],itemOffset:(options.itemOffset??0)+i,heading:pages.length?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading}))));
+      return pages;
+    }
+  }
   const capacity=values&&options.count?Math.max(1,Math.min(limit,options.count)):limit;
   const max=values&&id==='gallery'&&values.some(([a,b])=>a.length>24||b.length>70)?1:values&&id==='decision'&&values.some(([,body])=>body.length>70)?Math.min(capacity,2):values&&(['gantt','workstreams','funnel','roadmap','kanban'].includes(id)&&values.some(([,body])=>body.length>90||['gantt','workstreams'].includes(id)&&inlineTextWidth(body,1,collection.body)>24)||id==='dashboard'&&values.some(([,body])=>body.split(/[\n\t]/).length>2))?Math.min(capacity,3):values&&['process','solution','timeline','annotation'].includes(id)&&values.some(([a,b])=>a.length>24||b.length>(id==='timeline'?55:id==='annotation'?100:70))?Math.min(capacity,id==='annotation'?2:id==='timeline'?4:3):capacity;
   try{

@@ -198,11 +198,13 @@
   }
   let presenting = $state(false), printMode = $state(false);
   let presentationStartId = $state<string | undefined>();
+  let presentationReturnTo = $state<HTMLElement | undefined>();
   function closePresentation() { presenting = false; presentationStartId = undefined; }
   function startPresentation(id = editor.activeId) {
     if (!editor.deck || proposalDeck) return false;
     const index=presentationStartIndex(editor.deck.slides, Math.max(0,editor.deck.slides.findIndex(s=>s.id===id)));
     if(index===null){editor.notify('Unhide a slide before presenting.', 'warning');return false;}
+    presentationReturnTo = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     finishInlineText(); presentationStartId=editor.deck.slides[index].id; presenting=true; return true;
   }
   function toggleSlideHidden(id = editor.activeId) {
@@ -1058,7 +1060,7 @@
 {/if}
 
 {#if presenting && editor.deck && editor.slide}
-  <AsyncFeature feature="presentation" props={{deck: editor.deck, original: editor.sourceMode, clientId: prototypeClientId, startId: presentationStartId, onclose: closePresentation}} onclose={closePresentation} modalTitle="Present document" />
+  <AsyncFeature feature="presentation" props={{deck: editor.deck, original: editor.sourceMode, clientId: prototypeClientId, startId: presentationStartId, returnTo: presentationReturnTo, onclose: closePresentation}} onclose={closePresentation} modalTitle="Present document" />
 {/if}
 
 

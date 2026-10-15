@@ -37,7 +37,7 @@ await mkdir(resolve(out,'fonts'),{recursive:true});
 for (const name of ['inter.ttf','Inter-OFL.txt']) await cp(resolve(root,'public/fonts',name),resolve(out,'fonts',name));
 await mkdir(resolve(out,'brand'),{recursive:true});
 await cp(resolve(root,'public/brand/logo.svg'),resolve(out,'brand/logo.svg'));
-const required = ['index.html','site.css','site.js','demo.html','presentation.html','guide.html','guide.zh-CN.html','guide.css','assets/decksprig-demo.mp4','assets/editor-light.jpg','assets/editor-dark.jpg','assets/portfolio.jpg','assets/review.jpg','assets/proposal.jpg','assets/pitch.jpg','assets/report.jpg','assets/social.jpg','assets/editorial.deck.json','assets/studio.deck.json','assets/monograph.deck.json','assets/signal.deck.json','assets/ledger.deck.json','assets/logo.svg','assets/favicon.svg','assets/inter.ttf','assets/manrope.ttf','assets/bodoni-moda.ttf'];
+const required = ['index.html','site.css','site.js','demo.html','presentation.html','guide.html','guide.zh-CN.html','guide.css','assets/decksprig-demo.mp4','assets/editor-light.jpg','assets/editor-dark.jpg','assets/portfolio.jpg','assets/review.jpg','assets/proposal.jpg','assets/minimal.jpg','assets/pitch.jpg','assets/report.jpg','assets/social.jpg','assets/editorial.deck.json','assets/studio.deck.json','assets/monograph.deck.json','assets/minimalist.deck.json','assets/signal.deck.json','assets/ledger.deck.json','assets/logo.svg','assets/favicon.svg','assets/inter.ttf','assets/manrope.ttf','assets/bodoni-moda.ttf'];
 for (const name of required) await stat(resolve(out,name));
 const html = await readFile(resolve(out,'index.html'),'utf8');
 for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {

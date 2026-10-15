@@ -19,7 +19,7 @@
   const starters = [
     { id: 'portfolio', name: 'Editorial', category: 'Portfolio' },
     { id: 'review', name: 'Studio', category: 'Project review' },
-    { id: 'proposal', name: 'Monograph', category: 'Design proposal' },
+    { id: 'minimal', name: 'Minimalist', category: 'General presentation' },
   ] as const;
   let previews = $state<Deck[]>([]);
   let creating = $state(false);
