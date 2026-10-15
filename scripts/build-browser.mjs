@@ -39,8 +39,7 @@ const csp=`default-src 'self'; script-src 'self' ${hashes.join(' ')}; style-src 
 // image data and blob URLs just as the main browser editor does.
 const workerCsp="default-src 'self'; script-src 'self'; connect-src 'self' data: blob: https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'";
 const websiteHeaders=await readFile(resolve(out,'_headers'),'utf8');
-// Netlify uses the first block for an identical path pattern. Put the worker
-// policy in the existing asset block alongside its cache rule.
+// Keep caching and worker execution policy together in one asset header block.
 if([...websiteHeaders.matchAll(/^\/assets\/\*\s*$/gm)].length!==1)throw new Error('Expected one website asset header block.');
 const editorHeaders=websiteHeaders.replace(/^\/assets\/\*\r?\n/m,`/assets/*\n  Content-Security-Policy: ${workerCsp}\n`);
 await writeFile(resolve(out,'_headers'),editorHeaders+`\n/app*\n  Content-Security-Policy: ${csp}\n  X-Robots-Tag: noindex\n\n/speaker*\n  Content-Security-Policy: ${csp}\n  X-Robots-Tag: noindex\n`);

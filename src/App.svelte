@@ -818,7 +818,10 @@
     if (insertTool && ((cmd && !['z','meta','control','shift'].includes(event.key.toLowerCase())) || ['Delete','Backspace','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))) cancelInsertion();
     const canvas = Boolean(target.closest('.canvas-stage')) && !target.closest('button,a');
     const scope = clipboardScope(target), slides = scope === 'slide';
-    const objects = !editor.sourceMode && scope === 'objects';
+    // A dismissed or removed control can leave focus on body while objects stay selected.
+    // Keep Delete attached to that selection, without taking keys from fields or other controls.
+    const unfocusedDelete = ['delete','backspace'].includes(key) && (target === document.body || target === document.documentElement) && editor.selected.length > 0;
+    const objects = !editor.sourceMode && (scope === 'objects' || unfocusedDelete);
     if (proposalDeck && (slides&&['backspace','delete'].includes(key)||(cmd && ['z', 'y', 'd', 'a', 'x', 'v', 'g'].includes(key)) || objects&&['backspace','delete'].includes(key) || (canvas && ((!cmd && event.shiftKey && key === 'a') || ['t', 'r', 'arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(key))))) { event.preventDefault(); return; }
     if(objects&&!cmd&&key==='enter'&&event.shiftKey){event.preventDefault();editor.selectParent();void focusCanvasSelection();}
     else if(canvas&&!cmd&&key==='enter'&&editor.selectedContainer){event.preventDefault();editor.enterGroup();editor.selectAll();void focusCanvasSelection();}
