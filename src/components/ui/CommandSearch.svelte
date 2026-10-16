@@ -17,7 +17,8 @@
   const buttons = () => Array.from(content?.querySelectorAll<HTMLButtonElement>('.ui-command-results button:not(:disabled)') ?? []);
   export function toggle() { panel?.toggle(); }
   export function close() { panel?.close(); }
-  function dismiss() { close(); trigger?.querySelector('button')?.focus({preventScroll: true}); }
+  export function focus() { trigger?.querySelector('button')?.focus({preventScroll: true}); }
+  function dismiss() { close(); focus(); }
   function expand() { const currentQuery = query; dismiss(); onexpand(currentQuery); }
   function select(action: SearchAction) {
     if (action.disabled) return;

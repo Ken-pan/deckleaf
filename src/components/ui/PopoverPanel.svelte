@@ -43,7 +43,7 @@
     if (event.newState !== 'open') {
       if (!returnFocus) return;
       await tick();
-      if (!open && (document.activeElement === document.body || document.activeElement === document.querySelector('.canvas-stage') || panel?.contains(document.activeElement))) restoreFocus(returnFocus());
+      if (!open && (document.activeElement === document.body || panel?.contains(document.activeElement))) restoreFocus(returnFocus());
       return;
     }
     await tick(); if (!panel?.matches(':popover-open')) return;

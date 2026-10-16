@@ -108,7 +108,7 @@
     <div class="object-heading">
       <span class="object-type-icon"><ObjectIcon size={16} aria-hidden="true" /></span>
       <div class="object-heading-copy">
-        {#if single}<input class="object-name" aria-label="Object name" value={e.name} maxlength="200" disabled={e.locked} onchange={event=>{if(event.currentTarget.value.trim())editor.patch({name:event.currentTarget.value.trim()});else event.currentTarget.value=e.name;}} />{:else}<strong>{editor.selection.length} objects</strong>{/if}
+        {#if single}<input class="object-name" aria-label="Object name" value={e.name} maxlength="200" disabled={e.locked} onchange={event=>{const name=event.currentTarget.value.trim();event.currentTarget.value=name||e.name;if(name&&name!==e.name)editor.patch({name});}} onkeydown={event=>{if(event.isComposing||event.keyCode===229)return;if(event.key==='Escape'){event.preventDefault();event.stopPropagation();event.currentTarget.value=e.name;}}} />{:else}<strong>{editor.selection.length} objects</strong>{/if}
         {#if !single||e.sourceRegion||e.pageElement}<span>{sameType ? elementLabel(e) : 'Mixed types'}{#if mixedLocks} · {editable.length} editable{/if}</span>{/if}
       </div>
       <ActionMenu class="object-menu" label="Object actions" iconOnly items={[

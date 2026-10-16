@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount, type Snippet } from 'svelte';
   import { uiPresence, uiChange } from '../ui-motion';
-  import { DialogHeader } from './ui';
-  import { modalFocus, restoreFocus } from '../ui-focus';
+  import DialogHeader from './ui/DialogHeader.svelte';
+  import { restoreFocus } from '../ui-focus';
+  import { modalFocus } from '../ui-modal-focus';
   import NotificationOutlet from './NotificationOutlet.svelte';
   import { registerNotificationDialog } from '../notification-ui.svelte';
   let {title, onclose, returnFocus, children, footer, subtitle, descriptionId, wide = false, resource = false, review = false, workspace = false, closeLabel = 'Close', element = $bindable(), class: className = ''}: {title: string; onclose: () => void; returnFocus?: () => HTMLElement | undefined; children: Snippet; footer?: Snippet; subtitle?: string; descriptionId?: string; wide?: boolean; resource?: boolean; review?: boolean; workspace?: boolean; closeLabel?: string; element?: HTMLDialogElement; class?: string} = $props();
@@ -40,11 +41,16 @@
   onMount(() => {
     const current = element!, origin = document.activeElement as HTMLElement | null;focusOrigin=origin;
     const measure=()=>scrollable=body.scrollHeight>body.clientHeight+1;
-    const resize=new ResizeObserver(measure), content=new MutationObserver(measure);
+    let revealFrame=0;
+    const resize=new ResizeObserver(()=>{measure();cancelAnimationFrame(revealFrame);revealFrame=requestAnimationFrame(()=>{
+      const active=document.activeElement;
+      // Keep the focused control in view when the keyboard shrinks the body.
+      if(current.open&&active instanceof HTMLElement&&active!==body&&body.contains(active)&&!active.closest('[popover]:popover-open'))active.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
+    });}), content=new MutationObserver(measure);
     resize.observe(body);content.observe(body,{childList:true,subtree:true,characterData:true});
     current.showModal(); releaseFeedback??=registerNotificationDialog(current); focusContent();measure();
     return () => {
-      resize.disconnect();content.disconnect();cancelAnimationFrame(focusFrame); releaseFeedback?.();releaseFeedback=undefined; const wasOpen=current.open;current.close();
+      resize.disconnect();content.disconnect();cancelAnimationFrame(revealFrame);cancelAnimationFrame(focusFrame); releaseFeedback?.();releaseFeedback=undefined; const wasOpen=current.open;current.close();
       if(!wasOpen)return;
       queueMicrotask(() => {
         if (document.querySelector('dialog:modal')) return;
@@ -54,7 +60,7 @@
     };
   });
 </script>
-<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} onkeydown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !event.isComposing && event.target === heading) { event.preventDefault(); onclose(); } }} oncancel={(e) => { e.preventDefault(); onclose(); }}>
+<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} onkeydown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 && event.target instanceof Element && event.target.closest('dialog') === element && !event.target.closest('[popover]:popover-open:not([role="tooltip"])')) { event.preventDefault(); event.stopPropagation(); onclose(); } }} oncancel={(e) => { e.preventDefault(); onclose(); }}>
   <DialogHeader {title} {subtitle} {titleId} {closeLabel} {onclose} bind:heading />
   <!-- Scrollable dialog prose has a keyboard reading position. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->

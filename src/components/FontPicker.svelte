@@ -49,6 +49,7 @@
     return query.trim() ? result : result.sort((a, b) => Number(b.family === currentFamily) - Number(a.family === currentFamily));
   });
   const visible = $derived(items.slice(start, start+pageSize));
+  const catalogFailed = $derived(source === 'online' && !visible.length && !catalogLoading && Boolean(catalogError));
   $effect(() => { if (open && source !== 'online') for (const font of visible) void loadLibraryFont(font.family, editor.deck?.fonts).catch(() => {}); });
   const activeId = $derived(items[active] ? `${id}-option-${active}` : undefined);
   function selectionKey() { return `${editor.deck?.id}:${editor.slide?.id}:${editor.deck?.revision}:${editor.selected.join(',')}`; }
@@ -219,15 +220,15 @@
           {#if source==='document'}<small>{documentChoices.find(c=>c.family===font.family)?.label}</small>{:else if font.label || font.origin || font.chinese || (source === 'online' && !font.online)}<small>{font.label ? font.family : font.origin === 'document' ? 'Document fonts' : font.origin === 'system' ? 'System fonts' : font.chinese ? 'Chinese' : 'Built in'}</small>{/if}
         </button>
       {:else}{#if source === 'online' && (catalogLoading || catalogError)}<FeedbackState density={height < 320 ? 'inline' : 'compact'} state={catalogLoading ? 'loading' : 'error'} title={catalogLoading ? 'Loading online fonts…' : 'Font catalog unavailable'} description={catalogLoading ? '' : 'Try again or browse local fonts.'}>
-        {#if !catalogLoading}<Button variant="secondary" onclick={()=>fetchCatalog(true)} onkeydown={quietKey}>Try again</Button><Button onclick={()=>switchSource('local')} onkeydown={quietKey}>Local fonts</Button>{/if}
       </FeedbackState>{:else}<EmptyState density={height < 320 ? 'inline' : 'compact'} icon={Type} title="No matching fonts" description="Try another search or choose another category.">
         {#if query.trim()}<Button variant="secondary" onclick={clearSearch} onkeydown={quietKey}>Clear search</Button>{/if}{#if source === 'local' && query.trim()}<Button onclick={()=>switchSource('online')} onkeydown={quietKey}>Search online fonts<ArrowRight size={12}/></Button>{/if}
       </EmptyState>{/if}{/each}
     </div>
     </div>
+    {#if catalogFailed}<div class="font-dropdown-recovery"><Button variant="secondary" onclick={()=>{popup?.focus({preventScroll:true});void fetchCatalog(true);}} onkeydown={quietKey}>Try again</Button><Button onclick={()=>switchSource('local')} onkeydown={quietKey}>Local fonts</Button></div>{/if}
     {#if items.length>pageSize}<div class="font-dropdown-pagination"><span role="status">{start+1}–{Math.min(start+pageSize,items.length)} of {items.length}</span><button aria-label="Previous fonts" disabled={busy||start===0} onclick={()=>pageFonts(-1)} onkeydown={quietKey}><ChevronLeft size={16}/></button><button aria-label="Next fonts" disabled={busy||start+pageSize>=items.length} onclick={()=>pageFonts(1)} onkeydown={quietKey}><ChevronRight size={16}/></button></div>{/if}
     {#if source!=='document' && preview && visible.length}<div class="font-dropdown-preview" aria-label="Font preview"><div><span>Preview · {fontDisplayName(preview)}</span><span role="status">{busy ? 'Applying…' : previewLoading ? 'Loading…' : ''}</span></div><p style:font-family={fontStack(preview.family, preview.category)} style:font-weight={nearestWeight(preview.weights, previewWeight)}>{sample}</p>{#if previewError}<Notice tone="error" title="Font preview unavailable" message="Try again or choose a local font.">{#snippet actions()}<Button variant="secondary" disabled={busy} onclick={()=>previewAttempt++} onkeydown={quietKey}>Try again</Button>{/snippet}</Notice>{:else if /[\u3400-\u9fff]/.test(sample) && !preview.chinese && !preview.origin}<small>Chinese text may use a fallback font.</small>{/if}</div>{/if}
-    <div class="font-dropdown-footer"><span role="status">{countLabel(items.length, source === 'document'?'document font':source === 'online' ? 'open-source font' : 'local font')}</span><button onclick={() => { close(true); onbrowse(); }} onkeydown={quietKey}>Font library<ArrowRight size={12} /></button></div>
+    {#if !catalogFailed}<div class="font-dropdown-footer"><span role="status">{countLabel(items.length, source === 'document'?'document font':source === 'online' ? 'open-source font' : 'local font')}</span><button onclick={() => { close(true); onbrowse(); }} onkeydown={quietKey}>Font library<ArrowRight size={12} /></button></div>{/if}
     {#if catalogError && source === 'online' && visible.length}<Notice tone="error" title="Font catalog unavailable" message={catalogError}>{#snippet actions()}<Button disabled={catalogLoading} onclick={() => fetchCatalog(true)} onkeydown={quietKey}>Try again</Button>{/snippet}</Notice>{/if}
     {#if error}<Notice tone="error" title="Font could not be applied" message={error}/>{/if}
   </div>

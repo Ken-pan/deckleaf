@@ -40,6 +40,33 @@ toolbars, and More stays visible while content scrolls and opens the full Dialog
 - UI motion and reduced-motion behavior are shared through `uiPresence` and
   `uiIndicator`. Document animation retains its own contract.
 
+Overlay keyboard and focus details:
+
+- `ui-modal-focus.ts` loads with modal views and wraps the visible Tab sequence.
+  Controls inside collapsed `details` do not participate, including nested
+  summaries hidden by an outer disclosure. Native modal isolation stays authoritative.
+- Dialog handles an unconsumed Escape from its own controls explicitly. Nested
+  dialogs, menus, editable widgets and popovers retain their own Escape first.
+  Ignore composition events and key code 229; a tooltip does not consume the
+  containing surface's dismissal.
+- `popoverFocus` lets Tab continue from the invoker when reaching a boundary.
+  A validated editor can return `false` from `close` to keep an invalid draft and
+  its focus. A focus-out veto restores its invalid field or popup; successful
+  departure keeps the next control's focus. Explicit canvas clicks stay on canvas.
+- Deferred Search cancels its pending opening on Escape, Tab or an outside
+  pointer action. Replacement after loading preserves focus only when the old
+  trigger still owned it. Loading failures open the full recovery surface;
+  DialogHeader is imported directly so recovery does not require the search chunk.
+- Alignment, page layout and cell context menus follow `visualViewport` changes.
+  Table cells expose actions with Shift+F10 or the Menu key; their inline editor
+  retains its cell-navigation Tab/Enter contract.
+- Publishing's generated preview forwards Escape from its owned iframe to its
+  parent. This bridge belongs only to the preview Blob; downloaded HTML remains
+  unchanged. External prototype iframes own their keyboard events; preserve
+  visible outer close controls and the normal Tab route back to them.
+
+Release scope and validation boundaries: `docs/open-source/release-checklist.md`.
+
 Use native controls inside a shared primitive when the interaction is specialized
 (a font listbox, color swatch, slide thumbnail or canvas handle). Preserve their
 semantics rather than presenting them as ordinary action buttons.
@@ -61,6 +88,10 @@ semantics rather than presenting them as ordinary action buttons.
 | Elevation | `--shadow-floating`, `--shadow-popover`, `--shadow-modal`; resting groups remain flat |
 
 Use the role aliases rather than inventing another corner or elevation value.
+Control sizes have one source in `src/design-system.css`: `--control-sm/md/lg`
+are 28/36/40px (small is 32px on phones), and `--control-touch` is 44px.
+The copied `--ctl-*` names alias these roles. Keep size definitions in that token layer,
+with component CSS consuming the roles instead of redefining their values.
 Two-pixel optical gaps and six-pixel vertical control padding are exceptions for
 dense chrome, not section spacing. Keep control height automatic when text grows.
 Close controls, menu rows and segmented choices use 44px targets on coarse input;
@@ -168,6 +199,20 @@ and [resize text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html).
 
 ## Interaction states and motion
 
+| State | Feedback |
+| --- | --- |
+| Hover | Fine pointers receive a neutral surface or stronger field boundary |
+| Press | Immediate stronger fill; target position and size stay fixed |
+| Selected | Selection persists through hover and press, including settings navigation |
+| Focus | One complete 2px keyboard outline; composite fields and rows own their outline |
+| Disabled / busy | Disabled surfaces and borders stay still; busy retains its action label and one indicator |
+| Touch | Release restores the resting or selected state without cached hover |
+| Forced colors | Selected choices retain a 1px outline; focused choices use the 2px focus outline |
+
+Command-button labels do not start text selection during a canceled press;
+application prose, input values and editable document text retain their normal
+selection behavior. Numeric/color-field hover never replaces an error boundary.
+
 `src/feedback.css` completes state feedback after layout/type styles. Scoped
 state rules must also hold when production extracts this as a shared stylesheet. Keep the
 native disabled, pressed, selected and busy semantics on the responsible control.
@@ -222,6 +267,8 @@ Resizing changes the displayed inspector width, preserving its saved desktop
 width and pane visibility. Compact canvas docks participate in footer layout
 instead of overlapping utilities. Hidden panel views are `hidden` and `inert`;
 background footer actions are inert while the phone inspector owns that space.
+Short touch workspaces also keep the labeled dock in normal flow: two rows of
+tools determine the footer height rather than overflowing an 80px desktop frame.
 
 Dialogs use the visual viewport with 24px outer clearance on larger screens and
 12px on phones. Headers and actions remain within the frame; long bodies scroll.

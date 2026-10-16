@@ -104,9 +104,26 @@
 .short-workspace .canvas-stage:has(.canvas-version) { --canvas-top-space:72px; }
 .short-workspace .notes-panel { height:96px; }
 .short-workspace .stage-footer:has(.canvas-insert-dock) { min-height:0; }
+/* Reserve tools outside the artwork instead of letting a floating toolbar
+   obscure a fitted phone slide. The action measures its actual wrapped height. */
+.editor-app.short-workspace .canvas-stage {
+  padding-top:max(var(--canvas-toolbar-space,102px),var(--canvas-header-height,0px));
+}
+.short-workspace.inline-text-active .canvas-dock-slot { display:none; }
+.short-workspace.inline-text-active .stage-footer:has(.canvas-insert-dock) { min-height:64px; padding-block:8px; }
+.short-workspace.inline-text-active .canvas-utility-left > button[aria-label='Notes'] { display:none; }
+.short-workspace .stage-footer { gap:8px; padding-block:8px; }
+.short-workspace .stage-footer .canvas-utility-left { gap:4px; }
+.short-workspace .canvas-utility-left > button[aria-label='Notes'] > span { display:none; }
 @container (min-width:701px) {
   .short-workspace .stage-footer:has(.canvas-insert-dock) { min-height:80px; align-items:center; padding-block:12px; }
   .short-workspace .canvas-insert-dock { top:50%; translate:-50% -50%; }
+  @media (any-pointer:coarse) {
+    /* Labeled touch tools occupy two rows; their height must size the footer. */
+    .short-workspace .stage-footer:has(.canvas-insert-dock) { flex-wrap:wrap; }
+    .short-workspace .canvas-dock-slot { display:flex; flex:0 1 auto; }
+    .short-workspace .canvas-insert-dock { position:relative; left:auto; top:auto; translate:none; max-width:100%; }
+  }
 }
 @media (max-width: 760px), (pointer: coarse) {
   .stage-footer .canvas-utility-right > .ui-button { min-height: 44px; }

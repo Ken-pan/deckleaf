@@ -48,7 +48,6 @@
   import PopoverPanel from './components/ui/PopoverPanel.svelte';
   import EmptyState from './components/ui/EmptyState.svelte';
   import CommandSearch from './components/LazyCommandSearch.svelte';
-  import {resourceCredits} from './core/resource-credits';
   import {publishEditorContext} from './core/editor-context-client';
   import type {WorkflowRequest,WorkflowOutcome,WorkflowReceipt} from './core/workflows';
   import {workflowLabel} from './core/workflow-label';
@@ -131,7 +130,7 @@
   function openPrototype(target?: SlideElement) { prototypeTarget = target ?? null; prototypeUrl = ''; error = ''; modal = 'prototype'; }
   async function insertPrototype() { if (!editor.deck) return; const captured=editor.deck,url=prototypeUrl;try { const {prototypeElement}=await import('./core/prototype');if(editor.deck!==captured||modal!=='prototype')return;editor.add(prototypeElement(url, captured.width, captured.height)); editor.sourceMode = false; panel = 'design'; rightOpen = true; modal = ''; } catch (e: any) { error = e.message; } }
   let viewportWidth = $state(typeof window === 'undefined' ? 1440 : window.innerWidth), viewportHeight = $state(typeof window === 'undefined' ? 960 : window.innerHeight);
-  let shortWorkspace = $derived(viewportWidth <= 1100 && viewportHeight <= 520);
+  let shortWorkspace = $derived(viewportWidth <= 1100 && (viewportHeight <= 520 || viewportWidth <= 760 && viewportHeight <= 640));
   let leftOpen = $state(true), rightOpen = $state(typeof window === 'undefined' || (window.innerWidth > 760 && (window.innerWidth > 1100 || window.innerHeight > 520))), notesOpen = $state(false);
   let shortSlidesOpen = $state(false);
   let slidesHidden = $derived(!leftOpen || (shortWorkspace && !shortSlidesOpen));
@@ -613,9 +612,7 @@
     if (demoLoading || busy) return;
     demoLoading = true; error = '';
     try {
-      const response = await fetch('/examples/decksprig-demo.deck.json');
-      if (!response.ok) throw new Error('The sample could not be loaded. Download the sample Deck file from the guide and import it.');
-      await imported([new File([await response.blob()], 'decksprig-demo.deck.json', {type:'application/json'})]);
+      await (await import('./core/demo-file')).openSample(imported);
     } catch (failure) { error = (failure as Error).message; }
     finally { demoLoading = false; }
   }
@@ -671,7 +668,7 @@
       if (kind === 'pptx-source') await (await import('./core/export')).exportPptx(d, true);
       if (kind === 'html') await (await import('./core/export')).exportHtml(d, original);
       if (kind === 'broadser') download(JSON.stringify((await import('./core/export')).exportBroadser(d), null, 2), `${deckFilename(d)}.broadser.json`);
-      if (kind === 'markdown') download(`# ${d.title}\n\n${d.slides.map((s, i) => `## ${slideLabel(i)}\n\n${s.elements.filter(e => e.type === 'text').map(e => e.text).join('\n\n')}\n\n### Notes\n\n${s.notes}`).join('\n\n---\n\n')}${resourceCredits(d) ? `\n\n## Sources and licenses\n\n${resourceCredits(d)}` : ''}`, `${deckFilename(d)}.md`, 'text/markdown');
+      if (kind === 'markdown') download((await import('./core/export-markdown')).markdownDocument(d), `${deckFilename(d)}.md`, 'text/markdown');
       if (kind === 'pdf') {
         const delivery=visibleDeliveryDeck(d);
         PrintDocument ??= (await import('./components/PrintDocument.svelte')).default;
@@ -953,7 +950,7 @@
 {#if printMode && editor.deck && PrintDocument}
   <PrintDocument deck={editor.deck} original={printOriginal} />
 {:else}
-  <div class="editor-app" class:welcome-workspace={!editor.deck} class:is-presenting={presenting} class:canvas-focused={canvasFocus} class:short-workspace={shortWorkspace} data-task={task}>
+  <div class="editor-app" class:welcome-workspace={!editor.deck} class:is-presenting={presenting} class:canvas-focused={canvasFocus} class:short-workspace={shortWorkspace} class:inline-text-active={Boolean(editor.editingId||insertingText)} data-task={task}>
     <a class="skip-link" href="#workspace-canvas" onclick={event=>{event.preventDefault();if(footerObscured)rightOpen=false;void focusCanvasSelection();}}>Skip to canvas</a>
     {#if editor.deck}<a class="skip-link" href="#editing-panel" onclick={event=>{event.preventDefault();showPanel(panel,false);void focusEditingPanel();}}>Skip to editing panel</a>{/if}
     <header class="topbar" inert={canvasFocus}>
@@ -998,7 +995,7 @@
           {#if editor.editingGroup&&!editor.sourceMode&&!proposalDeck&&!insertTool}<AsyncFeature feature="group-navigation" props={{}}/>{/if}
           {#if !editor.sourceMode}<PhotoCredits slide={editor.slide} />{/if}
           {#if !canvasCellsSelected && !editor.sourceMode && !proposalDeck && !insertTool && (insertingText || editor.selection.length || editor.additiveSelection)}
-            <div class="selection-context" use:editorToolbar use:selectionToolbar={{ids: editor.selected, editingId: editor.editingId, revision: editor.deck?.revision, scale: currentScale, draft: insertingText}} role="toolbar" aria-label="Selected object actions">
+            <div class="selection-context" use:editorToolbar use:selectionToolbar={{ids: editor.selected, editingId: editor.editingId, revision: editor.deck?.revision, scale: currentScale, draft: insertingText, docked: shortWorkspace}} role="toolbar" aria-label="Selected object actions">
               <span title={editor.selection.length===1?editor.selection[0].name:undefined}>{insertingText ? 'Text' : editor.selection.length === 1 ? elementLabel(editor.selection[0]) : editor.selection.length ? countLabel(editor.selection.length, "object") : 'Select objects'}</span>
               {#if !editor.editingId && !insertingText && editor.selection.length>1}<AsyncFeature feature="selection-actions" props={{onproperties:()=>showPanel('design'),mode:'primary'}}/>{/if}
               {#if editor.editingId || insertingText || (editor.selection.length && editor.selection.every(e=>e.type==='text') && !editor.selection.every(e=>e.locked))}
@@ -1010,7 +1007,7 @@
                 {/key}
               {/if}
               {#if editor.editingId || insertingText}
-                <button class="text-btn" aria-label="Done editing text" title="Done editing text" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText()}><Check size={16} /><span class="selection-secondary-label">Done</span></button><button class="text-btn" aria-label="Cancel text editing" title="Cancel text editing" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText(true)}><X size={16}/><span class="selection-secondary-label">Cancel</span></button>
+                <div class="selection-completion-actions"><button class="text-btn" aria-label="Done editing text" title="Done editing text" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText()}><Check size={16} /><span class="selection-completion-label">Done</span></button><button class="text-btn" aria-label="Cancel text editing" title="Cancel text editing" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText(true)}><X size={16}/><span class="selection-completion-label">Cancel</span></button></div>
               {:else}
                 {#if editor.selection.length === 1 && editor.selection[0].type === 'text' && !editor.selection[0].locked}<button class="text-btn" aria-label="Edit text" onclick={() => {editor.additiveSelection=false;editor.editingId = editor.selection[0].id;}} title="Edit text · Enter"><Type size={16} /><span class="selection-secondary-label">Edit text</span></button>{/if}
                 {#if editor.selection.length && editor.selection.every(e => e.locked)}<button class="text-btn" aria-label="Unlock" title="Unlock selection" onclick={() => editor.patch({locked: false})}><Unlock size={16}/><span class="selection-secondary-label">Unlock</span></button>{/if}
@@ -1018,7 +1015,7 @@
               {/if}
             </div>
           {/if}
-          {#if proposalDeck}<div class="task-preview-caption" role="status"><Sparkles size={14} /><span>AI change preview · Not applied</span><Button variant="secondary" aria-label="Exit preview and return to the current version" onclick={returnCurrentVersion}>Exit preview</Button></div>{:else if editor.sourceMode}<div class="source-caption"><BookOpen size={14} /><span>Viewing the source reference</span><Button variant="secondary" onclick={enterEditable}>Edit slide</Button></div>{:else if insertTool}<div class="insertion-status" class:has-asset={Boolean(insertImage)} role="status"><span>{#if insertImage}<img class="insertion-thumbnail" src={insertImage.src} alt="" /><span class="insertion-asset-label"><b>{isGraphicBackground(insertImage.resource?.id) ? 'Area fill' : insertImage.resource?.kind === 'icon' ? 'Icon' : insertImage.resource?.kind === 'illustration' ? 'Illustration' : 'Image'} <span class="insertion-default-size" title="Default size in page pixels">{insertSize}</span></b><small title={insertImage.name}>{imageTotal > 1 ? `${imagePlaced + 1} of ${imageTotal} · ` : ''}{insertImage.name}</small></span>{:else}<span class="insertion-asset-label"><b>{insertBlock?.name ?? insertLabels[insertTool]}</b><small>{insertSize}</small></span>{/if}<span class="insertion-instructions" title="Arrow keys position the preview · Shift + Arrow moves 10 px · Enter places · Esc cancels">{insertImage && isGraphicBackground(insertImage.resource?.id) ? 'Drag to fill an area · Click for default size' : insertTool === 'text' ? 'Click to type · Drag a text box' : 'Click to place · Drag to size'}</span></span><button class="text-btn" onclick={() => {cancelInsertion();void focusCanvasSelection();}} aria-label="Cancel insertion"><X size={14} /><span>Cancel</span><kbd>Esc</kbd></button></div>{:else if editor.additiveSelection || editor.editingId || insertingText || editor.selected.length > 1 || (editor.selection.length && editor.selection.every(e => e.locked))}<div class="canvas-hint">{editor.additiveSelection ? 'Multiple selection · Click to add or remove objects · Esc to exit' : editor.editingId || insertingText ? 'Editing text · Esc to cancel · ⌘Enter to finish' : editor.selection.every(e => e.locked) && editor.selection.length ? 'Object locked · Unlock to edit' : editor.selectedContainer ? `${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Layout":"Group"} · ${countLabel(editor.selected.length, "object")} · ${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Handles resize the frame":"Handles scale contents"}` : editor.selected.length ? `${countLabel(editor.selected.length, "object")} · Drag to move · Arrow keys to nudge · ${editor.editingGroup ? "Esc to exit group" : "Esc to deselect"}` : 'Click to select · Drag on empty space to select multiple objects · Right-click for overlapping objects'}</div>{/if}
+          {#if proposalDeck}<div class="task-preview-caption" role="status"><Sparkles size={14} /><span>AI change preview · Not applied</span><Button variant="secondary" aria-label="Exit preview and return to the current version" onclick={returnCurrentVersion}>Exit preview</Button></div>{:else if editor.sourceMode}<div class="source-caption"><BookOpen size={14} /><span>Viewing the source reference</span><Button variant="secondary" onclick={enterEditable}>Edit slide</Button></div>{:else if insertTool}<div class="insertion-status" class:has-asset={Boolean(insertImage)} role="status"><span>{#if insertImage}<img class="insertion-thumbnail" src={insertImage.src} alt="" /><span class="insertion-asset-label"><b>{isGraphicBackground(insertImage.resource?.id) ? 'Area fill' : insertImage.resource?.kind === 'icon' ? 'Icon' : insertImage.resource?.kind === 'illustration' ? 'Illustration' : 'Image'} <span class="insertion-default-size" title="Default size in page pixels">{insertSize}</span></b><small title={insertImage.name}>{imageTotal > 1 ? `${imagePlaced + 1} of ${imageTotal} · ` : ''}{insertImage.name}</small></span>{:else}<span class="insertion-asset-label"><b>{insertBlock?.name ?? insertLabels[insertTool]}</b><small>{insertSize}</small></span>{/if}<span class="insertion-instructions" title="Arrow keys position the preview · Shift + Arrow moves 10 px · Enter places · Esc cancels">{insertImage && isGraphicBackground(insertImage.resource?.id) ? 'Drag to fill an area · Click for default size' : insertTool === 'text' ? 'Click to type · Drag a text box' : 'Click to place · Drag to size'}</span></span><button class="text-btn" onclick={() => {cancelInsertion();void focusCanvasSelection();}} aria-label="Cancel insertion"><X size={14} /><span>Cancel</span><kbd>Esc</kbd></button></div>{:else if editor.additiveSelection || editor.editingId || insertingText || editor.selected.length > 1 || (editor.selection.length && editor.selection.every(e => e.locked))}<div class="canvas-hint"><span class="canvas-keyboard-hint">{editor.additiveSelection ? 'Multiple selection · Click to add or remove objects · Esc to exit' : editor.editingId || insertingText ? 'Editing text · Esc to cancel · ⌘Enter to finish' : editor.selection.every(e => e.locked) && editor.selection.length ? 'Object locked · Unlock to edit' : editor.selectedContainer ? `${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Layout":"Group"} · ${countLabel(editor.selected.length, "object")} · ${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Handles resize the frame":"Handles scale contents"}` : editor.selected.length ? `${countLabel(editor.selected.length, "object")} · Drag to move · Arrow keys to nudge · ${editor.editingGroup ? "Esc to exit group" : "Esc to deselect"}` : 'Click to select · Drag on empty space to select multiple objects · Right-click for overlapping objects'}</span><span class="canvas-touch-hint">{editor.editingId || insertingText ? 'Editing text · Done saves · Cancel discards' : editor.additiveSelection ? 'Multiple selection · Tap objects to add or remove' : editor.selection.every(e=>e.locked) ? 'Object locked · Unlock to edit' : `${countLabel(editor.selected.length, "object")} · Drag to move`}</span></div>{/if}
         </div>
         {#if notesOpen && !canvasFocus && !proposalDeck && editor.slide}<div class="notes-panel" transition:uiCollapse><label for="slide-notes">Speaker notes</label><textarea id="slide-notes" aria-label="Speaker notes" value={editor.slide.notes} oninput={(e) => editor.commit([{op: 'update_slide', slideId: editor.slide!.id, patch: {notes: e.currentTarget.value}}], 'notes')} placeholder="Add talking points, sources, or questions to resolve…"></textarea></div>{/if}
         {#if editor.deck}
@@ -1030,7 +1027,7 @@
           </div>
           {#if editor.deck && !editor.sourceMode && !proposalDeck}
           <div class="canvas-dock-slot"><div class="canvas-insert-dock" use:editorToolbar role="toolbar" aria-label="Insert tools" aria-describedby="editor-toolbar-help">
-      <AsyncFeature feature="insert-tools" props={{insertTool, resourceOpen, resourceActiveView, resourceBusy: Boolean(resourceOpen && resourceExpandControl?.disabled), disabled: !editor.deck, onselect: () => { finishInlineText(); cancelInsertion(); resourcePanel?.close(); void focusCanvasSelection(); }, oninsert: insert, onresource: openResourceTool, onchart: () => { cancelInsertion(); modal = 'chart'; }, onprototype: () => openPrototype(), onpageelements: openPageElements, onblocks: () => openBlocks()}} />
+      <AsyncFeature feature="insert-tools" props={{insertTool, compact:shortWorkspace, resourceOpen, resourceActiveView, resourceBusy: Boolean(resourceOpen && resourceExpandControl?.disabled), disabled: !editor.deck, onselect: () => { finishInlineText(); cancelInsertion(); resourcePanel?.close(); void focusCanvasSelection(); }, oninsert: insert, onresource: openResourceTool, onchart: () => { cancelInsertion(); modal = 'chart'; }, onprototype: () => openPrototype(), onpageelements: openPageElements, onblocks: () => openBlocks()}} />
           </div>
           </div>
           {/if}

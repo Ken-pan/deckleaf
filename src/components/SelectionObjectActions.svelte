@@ -32,6 +32,7 @@
 {#if mode!=='primary'}
 {#if !allLocked&&editor.selection.some(e=>e.type!=='text')}<button class="icon-btn" class:compact-group-utility={grouped} aria-label="Duplicate selection" title="Duplicate selection" onclick={event=>void objectAction(()=>editor.duplicateSelection(),event)}><Copy size={16}/></button>{/if}
 <ActionMenu label="More object actions" iconOnly items={[
+  {label:'Object properties',icon:PanelRight,onselect:onproperties},
   ...objectClipboardActions(),
   ...(editor.selectedContainer?[{label:'Enter group',icon:EnterGroupIcon,onselect:()=>editor.enterGroup()}]:[]),
   ...(editor.editingGroup?[{label:'Select all members',icon:SquareDashedMousePointer,onselect:()=>editor.selectAll()}]:[]),
@@ -48,7 +49,6 @@
   ...(editor.selectedContainer?[{label:'Ungroup selection',icon:Ungroup,disabled:allLocked||blockedGroup,onselect:()=>editor.group(true)}]:[]),
   ...(single?[{label:'Select overlapping objects',icon:Layers,divider:true,onselect:()=>editor.layerPickerId=first.id}]:[]),
   {label:editor.additiveSelection?'Finish multiple selection':'Select multiple objects',icon:SquareDashedMousePointer,onselect:()=>editor.additiveSelection=!editor.additiveSelection},
-  {label:'Object properties',icon:PanelRight,onselect:onproperties},
   {label:'Delete selection',icon:Trash2,tone:'danger',divider:true,disabled:allLocked||blockedGroup||!editor.selection.length,onselect:event=>void objectAction(()=>editor.remove(),event)},
 ]}><Ellipsis size={16}/></ActionMenu>
 <AlignmentControls compact hiddenTrigger bind:this={alignment}/>

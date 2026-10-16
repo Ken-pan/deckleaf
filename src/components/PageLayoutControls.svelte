@@ -7,22 +7,17 @@
   import { pageLayout,pageLayoutOperations } from '../core/page-layout';
   import type { PageLayout } from '../core/model';
   import {nextIncrement,SNAP_INCREMENT} from '../core/numeric-increment';
+  import {positionFloating} from '../ui-viewport';
   let {disabled=false}:{disabled?:boolean}=$props();
   const id=$props.id();
   let trigger=$state<HTMLButtonElement>(),popup=$state<HTMLDivElement>(),open=$state(false),linked=$state(true),error=$state('');
   const layout=$derived(editor.deck&&editor.slide?pageLayout(editor.deck,editor.slide):null);
   function position(){
     if(!popup||!trigger||!open)return;
-    const r=trigger.getBoundingClientRect(),margin=12,gap=8;
-    const below=innerHeight-r.bottom-margin-gap,above=r.top-margin-gap;
-    const placedBelow=below>=Math.min(popup.scrollHeight,innerHeight*.7)||below>=above;
-    popup.style.maxHeight=`${Math.max(100,placedBelow?below:above)}px`;
-    popup.style.left=`${Math.max(margin,Math.min(r.left,innerWidth-popup.offsetWidth-margin))}px`;
-    popup.style.top=`${Math.max(margin,placedBelow?r.bottom+gap:r.top-popup.offsetHeight-gap)}px`;
-    popup.dataset.uiPlacement=placedBelow?'below':'above';
+    positionFloating(popup,trigger.getBoundingClientRect(),{preferredHeight:popup.scrollHeight,minHeight:160});
   }
   function reposition(event:Event){if(event.target instanceof Node&&popup?.contains(event.target))return;position();}
-  async function toggled(event:ToggleEvent){open=event.newState==='open';if(open){error='';const m=layout?.margins;linked=Boolean(m&&m.top===m.right&&m.top===m.bottom&&m.top===m.left);await tick();position();(matchMedia('(pointer:coarse)').matches?popup:popup?.querySelector<HTMLInputElement>('input[type=number]'))?.focus({preventScroll:true});}}
+  async function toggled(event:ToggleEvent){open=event.newState==='open';if(open){error='';const m=layout?.margins;linked=Boolean(m&&m.top===m.right&&m.top===m.bottom&&m.top===m.left);await tick();if(!popup?.matches(':popover-open'))return;position();(matchMedia('(pointer:coarse)').matches?popup:popup.querySelector<HTMLInputElement>('input[type=number]')??popup)?.focus({preventScroll:true});}}
   function close(){popup?.hidePopover();restoreFocus(trigger);}
   function commit(next:PageLayout,all=false){if(!editor.deck||!editor.slide)return;error='';try{editor.commit(pageLayoutOperations(editor.operationDocument(),editor.slide.id,next,all));return true;}catch(e:any){error=e.message;return false;}}
   function numeric(event:Event,key:keyof PageLayout['margins']|'columns'|'gutter'){
@@ -41,7 +36,7 @@
   function savePreferences(){try{localStorage.setItem('deck-studio-layout-view',JSON.stringify({guides:editor.layoutGuides,snapping:editor.snapping,increment:editor.snapToIncrement}));}catch{/* view preferences are optional */}}
   function key(event:KeyboardEvent){if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopPropagation();close();}}
   $effect(()=>{const slideId=editor.slide?.id;if(open){error='';if(!slideId)close();}});
-  onMount(()=>{try{const stored=JSON.parse(localStorage.getItem('deck-studio-layout-view')??'{}');if(typeof stored.guides==='boolean')editor.layoutGuides=stored.guides;if(typeof stored.snapping==='boolean')editor.snapping=stored.snapping;if(typeof stored.increment==='boolean')editor.snapToIncrement=stored.increment;}catch{/* defaults */}const observer=new ResizeObserver(position);if(popup)observer.observe(popup);window.addEventListener('resize',position);window.addEventListener('scroll',reposition,true);return()=>{observer.disconnect();window.removeEventListener('resize',position);window.removeEventListener('scroll',reposition,true);};});
+  onMount(()=>{try{const stored=JSON.parse(localStorage.getItem('deck-studio-layout-view')??'{}');if(typeof stored.guides==='boolean')editor.layoutGuides=stored.guides;if(typeof stored.snapping==='boolean')editor.snapping=stored.snapping;if(typeof stored.increment==='boolean')editor.snapToIncrement=stored.increment;}catch{/* defaults */}const observer=new ResizeObserver(position);if(popup)observer.observe(popup);window.addEventListener('resize',position);window.addEventListener('scroll',reposition,true);window.visualViewport?.addEventListener('resize',position);window.visualViewport?.addEventListener('scroll',position);return()=>{observer.disconnect();window.removeEventListener('resize',position);window.removeEventListener('scroll',reposition,true);window.visualViewport?.removeEventListener('resize',position);window.visualViewport?.removeEventListener('scroll',position);};});
 </script>
 <button bind:this={trigger} class="text-btn page-layout-trigger" aria-label="Slide layout settings · Margins and columns" title="Slide layout · Margins and columns" aria-haspopup="dialog" aria-controls={id} aria-expanded={open} popovertarget={id} disabled={disabled||!editor.slide}><Ruler size={15}/><span>Margins and columns</span></button>
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->

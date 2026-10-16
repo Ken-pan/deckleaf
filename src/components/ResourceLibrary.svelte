@@ -432,7 +432,7 @@
       if (importing) return;
       if (paletteOpen) paletteOpen = false;
       else if (selected) void back();
-      else if (filtersOpen) filtersOpen = false;
+      else if (filtersOpen) { filtersOpen = false; libraryNode.querySelector<HTMLButtonElement>('.resource-filter-toggle')?.focus({preventScroll:true}); }
       else void toggleBatch();
     };
     window.addEventListener('keydown', escape, true);
@@ -445,6 +445,7 @@
 {/snippet}
 
 <div class="resource-library" class:compact class:replacing class:replacement-browsing={compact && replacing && !replacementDetails} class:graphics-browsing={graphicsBrowse} bind:this={libraryNode} class:detail-open={showDetail}>
+  <div class="resource-content">
   {#if replacing}<div class="resource-replacement-target">
     {#if target?.src}<ResourceImage src={target.src} alt="Current image" />{/if}
     <div><span>Replacing</span><strong title={target?.name}>{target?.name || 'Image'}</strong><small>{replaceDisabled ? target?.locked ? 'Unlock this image to replace it' : 'Select the image again' : 'Frame stays · Original proportions'}</small></div>
@@ -492,7 +493,7 @@
   {#if kind === 'photo' && scope === 'browse' && ['nasa','rawpixel','europeana','smithsonian_national_museum_of_natural_history','smithsonian_air_and_space_museum'].includes(photoSource)}<p class="resource-archive-note">Search photography, museum collections, and archive images by license.</p>{/if}
   {#if !compact && connectionOpen && kind === 'photo' && stockSource}{#key stockSource}<PhotoConnection provider={stockSource} status={sourceStatus} onconfigured={photoConfigured} onclose={() => connectionOpen = false} />{/key}{/if}
 
-  {#if filtersOpen && scope === 'browse' && kind !== 'used'}<div class="resource-filters" transition:uiCollapse id="resource-filters">
+  {#if filtersOpen && scope === 'browse' && kind !== 'used'}<div class="resource-filters" transition:uiCollapse id="resource-filters" inert={!filtersOpen}>
     {#if kind === 'photo'}
       {#if !stockSource}<label>License<select aria-label="Photo license" bind:value={license} disabled={importing} onchange={() => search()}><option value="cc0">No attribution required · CC0 / Public domain</option><option value="by">Attribution required · CC BY</option></select></label>{/if}
       <label>Orientation<select aria-label="Photo orientation" bind:value={aspect} disabled={importing} onchange={() => search()}><option value="">All orientations</option><option value="wide">Landscape</option><option value="tall">Portrait</option><option value="square">Square</option></select></label>
@@ -595,6 +596,7 @@
       <div class="resource-detail-meta"><p>{#if selected.creatorUrl}<a href={selected.creatorUrl} target="_blank" rel="noopener noreferrer">{selected.creator}</a>{:else}{selected.creator || selected.provider}{/if}<span>{selected.attributionRequired ? selected.id.startsWith('unsplash:') || selected.id.startsWith('pexels:') ? 'Photographer and provider credits preserved' : 'Attribution required' : selected.license.startsWith('CC0') ? 'No attribution required' : selected.kind === 'icon' ? 'Copyright notice preserved' : selected.license}</span></p><button class="text-btn" aria-pressed={isFavorite(selected)} disabled={importing} onclick={() => favorite(selected!)}><Star size={14} fill={isFavorite(selected) ? 'currentColor' : 'none'} />{isFavorite(selected) ? 'In favorites' : 'Favorites'}</button></div>
       <details use:uiDisclosure class="resource-credit"><summary>Source and license · {selected.license}</summary><p>{selected.attribution}</p><div><a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer">Original source<ExternalLink size={12} /></a><a href={selected.licenseUrl} target="_blank" rel="noopener noreferrer">View license<ExternalLink size={12} /></a></div>{#if selected.licenseNotice}<p>{selected.licenseNotice}</p>{/if}<button class="text-btn" onclick={() => copyCredit(selected!)}>{#if copied}<Check size={13} />Copied{:else}<Copy size={13} />Copy attribution{/if}</button></details>
     </aside>{:else}<aside class="resource-detail resource-detail-idle" aria-label="Use resource">{#if replacing && target?.src}<ResourceImage src={target.src} alt="Current selection" /><strong>Choose a resource for “{target.name || 'Image'}”</strong><p>Replacing keeps the image’s size and position.</p>{:else}{@const ResourceIcon = resourceIcons[graphicsBrowse ? 'graphics' : kind]}<div class="resource-idle-icon"><ResourceIcon size={30} strokeWidth={1.5} /></div><strong>Select a resource to preview it</strong><p>Click or drag on the canvas to place it.</p>{/if}<span>{kind === 'photo' ? 'Photo search requires an internet connection' : kind === 'used' ? 'Reuse resources from this document' : 'Icons and illustrations are available offline'}</span></aside>{/if}
+  </div>
   </div>
   {#if compact && replacing}<div class="resource-replacement-footer ui-popover-more">
     <div class="resource-replacement-choice" role="status">

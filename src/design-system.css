@@ -2,7 +2,7 @@
    These roles style editor chrome; document typography belongs to src/core. */
 @font-face {
   font-family: 'Deck Studio UI';
-  src: url('/fonts/inter.ttf') format('truetype');
+  src: url('/fonts/ui-inter.woff2') format('woff2');
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -32,7 +32,7 @@
   --state-drop: var(--state-selected-active);
   --action-solid-bg: light-dark(var(--a-9), var(--a-11));
   --action-solid-bg-hover: light-dark(var(--a-10), color-mix(in oklab, var(--a-11) 88%, #ffffff));
-  --action-solid-bg-active: light-dark(var(--a-10), color-mix(in oklab, var(--a-11) 88%, #000000));
+  --action-solid-bg-active: light-dark(color-mix(in oklab, var(--a-10) 88%, #000000), color-mix(in oklab, var(--a-11) 88%, #000000));
   --action-solid-fg: light-dark(#ffffff, var(--n-1));
   --action-tonal-bg: var(--state-selected);
   --action-tonal-bg-hover: var(--state-selected-hover);
@@ -68,9 +68,14 @@
   --fs-xs: var(--ui-meta);
   --fs-sm: var(--ui-label);
   --fs-md: var(--ui-text);
-  --ctl-sm: 28px;
-  --ctl-md: 36px;
-  --ctl-lg: 40px;
+  --control-sm: 28px;
+  --control-md: 36px;
+  --control-lg: 40px;
+  --control-touch: 44px;
+  /* Copied controls and application primitives share the same size source. */
+  --ctl-sm: var(--control-sm);
+  --ctl-md: var(--control-md);
+  --ctl-lg: var(--control-lg);
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -307,7 +312,7 @@ input[type='color'] { height: 32px; border-radius: var(--r-field); }
   .layer-row .icon-btn, .font-favorite, .resource-favorite { opacity: 1; }
 }
 @media (max-width: 760px) {
-  :root { --ctl-md: 36px; --ctl-sm: 32px; }
+  :root { --control-sm: 32px; }
   .topbar { height: 54px; padding: 0 8px; gap: 4px; }
   .topbar-left, .topbar-right { gap: 2px; }
   .topbar-left { max-width: none; min-width: 0; flex: 1; }

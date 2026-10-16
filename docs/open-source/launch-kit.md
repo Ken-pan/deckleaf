@@ -1,6 +1,6 @@
 # Decksprig launch kit
 
-Prepared announcement copy; publishing it to communities is a separate choice. Source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig.kens-toolbox.com · Release: https://github.com/Ken-pan/decksprig/releases/tag/v0.1.4. Use the fictional sample and actual editor recording; no customer or extracted portfolio examples.
+Prepared announcement copy; publishing it to communities is a separate choice. Source: https://github.com/Ken-pan/decksprig · Demo: https://decksprig.kens-toolbox.com · Release: https://github.com/Ken-pan/decksprig/releases/tag/v0.1.5. Use the fictional sample and actual editor recording; no customer or extracted portfolio examples.
 
 ## Repository description
 

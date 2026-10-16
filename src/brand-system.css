@@ -1,7 +1,7 @@
 /* Identity roles consume the selected palette; source artwork and slides stay independent. */
 @font-face {
   font-family: 'Deck Studio Brand';
-  src: url('/fonts/manrope.ttf') format('truetype');
+  src: url('/fonts/ui-manrope.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;

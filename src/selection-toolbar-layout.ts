@@ -1,7 +1,7 @@
 import { intersectRect, positionSelectionToolbar, unionRects, type ScreenRect } from './selection-toolbar-position';
 import './selection-toolbar.css';
 
-export interface SelectionToolbarOptions { ids: string[]; editingId: string; revision?: number; scale: number; draft?: boolean }
+export interface SelectionToolbarOptions { ids: string[]; editingId: string; revision?: number; scale: number; draft?: boolean; docked?: boolean }
 
 export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOptions) {
   const stage = node.closest<HTMLElement>('.canvas-stage');
@@ -54,7 +54,18 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
     const maxWidth = `${Math.floor(boundary.right - boundary.left - 16)}px`;
     if (node.style.maxWidth !== maxWidth) node.style.maxWidth = maxWidth;
     const rect = node.getBoundingClientRect();
-    const position = positionSelectionToolbar(anchor, rect, boundary, !rotationTargets.length&&matchMedia('(pointer:coarse)').matches&&!options.editingId&&!options.draft?40:10);
+    // Short workspaces reserve a strip above the artwork, independent of the
+    // selected object's position. Enlarging the tools also enlarges that strip.
+    const space = options.docked ? `${Math.ceil(boundary.top - stage!.getBoundingClientRect().top + rect.height + 48)}px` : '';
+    if (stage!.style.getPropertyValue('--canvas-toolbar-space') !== space) {
+      if (space) stage!.style.setProperty('--canvas-toolbar-space', space);
+      else stage!.style.removeProperty('--canvas-toolbar-space');
+    }
+    const position = options.docked
+      ? intersectRect(anchor, boundary) && rect.height + 16 <= boundary.bottom - boundary.top
+        ? {x: boundary.left + (boundary.right - boundary.left - rect.width) / 2, y: boundary.top + 8, placement: 'dock'}
+        : null
+      : positionSelectionToolbar(anchor, rect, boundary, !rotationTargets.length&&matchMedia('(pointer:coarse)').matches&&!options.editingId&&!options.draft?40:10);
     if (!position) { hide(); return; }
     node.style.left = `${Math.round(position.x)}px`;
     node.style.top = `${Math.round(position.y)}px`;
@@ -83,6 +94,7 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
   return {
     update(next: SelectionToolbarOptions) { options = next; schedule(); },
     destroy() {
+      stage!.style.removeProperty('--canvas-toolbar-space');
       cancelAnimationFrame(frame); resize.disconnect(); mutations.disconnect();
       document.removeEventListener('selectionchange', schedule);
       document.removeEventListener('scroll', schedule, true);

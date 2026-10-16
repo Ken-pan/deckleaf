@@ -13,6 +13,7 @@
   import ColorField from './ui/ColorField.svelte';
   let {element,disabled=false,onpreview,onselection}:{element:SlideElement;disabled?:boolean;onpreview:(chart:Chart|null)=>void;onselection?:(active:boolean)=>void}=$props();
   type Section='axis'|'labels'|'legend';
+  const errorId=$props.id();
   let objectMode=$state(false);
   let marker=$state<HTMLDivElement>(),tools=$state<HTMLDivElement>(),popup=$state<HTMLDivElement>(),section=$state<Section|null>(null),draft=$state<Chart>(),error=$state(''),origin=$state<HTMLElement|SVGElement>(),revision=0,deckId='',slideId='',root:HTMLElement|undefined;
   const chart=$derived(chartFromElement(element)),round=$derived(['pie','donut'].includes(chart.type));
@@ -21,9 +22,11 @@
   function portal(node:HTMLElement){document.body.append(node);return {destroy(){node.remove();}};}
   function position(){if(!root)return;const r=root.getBoundingClientRect();if(tools&&!disabled)positionFloating(tools,r,{preferredHeight:tools.scrollHeight,minHeight:44});if(popup?.matches(':popover-open'))positionFloating(popup,origin?.isConnected?origin.getBoundingClientRect():r,{preferredHeight:popup.scrollHeight,minHeight:180,avoid:r});}
   async function open(next:Section,target:HTMLElement|SVGElement){objectMode=false;onselection?.(true);section=next;origin=target;draft=structuredClone(chartFromElement(editor.slide?.elements.find(e=>e.id===element.id)??element));revision=editor.deck!.revision;deckId=editor.deck!.id;slideId=editor.slide!.id;error='';await tick();popup?.showPopover();position();popup?.querySelector<HTMLElement>('input,select,button')?.focus({preventScroll:true});}
-  function update(patch:Partial<Chart>){if(!draft||stale)return;draft={...draft,...patch};try{validateChart(draft);error='';onpreview(draft);}catch(e){error=(e as Error).message;onpreview(null);}void tick().then(position);}
-  function save(){if(!draft||stale||error)return false;try{const chart=validateChart(draft);if(JSON.stringify(chart)!==JSON.stringify(chartFromElement(editor.slide?.elements.find(e=>e.id===element.id)??element))){const before=editor.deck!.revision;editor.commit([{op:'update_element',slideId,elementId:element.id,patch:{chart,values:undefined}}],'','manual',revision);if(editor.deck!.revision===before){error=editor.error;return false;}revision=editor.deck!.revision;}return true;}catch(e){error=(e as Error).message;return false;}}
-  function close(cancel=false,focus=true){if(!cancel&&!save())return;section=null;onpreview(null);popup?.hidePopover();if(focus)queueMicrotask(()=>focusAfterChartRedraw(origin));}
+  function update(patch:Partial<Chart>){if(!draft||stale)return;draft={...draft,...patch};try{validateChart(draft);error='';onpreview(draft);}catch(e){error=validationMessage(e);onpreview(null);}void tick().then(position);}
+  const invalidRange=$derived(Boolean(draft?.axisRange&&draft.axisRange.max<=draft.axisRange.min));
+  function validationMessage(e:unknown){return invalidRange?'Maximum must be greater than minimum.':(e as Error).message;}
+  function save(){if(!draft||stale||error)return false;try{const chart=validateChart(draft);if(JSON.stringify(chart)!==JSON.stringify(chartFromElement(editor.slide?.elements.find(e=>e.id===element.id)??element))){const before=editor.deck!.revision;editor.commit([{op:'update_element',slideId,elementId:element.id,patch:{chart,values:undefined}}],'','manual',revision);if(editor.deck!.revision===before){error=editor.error;return false;}revision=editor.deck!.revision;}return true;}catch(e){error=validationMessage(e);return false;}}
+  function close(cancel=false,focus=true){if(!cancel&&!save())return false;section=null;onpreview(null);popup?.hidePopover();if(focus)queueMicrotask(()=>focusAfterChartRedraw(origin));return true;}
   function formatTarget(event:Event){return !chartPointTarget(root,event)&&event.target instanceof Element?event.target.closest<SVGElement>('[data-chart-format]'):null;}
   function down(event:PointerEvent){const node=formatTarget(event);if(!node||disabled)return;event.preventDefault();event.stopPropagation();node.focus({preventScroll:true});}
   function click(event:MouseEvent){const node=formatTarget(event);if(!node||disabled)return;event.preventDefault();event.stopPropagation();void open(node.dataset.chartFormat as Section,node);}
@@ -40,14 +43,14 @@
   <Button variant="quiet" aria-label="More object tools" onclick={showObjects}>More</Button>
 </div>
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div bind:this={popup} popover="auto" role="dialog" aria-label="Chart appearance" tabindex="-1" class="chart-format-popup" use:popoverFocus={{close:()=>close(false,false),origin:()=>origin,focus:focusAfterChartRedraw}} onbeforetoggle={e=>{if(e.newState==='closed'&&section){if(!save())queueMicrotask(()=>popup?.showPopover());else close(true,false);}}} onkeydown={e=>{e.stopPropagation();if(e.isComposing)return;if(e.key==='Escape'){e.preventDefault();close(true);}else if(e.key==='Enter'&&!(e.target instanceof HTMLButtonElement)){e.preventDefault();close();}}}>
+<div bind:this={popup} popover="auto" role="dialog" aria-label="Chart appearance" tabindex="-1" class="chart-format-popup" use:popoverFocus={{close:()=>close(false,false),origin:()=>origin,focus:focusAfterChartRedraw}} onbeforetoggle={e=>{if(e.newState==='closed'&&section){if(!save())queueMicrotask(()=>{popup?.showPopover();popup?.focus({preventScroll:true});});else close(true,false);}}} onkeydown={e=>{e.stopPropagation();if(e.defaultPrevented||e.isComposing||e.keyCode===229)return;if(e.key==='Escape'){e.preventDefault();close(true);}else if(e.key==='Enter'&&!(e.target instanceof HTMLButtonElement)){e.preventDefault();close();}}}>
 {#if draft&&section}
   <strong>{section==='axis'?'Axes':section==='labels'?'Data labels':'Legend'}</strong>
   <div class="format-body">
   {#if section==='axis'}
     <label class="toggle"><input type="checkbox" checked={!draft.axisRange} onchange={e=>update({axisRange:e.currentTarget.checked?undefined:{min:defaults.min,max:defaults.max}})}/>Automatic range</label>
-    {#if draft.axisRange}<div class="pair"><label>Minimum<input aria-label="Axis minimum" type="number" value={draft.axisRange.min} oninput={e=>{const n=e.currentTarget.valueAsNumber;if(Number.isFinite(n))update({axisRange:{...draft!.axisRange!,min:n}});}}/></label><label>Maximum<input aria-label="Axis maximum" type="number" value={draft.axisRange.max} oninput={e=>{const n=e.currentTarget.valueAsNumber;if(Number.isFinite(n))update({axisRange:{...draft!.axisRange!,max:n}});}}/></label></div>{/if}
-    <div class="pair"><label>Label size<input aria-label="Axis label size" type="number" min="12" max="40" value={draft.axisStyle?.fontSize??Math.max(18,Math.min(28,element.fontSize))} onchange={e=>update({axisStyle:{...draft!.axisStyle,fontSize:e.currentTarget.valueAsNumber}})}/></label><label>Category angle<select aria-label="Category label angle" value={draft.axisStyle?.rotation??0} onchange={e=>update({axisStyle:{...draft!.axisStyle,rotation:Number(e.currentTarget.value)}})}><option value="0">Horizontal</option><option value="30">30°</option><option value="45">45°</option><option value="90">Vertical</option></select></label></div>
+    {#if draft.axisRange}<div class="pair"><label>Minimum<input aria-label="Axis minimum" aria-invalid={invalidRange||undefined} aria-describedby={invalidRange?errorId:undefined} type="number" value={draft.axisRange.min} oninput={e=>{const n=e.currentTarget.valueAsNumber;if(Number.isFinite(n))update({axisRange:{...draft!.axisRange!,min:n}});}}/></label><label>Maximum<input aria-label="Axis maximum" aria-invalid={invalidRange||undefined} aria-describedby={invalidRange?errorId:undefined} type="number" value={draft.axisRange.max} oninput={e=>{const n=e.currentTarget.valueAsNumber;if(Number.isFinite(n))update({axisRange:{...draft!.axisRange!,max:n}});}}/></label></div>{/if}
+    <div class="pair"><label>Label size<input aria-label="Axis label size" type="number" min="12" max="40" value={draft.axisStyle?.fontSize??Math.max(18,Math.min(28,element.fontSize))} onchange={e=>update({axisStyle:{...draft!.axisStyle,fontSize:e.currentTarget.valueAsNumber}})}/></label><label>Category angle<select aria-label="Category label angle" value={draft.axisStyle?.rotation??0} onchange={e=>update({axisStyle:{...draft!.axisStyle,rotation:Number(e.currentTarget.value)}})}><option value={0}>Horizontal</option><option value={30}>30°</option><option value={45}>45°</option><option value={90}>Vertical</option></select></label></div>
     <label class="toggle"><input type="checkbox" checked={draft.grid} onchange={e=>update({grid:e.currentTarget.checked})}/>Grid lines</label>
     <label class="toggle"><input type="checkbox" checked={draft.axisStyle?.showLabels??true} onchange={e=>update({axisStyle:{...draft!.axisStyle,showLabels:e.currentTarget.checked}})}/>Axis labels</label>
   {:else if section==='labels'}
@@ -60,8 +63,8 @@
     <label class="toggle"><input type="checkbox" checked={draft.legend&&(round||draft.series.length>1||draft.legendPosition!==undefined)} onchange={e=>update({legend:e.currentTarget.checked,legendPosition:draft!.legendPosition??'auto'})}/>Show legend</label>
     <div class="legend-positions" role="group" aria-label="Legend position">{#each ['auto','top','right','bottom','left'] as position}<Button variant="quiet" aria-pressed={(draft.legendPosition??'auto')===position} onclick={()=>update({legendPosition:position as Chart['legendPosition'],legend:true})}>{position==='auto'?'Auto':position[0].toUpperCase()+position.slice(1)}</Button>{/each}</div>
   {/if}
-  {#if stale||error}<p role="alert" class="error">{stale?'The document changed. Reopen these controls.':error}</p>{/if}
   </div>
+  {#if stale||error}<p id={errorId} role="alert" class="error">{stale?'The document changed. Reopen these controls.':error}</p>{/if}
   <footer><Button variant="quiet" onclick={()=>close(true)}>Cancel</Button><Button variant="secondary" disabled={Boolean(stale||error)} onclick={()=>close()}>Done</Button></footer>
 {/if}
 </div>

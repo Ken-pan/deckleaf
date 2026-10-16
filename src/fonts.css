@@ -48,6 +48,8 @@
 .font-results.font-results-empty{height:auto;max-height:none;overflow:visible;padding-right:0}
 .font-dropdown-body:has(.ui-empty-state){flex:1 1 auto}
 .font-dropdown-body>.font-dropdown-list:has(.ui-empty-state){flex:none;max-height:none;overflow:visible}
+.font-dropdown-recovery{display:flex;flex:none;align-items:stretch;gap:8px;padding-top:8px;border-top:1px solid var(--border-subtle)}
+.font-dropdown-recovery>button{flex:1;min-width:0;white-space:normal;height:auto}
 .font-dropdown-pagination{display:flex;align-items:center;gap:4px;flex:none;padding-top:4px;border-top:1px solid var(--border-subtle);font-size:var(--ui-meta);color:var(--text-secondary)}
 .font-dropdown-pagination>span{flex:1}.font-dropdown-pagination>button{display:grid;place-items:center;min-width:32px;min-height:32px;padding:4px;border-radius:var(--r-sm)}
 .font-dropdown-pagination>button:not(:disabled):hover{background:var(--state-hover)}

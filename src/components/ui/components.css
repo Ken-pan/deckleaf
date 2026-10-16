@@ -1,9 +1,6 @@
 /* Shared component contract. Application layouts consume these roles; source
    renders and document typography do not inherit component geometry. */
 :root {
-  --control-sm: 28px;
-  --control-md: 36px;
-  --control-lg: 40px;
   --control-gap: var(--space-2);
   --dialog-gutter: var(--space-6);
   --dialog-header-height: 64px;
@@ -16,6 +13,8 @@
 /* Application glyphs retain their geometry in dense controls. */
 .lucide-icon { flex-shrink: 0; pointer-events: none; }
 a > .lucide-icon { vertical-align: -2px; margin-inline-start: 4px; }
+/* Canceling a press must not start a text selection across the workspace. */
+:is(.editor-app, .modal, [popover]) button { -webkit-user-select: none; user-select: none; }
 
 .text-btn, .icon-btn, .ui-button {
   min-height: var(--control-md);
@@ -68,7 +67,7 @@ a > .lucide-icon { vertical-align: -2px; margin-inline-start: 4px; }
 .ui-search-field > svg { color: var(--text-secondary); width: 16px; height: 16px; flex: none; }
 .ui-search-field input { flex: 1; width: 100%; min-width: 0; border: 0; padding: 8px 0; background: none; outline: none; font-size: var(--ui-text); }
 .ui-search-field input:focus-visible { outline: none; }
-.ui-search-field:has(input:disabled) { opacity: var(--state-disabled-opacity); }
+.ui-search-field:has(input:disabled) > svg { color: var(--text-disabled); }
 .ui-search-count { font-size: var(--ui-meta); font-variant-numeric: tabular-nums; color: var(--text-secondary); }
 
 /* Native top-layer menus share fields, type and focus with the dialog family. */
@@ -292,9 +291,9 @@ a > .lucide-icon { vertical-align: -2px; margin-inline-start: 4px; }
   .prototype-shell.is-focused { --dialog-gutter: 16px; width: calc(100vw - 24px); max-height: calc(100dvh - 24px); border-radius: var(--r-popover); }
 }
 @media (max-width: 760px), (pointer: coarse) {
-  .ui-popover-head .ui-button.icon-btn { width: 44px; height: 44px; min-height: 44px; }
-  .canvas-controls-popover > header .icon-btn { width: 44px; height: 44px; }
-  .ui-action-menu button, .ui-command-results > button, .seg button { min-height: 44px; }
+  .ui-popover-head .ui-button.icon-btn { width: var(--control-touch); height: var(--control-touch); min-height: var(--control-touch); }
+  .canvas-controls-popover > header .icon-btn { width: var(--control-touch); height: var(--control-touch); }
+  .ui-action-menu button, .ui-command-results > button, .seg button { min-height: var(--control-touch); }
 }
 @media (prefers-reduced-motion: reduce) {
   .ui-button, .ui-search-field, .ui-search-field input { transition: none; }

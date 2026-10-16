@@ -48,7 +48,8 @@
   }
   function restart() { if (apiReady) iframe?.contentWindow?.postMessage({type: 'RESTART'}, 'https://www.figma.com'); else reload(); }
   onMount(() => { if (live && !focusable && !onfocus) start(); return () => { clearTimeout(timer); focused = false; if (focusDialog?.open) focusDialog.close(); queueMicrotask(() => oninteractionchange?.(false)); }; });
-  import {modalFocus,restoreFocus} from '../ui-focus';
+  import {restoreFocus} from '../ui-focus';
+  import {modalFocus} from '../ui-modal-focus';
 </script>
 <svelte:window onmessage={message} />
 <div class="prototype-host">

@@ -1,6 +1,14 @@
 .modal.resource-modal{width:1180px;height:min(820px,calc(100dvh - 32px))}
 .resource-modal .modal-body{padding:0 24px;flex:1;overflow:hidden;display:flex;flex-direction:column}
 .resource-library{font-size:var(--ui-label);min-width:0;min-height:0;flex:1;display:flex;flex-direction:column}
+.resource-content{display:contents}
+.resource-library:not(.compact){container-type:size;container-name:resource-library}
+.resource-library:not(.compact)>.resource-footer{position:static;margin-bottom:0}
+@container resource-library (max-height:30rem){
+  .resource-content{display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scroll-padding:8px;padding:4px}
+  .resource-content>.resource-workspace{flex:none;height:18rem;min-height:0}
+  .resource-library>.resource-footer{margin-top:8px}
+}
 .resource-graphics-browse,.resource-graphics-categories{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:none;margin-bottom:8px}
 .resource-graphics-browse{justify-content:space-between}
 .resource-graphics-browse a{display:inline-flex;align-items:center;gap:4px;color:var(--text-secondary);font-size:var(--ui-meta)}

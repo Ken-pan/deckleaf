@@ -6,14 +6,15 @@
   import { ActionMenu } from './ui';
   import { type InsertTool, type PrimitiveInsertTool } from '../core/insertion';
   import type { ResourceQuickView } from './resource-library-view';
-  let {insertTool, resourceOpen, resourceActiveView, resourceBusy = false, disabled = false, onselect, oninsert, onresource, onchart, onprototype, onpageelements, onblocks}: {
-    insertTool: InsertTool | null; resourceOpen: boolean; resourceActiveView?: ResourceQuickView; resourceBusy?: boolean; disabled?: boolean;
+  let {insertTool, resourceOpen, resourceActiveView, resourceBusy = false, disabled = false, compact = false, onselect, oninsert, onresource, onchart, onprototype, onpageelements, onblocks}: {
+    insertTool: InsertTool | null; resourceOpen: boolean; resourceActiveView?: ResourceQuickView; resourceBusy?: boolean; disabled?: boolean; compact?: boolean;
     onselect: () => void; oninsert: (tool: PrimitiveInsertTool) => void; onresource: (view: ResourceQuickView, anchor: HTMLButtonElement) => void;
     onchart: () => void; onprototype: () => void; onpageelements: () => void; onblocks: () => void;
   } = $props();
   let moreGroup = $state<HTMLDivElement>();
   const ShapeIcon = $derived(isShapeTool(insertTool) ? shapeToolIcons[insertTool] : Square);
   function openGraphics() { const anchor = moreGroup?.querySelector<HTMLButtonElement>('button'); if (anchor) onresource('graphics', anchor); }
+  function openCompactResource(view: ResourceQuickView) { const anchor = moreGroup?.querySelector<HTMLButtonElement>('button'); if (anchor) onresource(view, anchor); }
   const resourceTools = [
     {id: 'photo', label: 'Photos', title: 'Photos', icon: resourceIcons.photo},
     {id: 'icon', label: 'Icons', title: 'Icons', icon: resourceIcons.icon},
@@ -27,7 +28,7 @@
         <ActionMenu label="Insert shapes" active={isShapeTool(insertTool)} {disabled} items={SHAPE_TOOLS.map(tool=>({label:SHAPE_LABELS[tool],icon:shapeToolIcons[tool],shortcut:tool==='rect'?'R':undefined,divider:tool==='line',onselect:()=>oninsert(tool)}))}><ShapeIcon size={16} /><span class="dock-label">Shapes</span></ActionMenu>
         <button class="text-btn table-entry" class:active={insertTool === 'table'} aria-pressed={insertTool === 'table'} {disabled} onclick={() => oninsert('table')} title="Insert table" aria-label="Insert table"><Table2 size={16}/><span class="dock-label">Table</span></button>
         </div>
-        <div class="resource-tools" role="group" aria-label="Resource categories">
+        <div class="resource-tools" class:compact role="group" aria-label="Resource categories">
         <button class="text-btn resource-entry" class:active={insertTool==='block'} {disabled} onclick={onblocks} title="Blocks · Diagrams, plans and business content" aria-label="Blocks" aria-haspopup="dialog"><LayoutTemplate size={16}/><span class="dock-label">Blocks</span></button>
         {#each resourceTools as tool}
           <button class="text-btn resource-entry" data-resource-view={tool.id} class:active={resourceOpen && resourceActiveView === tool.id} disabled={disabled || resourceBusy} title={tool.title} aria-label={tool.label === tool.title ? `${tool.title} resources` : `${tool.label} · ${tool.title} resources`} aria-haspopup="dialog" aria-controls="workspace-resource-popover" aria-expanded={resourceOpen && resourceActiveView === tool.id} popovertarget="workspace-resource-popover" popovertargetaction="show" onclick={event => { event.preventDefault(); void onresource(tool.id, event.currentTarget); }} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && event.key === 'ArrowDown') { event.preventDefault(); if (!resourceOpen || resourceActiveView !== tool.id) void onresource(tool.id, event.currentTarget); } }}><tool.icon size={16} /><span class="dock-label">{tool.label}</span></button>
@@ -35,6 +36,10 @@
         </div>
         <div class="insert-secondary" bind:this={moreGroup}>
         <ActionMenu label="More insert tools" active={insertTool === 'chart' || resourceOpen && ['graphics','favorites'].includes(resourceActiveView??'')} {disabled} items={[
+          ...(compact ? [
+            {label:'Blocks',icon:LayoutTemplate,onselect:onblocks},
+            ...resourceTools.map(tool=>({label:tool.title,icon:tool.icon,disabled:resourceBusy,onselect:()=>openCompactResource(tool.id)})),
+          ] : []),
           {label:'Paste',shortcut:'⌘V',onselect:()=>{onselect();return pasteFromClipboard();}},
           {label:'Paste as text',onselect:()=>{onselect();return pasteFromClipboard({textOnly:true});}},
           {label: 'Saved resources', icon: Star, disabled: resourceBusy, onselect: () => { const anchor=moreGroup?.querySelector<HTMLButtonElement>('button'); if(anchor)onresource('favorites',anchor); }},
@@ -51,6 +56,7 @@
   .resource-tools { border-left: 1px solid var(--border-subtle); padding-left: 8px; margin-left: 4px; }
   .insert-primary > button, .resource-tools > button { width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; }
   .resource-entry[aria-expanded='true'] { background: var(--state-selected); color: var(--text-link); }
+  .resource-tools.compact { display:none; }
   @media (max-width: 760px), (pointer: coarse) {
     :global(.canvas-insert-dock) .insert-tools { display: grid; grid-template-columns: repeat(5,minmax(44px,1fr)); gap: 4px; }
     .insert-primary { grid-column: 1 / 5; grid-row: 1; justify-content: center; }

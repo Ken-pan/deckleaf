@@ -244,7 +244,8 @@
       const wasOpen=viewer?.open;viewer?.close();if(wasOpen)restoreFocus(returnTo,previous);
     };
   });
-  import {modalFocus,restoreFocus} from '../ui-focus';
+  import {restoreFocus} from '../ui-focus';
+  import {modalFocus} from '../ui-modal-focus';
 </script>
 <svelte:window onkeydown={keyboard} />
 <dialog bind:this={viewer} use:modalFocus={()=>returnTo} aria-modal="true" transition:uiPresence={{y:0}} class="presentation" class:blackout class:speaker class:chrome-visible={chrome || !finePointer || Boolean(panel)} aria-label="Present document" onfocusin={e => { if ((e.target as HTMLElement).closest('.presentation-header,.presentation-controls,.player-panel,.speaker-panel')) reveal(); }} oncancel={e => { e.preventDefault(); if (panel) closePanel(); else if (blackout) toggleBlackout(); else void close(); }}>

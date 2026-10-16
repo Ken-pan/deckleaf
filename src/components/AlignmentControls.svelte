@@ -1,6 +1,7 @@
 <script lang="ts">
   import Notice from './ui/Notice.svelte';
-  import { tick } from 'svelte';
+  import { onMount, tick } from 'svelte';
+  import { positionFloating } from '../ui-viewport';
   import '../selection-tools.css';
   import { AlignHorizontalJustifyStart,AlignHorizontalJustifyCenter,AlignHorizontalJustifyEnd,AlignVerticalJustifyStart,AlignVerticalJustifyCenter,AlignVerticalJustifyEnd,AlignHorizontalDistributeCenter,AlignVerticalDistributeCenter,X } from '@lucide/svelte';
   import { editor } from '../core/editor.svelte';
@@ -23,7 +24,9 @@
   let externalAnchor:DOMRect|undefined,externalOrigin:HTMLElement|undefined;
   export function openAt(rect:DOMRect){externalAnchor=rect;externalOrigin=document.activeElement instanceof HTMLElement?document.activeElement:undefined;popup?.showPopover();}
   function close(){popup?.hidePopover();restoreFocus(externalOrigin,trigger);externalAnchor=undefined;externalOrigin=undefined;}
-  async function toggled(event:ToggleEvent){open=event.newState==='open';if(open){error='';await tick();if(!popup||!trigger)return;const r=externalAnchor??trigger.getBoundingClientRect(),p=popup.getBoundingClientRect();popup.style.left=`${Math.max(12,Math.min(r.left,innerWidth-p.width-12))}px`;popup.style.top=`${Math.max(12,Math.min(r.bottom+8,innerHeight-p.height-12))}px`;(matchMedia('(pointer:coarse)').matches?popup:popup.querySelector('select'))?.focus({preventScroll:true});}}
+  function position(){if(popup?.matches(':popover-open')&&trigger)positionFloating(popup,externalOrigin?.isConnected?externalOrigin.getBoundingClientRect():externalAnchor??trigger.getBoundingClientRect(),{preferredHeight:popup.scrollHeight,minHeight:160});}
+  async function toggled(event:ToggleEvent){open=event.newState==='open';if(open){error='';await tick();if(!popup?.matches(':popover-open'))return;position();(matchMedia('(pointer:coarse)').matches?popup:popup.querySelector<HTMLElement>('select,[role="radio"][tabindex="0"]')??popup)?.focus({preventScroll:true});}}
+  onMount(()=>{let frame=0;const schedule=(event?:Event)=>{if(event?.target instanceof Node&&popup?.contains(event.target))return;cancelAnimationFrame(frame);frame=requestAnimationFrame(position);};const observer=new ResizeObserver(()=>schedule());if(popup)observer.observe(popup);window.addEventListener('resize',schedule);window.addEventListener('scroll',schedule,true);window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);return()=>{observer.disconnect();cancelAnimationFrame(frame);window.removeEventListener('resize',schedule);window.removeEventListener('scroll',schedule,true);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);};});
   function apply(direction:AlignmentDirection|'x'|'y',event:MouseEvent){if(!editor.deck||!editor.slide)return;error='';try{const ops=direction==='x'||direction==='y'?distributeElements(editor.operationDocument(),editor.slide.id,editor.selected,direction,editor.selectionScope):alignElements(editor.operationDocument(),editor.slide.id,editor.selected,direction,reference,editor.selectionScope);if(compact)close();void objectAction(()=>editor.commit(ops),event);}catch(e:any){error=e.message;}}
   function key(event:KeyboardEvent){if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopPropagation();close();}}
   import {popoverFocus,restoreFocus} from '../ui-focus';
