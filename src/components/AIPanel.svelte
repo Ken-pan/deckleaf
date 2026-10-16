@@ -33,6 +33,7 @@
   let requestInput = $state<HTMLTextAreaElement>();
   let context = $derived(scope === 'selection' ? countLabel(selection.length, 'editable object') : scope === 'deck' ? countLabel(editor.deck?.slides.length ?? 0, 'slide') : slideLabel(editor.deck?.slides.findIndex(s=>s.id===editor.slide?.id)??0));
   const suggestions: {label:string;prompt:string;scope?:string}[] = [
+    {label:'Prepare for presenting',scope:'deck',prompt:'Prepare this deck for a live presentation. Review readability, story flow and speaker notes before proposing improvements. Give each slide a distinct takeaway, move supporting detail into useful speaker notes, and fix dense copy or small main text with an appropriate native layout. Preserve facts, evidence, sources, theme and local overrides. Vary composition only where the story benefits. Propose all changes together for review.'},
     {label:'Shorten the copy', prompt:'Shorten this slide while keeping the key insight and evidence'},
     {label:'Clarify the narrative', prompt:'Clarify the narrative and connect each point to its evidence'},
     {label:'Add speaker notes', prompt:'Add concise speaker notes to this slide'},
@@ -85,7 +86,7 @@
       if(editor.dirty)throw new Error('Save the document before requesting AI actions.');
       if(editor.deck.revision!==requestedRevision)throw new Error('The document changed while saving. Generate the proposal again.');
       const deck = editor.snapshot();submittedPrompt=prompt;
-      const p = await requestAI({deck, prompt, settings, scope:requestScope,history},{signal:run.signal,onprogress:event=>{if(controller===run&&!run.signal.aborted&&editor.deck?.id===deck.id){status=event.message;}}});
+      const p = await requestAI({deck, prompt, settings, scope:requestScope,activeSlideId:editor.activeId,history},{signal:run.signal,onprogress:event=>{if(controller===run&&!run.signal.aborted&&editor.deck?.id===deck.id){status=event.message;}}});
       if(run.signal.aborted||editor.deck?.id!==deck.id)return;
       const focusHere = root?.contains(document.activeElement);
       if('kind' in p){if(p.kind==='information'){information=p;remember(p.message,'information');}else{remember(p.request.action.kind+' action requested','queued');onworkflow?.(p);}prompt='';return;}

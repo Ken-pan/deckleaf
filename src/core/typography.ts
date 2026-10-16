@@ -18,7 +18,8 @@ function textBoxStyle(e: SlideElement) {
   return `padding:${p.top}px ${p.right}px ${p.bottom}px ${p.left}px;display:flex;flex-direction:column;justify-content:${e.verticalAlign === 'middle' ? 'center' : e.verticalAlign === 'bottom' ? 'flex-end' : 'flex-start'};white-space:${e.textSizing === 'auto-width' || !e.wrap ? 'pre' : 'pre-wrap'};overflow:${e.clipText === false ? 'visible' : 'hidden'};`;
 }
 function textFlowStyle(e: SlideElement) {
-  return `width:100%;flex-shrink:0;${e.maxLines ? `display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:${e.maxLines};overflow:hidden;` : ''}`;
+  const balanced=e.wrap&&e.textSizing!=='auto-width'&&!e.sourceId&&!e.nativeTextLayout&&!e.paragraphs?.length&&['title','heading'].includes(e.design?.text??'');
+  return `width:100%;flex-shrink:0;${balanced?'text-wrap:balance;':''}${e.maxLines ? `display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:${e.maxLines};overflow:hidden;` : ''}`;
 }
 function imageStyle(e: SlideElement) {
   const c = e.crop;

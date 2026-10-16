@@ -39,7 +39,9 @@ function field(key: string, value: unknown, proposed = false): string {
   if (typeof value === 'string') return ['text','notes','title','name','fontFamily','motionKey','url'].includes(key) ? value : wording[value] ?? sentenceCase(value);
   if (Array.isArray(value)) {
     if (key === 'cells') return value.map(row => row.join(' | ')).join('\n');
-    if (key === 'values') return value.map(item => `${item.label}: ${number(item.value)}`).join('\n');
+    if (key === 'values') return value.map(item => typeof item==='number'?number(item):`${item.label}: ${number(item.value)}`).join(', ');
+    if (key === 'labels') return value.join(' | ');
+    if (key === 'series') return value.map(item=>`${item.name}: ${field('values',item.values)}`).join('\n');
     if (key === 'runs') return value.map(run => `${run.text}${Object.keys(run).some(k => k !== 'text') ? ` [${Object.entries(run).filter(([k]) => k !== 'text').map(([k,v]) => `${label(k)}: ${field(k,v)}`).join(' · ')}]` : ''}`).join('');
     if (key === 'paragraphs') return value.map(p => `${field('runs', p.runs)}\n${Object.entries(p).filter(([k]) => k !== 'runs').map(([k,v]) => `${label(k)}: ${field(k,v)}`).join(' · ')}`).join('\n');
     return countLabel(value.length, 'item');

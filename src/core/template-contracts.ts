@@ -1,6 +1,6 @@
 import type {BlockOptions} from './deck-block-schema';
 import type {Chart} from './chart-schema';
-export type TemplateOptions={structure?:'designed'|'block';density?:'presentation'|'reading';count?:number;mirror?:boolean;noImage?:boolean;imageFit?:'contain'|'cover';imageShape?:'landscape'|'portrait';heading?:string;body?:string;items?:[string,string][];dates?:string[];itemOffset?:number;cells?:string[][];chart?:Chart;chartTheme?:'theme'|'local';source?:string;block?:Partial<BlockOptions>};
+export type TemplateOptions={structure?:'designed'|'block';density?:'presentation'|'reading';count?:number;mirror?:boolean;noImage?:boolean;coverVisual?:'illustration'|'photo';imageFit?:'contain'|'cover';imageShape?:'landscape'|'portrait';heading?:string;body?:string;items?:[string,string][];dates?:string[];itemOffset?:number;cells?:string[][];chart?:Chart;chartTheme?:'theme'|'local';source?:string;block?:Partial<BlockOptions>};
 export type TemplateContract={task:string;required:string[];optional:string[];counts:number[];variants:string[];fallback:string;capacity:string};
 export const DEFAULT_DASHBOARD_ITEMS:[string,string][]=[
  ['Completion','68%\nTarget 70% · +26 pp · Below target'],
@@ -12,7 +12,7 @@ export const DEFAULT_DASHBOARD_ITEMS:[string,string][]=[
 ];
 const contract=(task:string,required:string[],counts:number[],capacity:string,variants=['presentation','reading'],optional=['source','context']):TemplateContract=>({task,required,optional,counts,capacity,variants,fallback:'Use a reading layout or continue on another slide; preserve all content.'});
 export const TEMPLATE_CONTRACTS:Record<string,TemplateContract>={
- architecture:contract('Explain a system',['clients','services','responsibilities'],[4,5,6],'4–6 nodes with explicit connections'),
+ architecture:contract('Explain a system',['clients','services','responsibilities'],[2,3,4,5,6],'2–6 nodes with explicit connections'),
  gantt:contract('Schedule delivery',['tasks','owners','periods'],[3,4,5,6],'3–6 tasks over 2–12 periods'),
  kanban:contract('Track work by status',['status','tasks'],[2,3,4],'2–4 work states'),
  swot:contract('Assess a direction',['strengths','weaknesses','opportunities','threats'],[4],'4 named quadrants'),

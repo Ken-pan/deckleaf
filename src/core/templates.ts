@@ -299,12 +299,16 @@ export function createTemplatePages(id:LayoutId,index=1,collectionId='portfolio'
     }
   }
   const capacity=values&&options.count?Math.max(1,Math.min(limit,options.count)):limit;
-  const max=values&&id==='gallery'&&values.some(([a,b])=>a.length>24||b.length>70)?1:values&&id==='decision'&&values.some(([,body])=>body.length>70)?Math.min(capacity,2):values&&(['gantt','workstreams','funnel','roadmap','kanban'].includes(id)&&values.some(([,body])=>body.length>90||['gantt','workstreams'].includes(id)&&inlineTextWidth(body,1,collection.body)>24)||id==='dashboard'&&values.some(([,body])=>body.split(/[\n\t]/).length>2))?Math.min(capacity,3):values&&['process','solution','timeline','annotation'].includes(id)&&values.some(([a,b])=>a.length>24||b.length>(id==='timeline'?55:id==='annotation'?100:70))?Math.min(capacity,id==='annotation'?2:id==='timeline'?4:3):capacity;
+  let max=values&&id==='gallery'&&values.some(([a,b])=>a.length>24||b.length>70)?1:values&&id==='decision'&&values.some(([,body])=>body.length>70)?Math.min(capacity,2):values&&(['gantt','workstreams','funnel','roadmap','kanban'].includes(id)&&values.some(([,body])=>body.length>90||['gantt','workstreams'].includes(id)&&inlineTextWidth(body,1,collection.body)>24)||id==='dashboard'&&values.some(([,body])=>body.split(/[\n\t]/).length>2))?Math.min(capacity,3):values&&['process','solution','timeline','annotation'].includes(id)&&values.some(([a,b])=>a.length>24||b.length>(id==='timeline'?55:id==='annotation'?100:70))?Math.min(capacity,id==='annotation'?2:id==='timeline'?4:3):capacity;
+  // Native process blocks measure their text and can fit four longer step labels.
+  // Let that measured composition decide before falling back to continuation pages.
+  if(values?.length===4&&capacity>=4&&['process','solution'].includes(id))max=4;
   try{
     if(values&&values.length>max){const pages=Math.ceil(values.length/max),balanced=Boolean(templateBlockId(id)),size=balanced?Math.floor(values.length/pages):max,extra=balanced?values.length%pages:0;return Array.from({length:pages},(_,i)=>{const offset=i*size+Math.min(i,extra),end=offset+size+(i<extra?1:0);return createLayout(id,index+i,collectionId,{...options,items:values.slice(offset,end),dates:options.dates?.slice(offset,end),itemOffset:(options.itemOffset??0)+offset,heading:i?`${options.heading??TEMPLATE_PAGES[collectionId][id].heading} · Continued`:options.heading});});}
     const s=createLayout(id,index,collectionId,options),table=s.elements.find(e=>e.tableFit),chart=s.elements.find(e=>e.chart?.adaptive);return table?continueTable(s,table.id):chart?continueChart(s,chart.id):[s];
   }catch(error){
     const kind=templateBlockId(id);
+    if(error instanceof Error&&error.message.startsWith('Shorten “')&&kind==='process'&&values&&values.length<=6&&options.block?.layout!=='vertical')return createTemplatePages(id,index,collectionId,{...options,block:{...options.block,layout:'vertical'}});
     if(error instanceof Error&&error.message.startsWith('Shorten “')&&kind&&!['architecture','organization','swot'].includes(kind)&&values&&values.length>1&&max>1)return createTemplatePages(id,index,collectionId,{...options,count:Math.min(values.length-1,max-1)});
     throw error;
   }

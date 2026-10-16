@@ -7,7 +7,7 @@ import type {CreationBrief} from './ai-story';
 import type {AIHistory} from './ai-session';
 import type {EditScope} from './ai-editing';
 
-export async function requestAI(input:{deck:Deck;prompt:string;settings:AISettings;scope:EditScope;creation?:CreationBrief;history?:AIHistory},options:Pick<AIRunOptions,'signal'|'onprogress'>={},transport:typeof fetch=fetch):Promise<Proposal|WorkflowOutcome|AIInformation> {
+export async function requestAI(input:{deck:Deck;prompt:string;settings:AISettings;scope:EditScope;activeSlideId?:string;creation?:CreationBrief;history?:AIHistory},options:Pick<AIRunOptions,'signal'|'onprogress'>={},transport:typeof fetch=fetch):Promise<Proposal|WorkflowOutcome|AIInformation> {
   if(isBrowserEdition)return (await import('./web/api')).browserJson('/api/ai/propose','POST',input,options);
   const response=await transport('/api/ai/propose',{method:'POST',headers:{'Content-Type':'application/json',Accept:'text/event-stream'},body:JSON.stringify(input),signal:options.signal});
   if(!response.ok){const error=await response.json().catch(()=>({}));throw new Error(error.error??'The AI request could not start. Try again.');}

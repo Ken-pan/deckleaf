@@ -13,6 +13,7 @@ import {continueTable} from './table-fit';
 import {adaptTemplateText,adaptTemplateTable} from './template-edit-adaptation';
 import {continueChart} from './chart-continuation';
 import {templateChartCaption} from './chart-caption';
+import {formatChartValue} from './chart-format';
 import {isShape} from './shapes';
 import {createRevisionValidator} from './document-revision';
 
@@ -41,6 +42,7 @@ export type Operation = z.infer<typeof OperationSchema>;
 export const ProposalSchema = z.object({
   baseRevision: z.number().int().min(0), summary: z.string().max(3000),
   operations: z.array(OperationSchema).min(1).max(1000),
+  reviewWarnings:z.array(z.object({slide:z.number().int().min(1).max(3000),problem:z.string().max(1000),evidence:z.string().max(600)}).strict()).max(30).optional(),
 }).strict();
 export type Proposal = z.infer<typeof ProposalSchema>;
 function reorder<T extends {id: string}>(items: T[], ids: string[]): T[] {
@@ -238,7 +240,11 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
   if(chartEdits.size){
     const previousCharts=new Map<string,SlideElement>();
     for(const slide of deck.slides)for(const e of slide.elements)if(chartEdits.has(e.id)&&!previousCharts.has(e.id))previousCharts.set(e.id,e);
-    next.slides=next.slides.map(s=>{const kind=s.template?.prototype;if(!kind||!['trend','composition','category-chart'].includes(kind))return s;const changed=s.elements.find(e=>e.chart&&chartEdits.has(e.id)),old=changed&&previousCharts.get(changed.id);if(!changed?.chart||!old?.chart)return s;return {...s,elements:s.elements.map(e=>e.name==='Chart context'&&e.text===templateChartCaption(old.chart!,kind)?{...e,text:templateChartCaption(changed.chart!,kind)}:e)};});
+    next.slides=next.slides.map(s=>{const kind=s.template?.prototype;if(!kind||!['trend','composition','category-chart','metrics'].includes(kind))return s;const changed=s.elements.find(e=>e.chart&&chartEdits.has(e.id)),old=changed&&previousCharts.get(changed.id);if(!changed?.chart||!old?.chart)return s;
+      const generated=new Set(s.template?.generated?.map(e=>e.id)),bound=new Set(s.template?.slots?.filter(slot=>slot.key!=='chart').map(slot=>slot.elementId));
+      const metricCopy=(chart:NonNullable<SlideElement['chart']>)=>{const series=chart.series[0],last=series.values.length-1;return [formatChartValue(chart,series.values[last]),series.name,`${chart.labels[0]}: ${formatChartValue(chart,series.values[0])}\n${chart.labels[last]}: ${formatChartValue(chart,series.values[last])}`,chart.source||'Add source, population and reporting period'];};
+      const previous=kind==='metrics'?metricCopy(old.chart):[],current=kind==='metrics'?metricCopy(changed.chart):[];
+      return {...s,elements:s.elements.map(e=>{if(kind==='metrics'&&e.type==='text'&&!e.pageElement&&generated.has(e.id)&&!bound.has(e.id)){const i=previous.indexOf(e.text);if(i>=0)return resolveTextElement({...e,text:current[i]},next,measure);}return e.name==='Chart context'&&e.text===templateChartCaption(old.chart!,kind)?{...e,text:templateChartCaption(changed.chart!,kind)}:e;})};});
     next.slides=next.slides.flatMap(s=>{let slides=[s];for(const e of s.elements.filter(e=>e.chart?.adaptive&&chartEdits.has(e.id)))slides=slides.flatMap(v=>continueChart(v,e.id));return slides;});
   }
   next.slides=refreshPageElements(next).slides;

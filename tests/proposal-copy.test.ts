@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {sampleChart} from '../src/core/charts';
 import assert from 'node:assert/strict';
 import { blankSlide, element, newDeck } from '../src/core/model';
 import { diffProposal } from '../src/core/proposal-copy';
@@ -42,4 +43,10 @@ test('container changes produce complete previews with readable parent names',()
 
 test('stored asset replacements disclose removal of old crop and resource credit',()=>{
   const slide=blankSlide(),image=element('image',{src:'data:image/png;base64,AAAA',crop:{left:.1,right:.1,top:0,bottom:0},resource:{id:'fixture',kind:'photo',title:'Prior image',creator:'Author',provider:'Fixture',sourceUrl:'https://example.com/source',license:'CC0',licenseUrl:'https://example.com/license',attribution:'Author',attributionRequired:false}});slide.elements=[image];const deck=newDeck('Replace',[slide]);const change=preview(deck,[{op:'update_element',slideId:slide.id,elementId:image.id,patch:{src:'data:image/png;base64,BBBB'},unset:['crop','resource']}])[0];assert.match(change.before,/Crop: Left: 10%/);assert.match(change.before,/Resource credit: Prior image/);assert.match(change.after,/Crop: Not set/);assert.match(change.after,/Resource credit: Not set/);assert(!JSON.stringify(change).includes('base64'));
+});
+
+test('chart review exposes category labels and exact series values before applying',()=>{
+  const slide=blankSlide(),chart=element('chart',{chart:sampleChart()});chart.chart!.labels=['Old','New'];chart.chart!.series=[{name:'Completed',values:[26,32]}];slide.elements=[chart];const deck=newDeck('Counts',[slide]);
+  const [change]=preview(deck,[{op:'update_element',slideId:slide.id,elementId:chart.id,patch:{chart:{...chart.chart!,series:[{name:'Completed',values:[26,31]}]}}}]);
+  assert.match(change.before,/Old \| New/);assert.match(change.before,/Completed: 26, 32/);assert.match(change.after,/Completed: 26, 31/);assert.doesNotMatch(change.after,/NaN/);
 });

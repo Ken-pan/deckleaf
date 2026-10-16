@@ -27,9 +27,9 @@ export function composeTemplateBlock(c:TemplateCollection,p:TemplatePage,id:Layo
   if(id==='workstreams'){options.periods=4;options.periodLabels=['Q1','Q2','Q3','Q4'];items=items.map((item,i)=>({label:o.items?.[i]?.[0]??['Research','Product design','Delivery','Measurement'][i],detail:o.items?.[i]?.[1]??['Research · Scope confirmed','Design · Prototype reviewed','Engineering · Release gates','Product · Matched cohort'][i],meta:o.dates?.[i]??`${Math.min(4,i+1)}–${Math.min(4,i+2)}`}));}
   else if(kind==='gantt')items=items.map((item,i)=>({...item,meta:o.dates?.[i]??item.meta}));
   else if(['roadmap','funnel'].includes(kind))items=items.map((item,i)=>({...item,meta:o.dates?.[i]??item.meta}));
-  const layout=id==='team'?'grid':id==='hierarchy'?'auto':kind==='process'&&(o.density==='reading'||c.id==='review'||c.id==='report')?'vertical':kind==='timeline'&&count>4?'vertical':'auto';
+  const layout=id==='team'?'grid':id==='hierarchy'?'auto':kind==='process'&&(o.density==='reading'||count>4||items.some(i=>i.label.length>30||i.detail.length>90)||count===4&&items.some(i=>i.label.length>24||i.detail.length>55))?'vertical':kind==='timeline'&&count>4?'vertical':'auto';
   const tone=['portfolio','report','minimal'].includes(c.id)?'plain':c.id==='proposal'?'outline':'surface';
-  Object.assign(options,{title:'',items,layout,tone,showTitle:false,stagger:id==='process'&&c.id==='portfolio'&&!Object.keys(o).length,density:o.density==='reading'||items.some(i=>i.detail.length>80)?'compact':'comfortable',...o.block});
+  Object.assign(options,{title:'',items,layout,tone,showTitle:false,stagger:id==='process'&&c.id==='portfolio'&&!Object.keys(o).length,density:o.density==='reading'||items.some(i=>i.detail.length>80||[...i.detail].filter(c=>/[\u2e80-\uffff]/.test(c)).length>25)?'compact':'comfortable',...o.block});
   const {s,text}=d;s.groups??=[];s.autoLayouts??=[];
   const heading=o.heading??p.heading,body=o.body??p.body;
   const title=text(heading,84,138,body?800:1276,134,'heading',c.id==='proposal'?64:58,'ink',{textSizing:'auto-height',clipText:false}),titleGroup=uid('flow');
@@ -38,7 +38,7 @@ export function composeTemplateBlock(c:TemplateCollection,p:TemplatePage,id:Layo
   s.autoLayouts.push({id:titleGroup,name:'Page title',direction:'vertical',gap:0,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',columns:1,x:84,y:138,w:body?800:1276,h:134,textFitHeight:134,widthMode:'fixed',heightMode:'hug',order:[title.id]});
   if(body){const e=text(body,924,138,436,134,'body',24,'muted',{textSizing:'auto-height'}),g=uid('flow');e.group=g;e.layoutItem={widthMode:'fill',heightMode:'fixed',basisFontSize:24};s.groups.push({id:g,name:'Page introduction'});s.autoLayouts.push({id:g,name:'Page introduction',direction:'vertical',gap:0,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',columns:1,x:924,y:138,w:436,h:134,textFitHeight:134,widthMode:'fixed',heightMode:'hug',order:[e.id]});}
   const reading=templatePageGrid(c.id,id);
-  const frame={...reading.full,y:294,h:402},block=createDeckBlock(kind,options,page,s,frame),placed=placeDeckBlock(block,frame,s.id);
+  const frame={...reading.full,y:282,h:426},block=createDeckBlock(kind,options,page,s,frame),placed=placeDeckBlock(block,frame,s.id);
   if(block.fitIssues.length)throw new Error(`${block.fitIssues[0]} Choose Reading density or continue on another slide.`);
   for(const op of placed.operations){if(op.op==='set_group')s.groups.push(op.group);else if(op.op==='add_element')s.elements.push(op.element);}
   const group=s.groups.find(g=>g.id===placed.groupId)!;

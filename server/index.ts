@@ -115,7 +115,7 @@ const server = createServer(async (req, res) => {
     }
     if (path === '/api/ai/propose' && req.method === 'POST') {
       const b = await json(req), deck = validateDeck(b.deck);
-      const runOptions={services:editingServices,workflowServices:b.creation?undefined:workflowServices(googleSession),creation:b.creation,history:b.history};
+      const runOptions={services:editingServices,workflowServices:b.creation?undefined:workflowServices(googleSession),creation:b.creation,reviewEvidence:Boolean(b.creation),activeSlideId:b.activeSlideId,history:b.history};
       const controller=new AbortController();
       const abort=()=>{if(!res.writableEnded)controller.abort();};res.once('close',abort);
       try {

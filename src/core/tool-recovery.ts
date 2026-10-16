@@ -12,6 +12,7 @@ export function toolFailure(error:unknown,context:{tool?:string;deckId?:string}=
  else if(/expired|reference.*found/i.test(message)){code='EXPIRED_REFERENCE';recovery='Prepare this recipe or resource again, then use its new reference.';next={action:'prepare_again'};}
  else if(/another editor|already running/i.test(message)){code='ACTION_IN_PROGRESS';recovery='Read the existing receipt; do not resend a running action.';next={tool:'list_workflows',arguments:{deckId:context.deckId,status:'active'}};}
  else if(/connect|authorization|credentials|API key|sign.in/i.test(message)){code='CONNECTION_REQUIRED';recovery='Use the native connection UI. Never put credentials in tool arguments.';next={tool:'get_connection_status',arguments:{},userActionRequired:true};}
+ else if(/resource/i.test(message)&&/not found|does not exist|unknown|unavailable/i.test(message)&&['prepare_resource','prepare_asset_replacements','propose_page_edits'].includes(context.tool??'')){code='RESOURCE_NOT_FOUND';recovery='Search the resource library for the intended kind and query. Use an actual returned resource ID, never a placeholder or guessed ID.';next={tool:'search_resources',action:'find_actual_resource_id'};}
  else if(/no longer exists|not found|does not exist/i.test(message)){code='NOT_FOUND';recovery='Read current IDs before retrying.';next={tool:'read_deck',arguments:{deckId:context.deckId,detail:'outline'}};}
  else if(/Unknown|Choose|Provide|Supply|Invalid|at least|Use each|duplicate|already included|already creates/i.test(message)){code='INVALID_ARGUMENTS';recovery='Correct the arguments using the indicated requirement; preserve the original scope.';next={tool:context.tool,action:'correct_arguments'};}
  else if(value?.status===429||/timed out|timeout|unavailable|network/i.test(message)){code='TEMPORARILY_UNAVAILABLE';retryable=true;recovery='Retry the read later. Check an existing write receipt before resending it.';next={action:'retry_read_or_check_receipt'};}
@@ -23,6 +24,9 @@ export function mcpInputSchema(schema:z.AnyZodObject):z.AnyZodObject {
   if(item instanceof z.ZodOptional)return map(item.unwrap()).nullable().optional();
   if(item instanceof z.ZodDefault)return map(item.removeDefault()).nullable().optional();
   if(item instanceof z.ZodObject)return z.object(Object.fromEntries(Object.entries(item.shape).map(([key,value])=>[key,map(value as z.ZodTypeAny)]))).strict();
+  if(item instanceof z.ZodNullable)return map(item.unwrap()).nullable();
+  if(item instanceof z.ZodUnion)return z.union(item.options.map(map));
+  if(item instanceof z.ZodTuple)return z.tuple(item.items.map(map) as any);
   if(item instanceof z.ZodArray){let result=z.array(map(item.element));if(item._def.minLength)result=result.min(item._def.minLength.value);if(item._def.maxLength)result=result.max(item._def.maxLength.value);return result;}
   return item;
  };return map(schema) as z.AnyZodObject;

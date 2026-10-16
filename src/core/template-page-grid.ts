@@ -184,13 +184,34 @@ export function placeTemplateOnGrid(slide:Slide,collection:CollectionId,page:Lay
   };
   if(page==='problem')flowRows('Problem fields',layouts.filter(l=>/^Problem \d+$/.test(l.name)),7,5,330,grid.bottom);
   if(page==='decision')flowRows('Decision reasons',layouts.filter(l=>/^Decision reason \d+$/.test(l.name)),6,6,308,700);
+  if(s.template?.variant.startsWith('list-')){
+    const titles=layouts.filter(l=>/^Insight \d+$/.test(l.name)).sort((a,b)=>a.y-b.y),rows:GroupLayout[]=[];
+    for(const title of titles){
+      const index=Number(title.name.split(' ').at(-1)),body=layouts.find(l=>l.name===`Insight explanation ${index}`),rule=s.elements.find(e=>e.type==='line'&&!e.group&&Math.abs(e.y-(title.y-14))<1),number=s.elements.find(e=>e.type==='text'&&!e.group&&e.text===String(index).padStart(2,'0')&&Math.abs(e.y-title.y)<4);
+      if(!body||!rule||!number)continue;
+      const rowId=uid('flow'),contentId=uid('flow');groups.push({id:rowId,name:`Insight row ${index}`},{id:contentId,name:`Insight row contents ${index}`,parent:rowId,layoutItem:{widthMode:'fill',heightMode:'fixed'}});
+      for(const [child,start,count] of [[title,1,3],[body,4,8]] as const){const group=groups.find(g=>g.id===child.id)!;group.parent=contentId;group.layoutItem={widthMode:'fixed',heightMode:'fixed'};const area=grid.span(start,count);child.x=area.x;child.w=area.w;for(const e of s.elements.filter(e=>child.order.includes(e.id))){e.x=area.x;e.w=area.w;}}
+      Object.assign(number,grid.span(0,1),{group:contentId,layoutItem:{widthMode:'fixed',heightMode:'fixed'}});rule.group=rowId;rule.layoutItem={widthMode:'fill',heightMode:'fixed'};
+      layouts.push({id:contentId,name:`Insight row contents ${index}`,direction:'horizontal',columns:1,gap:grid.layout.gutter,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',...grid.full,y:title.y,h:title.h,widthMode:'fixed',heightMode:'hug',order:[number.id,title.id,body.id]});
+      const row:GroupLayout={id:rowId,name:`Insight row ${index}`,direction:'vertical',columns:1,gap:14,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',...grid.full,y:rule.y,h:title.h+16,widthMode:'fixed',heightMode:'hug',order:[rule.id,contentId]};layouts.push(row);rows.push(row);
+    }
+    flowRows('Insight rows',rows,0,12,300,grid.bottom,12);
+  }
   if(page==='risks'){
-    for(const label of layouts.filter(l=>/^Risk \d+$/.test(l.name)))label.textFitHeight=48;
     const title=layouts.find(l=>l.name==='Page title');if(title)title.h=title.textFitHeight=134;
     s.elements=s.elements.filter(e=>!(e.type==='line'&&e.y>=330&&e.y<700&&e.w>1000));
     const children=layouts.filter(l=>/^Risk \d+$|^Response \d+$|^Risk response \d+$|^Risk owner \d+$/.test(l.name)).sort((a,b)=>Number(a.name.match(/(\d+)$/)![1])-Number(b.name.match(/(\d+)$/)![1])||a.x-b.x);
-    if(children.length){const owners=children.some(l=>l.name.startsWith('Risk owner ')),rowY=owners?328:286,id=uid('flow');groups.push({id,name:'Risk rows'});for(const child of children){const group=groups.find(g=>g.id===child.id)!;group.parent=id;group.layoutItem={widthMode:'fixed',heightMode:'fixed'};}
-      layouts.push({id,name:'Risk rows',direction:'grid',columns:owners?3:2,gap:grid.span(3,6).x-(grid.span(0,2).x+grid.span(0,2).w),lineGap:8,gridSizing:'content',padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',...grid.full,y:rowY,h:(owners?grid.bottom:690)-rowY,widthMode:'fixed',heightMode:'fixed',order:children.map(l=>l.id)});bindings.push({id,name:'Risk rows',start:0,span:12,inset:0,kind:'columns'});
+    if(children.length){const owners=children.some(l=>l.name.startsWith('Risk owner ')),columns=owners?3:2,rowY=owners?328:304,rows:GroupLayout[]=[];
+      for(let i=0;i<children.length;i+=columns){const cells=children.slice(i,i+columns),id=uid('flow'),y=rowY+rows.length*120;
+        groups.push({id,name:`Risk row ${rows.length+1}`});
+        for(const [column,child]of cells.entries()){const group=groups.find(g=>g.id===child.id)!;group.parent=id;group.layoutItem={widthMode:'fixed',heightMode:'fixed'};
+          if(!owners){const area=grid.span(column?4:0,column?8:3);child.x=area.x;child.w=area.w;for(const e of s.elements.filter(e=>child.order.includes(e.id))){e.x=area.x;e.w=area.w;}}
+          child.textFitHeight=Math.max(80,child.textFitHeight??80);
+        }
+        const gap=cells[1].x-cells[0].x-cells[0].w;
+        const row:GroupLayout={id,name:`Risk row ${rows.length+1}`,direction:'horizontal',columns:1,gap,padding:{top:0,right:0,bottom:0,left:0},align:'start',justify:'start',...grid.full,y,h:80,widthMode:'fixed',heightMode:'hug',order:cells.map(l=>l.id)};layouts.push(row);rows.push(row);
+      }
+      flowRows('Risk rows',rows,0,12,rowY,690,24);
     }
   }
   if(page==='annotation'){

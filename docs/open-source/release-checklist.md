@@ -32,3 +32,9 @@ Decksprig, Duoquill and Clovlets were confirmed by the owner after dated public 
 ## Consistency release 0.1.3
 
 Current source, browser edition and local download use Decksprig 0.1.3. Speaker/OAuth copy, project-owned demonstration labels, website templates, crawler metadata and launch links use the current name and working public URLs. Self-host origin verification includes sitemap, robots, presentation credits and downloadable template metadata. Original artwork, SVG source comments, hashes and compatibility IDs are preserved. Local verification: 0 type errors/warnings, 960 passing tests, native and browser builds passed. Publication acceptance also checks the actual source/browser packages and desktop/mobile first-use, export and reload flows.
+
+## Authoring and presentation release 0.1.4
+
+Creation plans now follow the audience, delivery mode and supplied material. Templates expose actual authoring requirements and support compatible compositions. Grounded speaker explanations are retained; page review reports concrete quoted mismatches. Prepared edits can be inspected for content and native text fit before creating an atomic proposal. Data corrections can also update dependent captions and conclusions. Native titles use balanced wrapping, and content fields allow complete explanations without the former 200-character cutoff.
+
+AI session helpers load when needed, keeping the native startup bundle within the existing 450 KB budget. Provider-independent tests use fixtures; no paid provider requests are part of the release check. Live provider behavior was exercised separately before this release and does not establish support for every model or integration.

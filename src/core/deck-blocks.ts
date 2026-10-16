@@ -17,7 +17,7 @@ export type DeckBlock={id:BlockId;name:string;w:number;h:number;elements:SlideEl
 type BlockSpec = {id: BlockId; label: string; category: Exclude<BlockCategory, 'All'>; description: string; aliases: string; min: number; max: number; fields: [string, string, string?]; items: BlockOptions['items']};
 const item = (label: string, detail = '', meta = '') => ({label, detail, meta});
 export const DECK_BLOCKS: readonly BlockSpec[] = [
-  {id:'architecture',label:'Architecture',category:'Diagrams',description:'Layers, services and connections',aliases:'system software cloud API 架构图 系统',min:4,max:10,fields:['Service','Responsibility'],items:[item('Web & mobile','User experience'),item('API gateway','Routing & authentication'),item('Identity','Access control'),item('Core services','Business logic'),item('Data platform','Storage & analytics')]},
+  {id:'architecture',label:'Architecture',category:'Diagrams',description:'Layers, services and connections',aliases:'system software cloud API 架构图 系统',min:2,max:10,fields:['Service','Responsibility'],items:[item('Web & mobile','User experience'),item('API gateway','Routing & authentication'),item('Identity','Access control'),item('Core services','Business logic'),item('Data platform','Storage & analytics')]},
   {id:'process',label:'Process flow',category:'Diagrams',description:'A sequence of steps',aliases:'workflow steps flowchart 流程图 步骤',min:2,max:8,fields:['Step','Description'],items:[item('Discover','Understand the problem'),item('Define','Align on the approach'),item('Design','Explore and test'),item('Deliver','Build and measure')]},
   {id:'organization',label:'Org chart',category:'Diagrams',description:'Teams and reporting lines',aliases:'organization hierarchy tree 组织架构 团队',min:3,max:10,fields:['Team or person','Role'],items:[item('Project lead','Direction & decisions'),item('Design','Research & experience'),item('Engineering','Build & quality'),item('Operations','Launch & support')]},
   {id:'agenda',label:'Agenda',category:'Planning',description:'A timed meeting or event schedule',aliases:'schedule meeting workshop calendar 日程 议程 会议 规划',min:2,max:12,fields:['Session','Purpose','Time'],items:[item('Welcome','Goals and introductions','09:00'),item('Context','What we know so far','09:15'),item('Working session','Explore ideas together','09:45'),item('Next steps','Decisions and owners','10:30')]},
@@ -42,10 +42,11 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   const minimum=frame&&['metrics','agenda','process','timeline','organization','roadmap','gantt','kanban','funnel'].includes(id)?1:spec.min;
   if(n<minimum||n>spec.max)throw new Error(`Use ${spec.min}–${spec.max} items for ${spec.label}.`);
   const scale=Math.min(page.width/1440,page.height/810),system=deckDesignSystem(page);
+  const presenting=Boolean(frame)&&options.density==='comfortable';
   const vertical=options.layout==='vertical';
   const W=frame?frame.w/scale:vertical?760:1000,H=frame?frame.h/scale:Math.max(vertical?720:520,['agenda','gantt'].includes(id)?100+n*(options.density==='compact'?48:58):id==='process'&&n>4?100+Math.ceil(n/3)*220:['architecture','organization'].includes(id)&&n>6?680:0);
   const group:SlideGroup={id:uid('block'),name:spec.label},elements:SlideElement[]=[],fitIssues:string[]=[];
-  const ink:ColorRole=slide?.backgroundStyle==='dark'?'onDark':'ink',padding=options.density==='compact'?16:24,gap=options.density==='compact'?12:24;
+  const ink:ColorRole=slide?.backgroundStyle==='dark'?'onDark':'ink',padding=options.density==='compact'||presenting?16:24,gap=options.density==='compact'?12:24;
   const top=options.showTitle&&options.title?78:padding,left=padding,right=W-padding,bottom=H-padding,width=right-left,height=bottom-top;
   const accentInk=(['ink','onDark','dark','background'] as ColorRole[]).sort((a,b)=>contrastRatio(system.colors[b],system.colors.accent)-contrastRatio(system.colors[a],system.colors.accent))[0];
   const panelInk=options.tone==='accent'?accentInk:options.tone==='plain'||options.tone==='outline'?ink:'ink';
@@ -53,8 +54,8 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   let itemIndex=-1;
   const add=(type:SlideElement['type'],attrs:Partial<SlideElement>)=>{
     const e=element(type,{...attrs,...(itemIndex>=0?{blockItem:itemIndex}:{}),group:group.id});let result=styledElement({...e,x:e.x*scale,y:e.y*scale,w:Math.max(1,e.w*scale),h:Math.max(1,e.h*scale),fontSize:Math.max(4,e.fontSize*scale),strokeWidth:e.strokeWidth*scale,radius:e.radius*scale},system,page);
-    if(type==='text'&&result.text){const min=Math.max(4,(options.density==='compact'?12:14)*scale);
-      const measure=()=>browserTextSize({...result,textSizing:'auto-height'}, {})??{w:result.w,h:inlineTextLines(result.text,result.fontSize,result.fontFamily,result.w)*result.fontSize*result.lineHeight+8*scale};
+    if(type==='text'&&result.text){const min=Math.max(4,(presenting?20:options.density==='compact'?12:14)*scale);
+      const measure=()=>browserTextSize({...result,textSizing:'auto-height'}, {})??{w:result.w,h:inlineTextLines(result.text,result.fontSize,result.fontFamily,result.w)*result.fontSize*result.lineHeight+2*scale};
       let size=measure();
       while(size.h>result.h+.5&&result.fontSize>min){result={...result,fontSize:Math.max(min,result.fontSize-scale)};size=measure();}
       if(result.design?.text)result.design={...result.design,textScale:result.fontSize/(system.typography[result.design.text].fontSize*scale)};
@@ -63,7 +64,8 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   };
   const box=(x:number,y:number,w:number,h:number,bar=false)=>{const fill:ColorRole=bar||options.tone==='accent'?'accent':'surface';add('rect',{name:bar?'Work period':'Panel',x,y,w,h,radius:options.tone==='plain'?0:8,fill:!bar&&(options.tone==='plain'||options.tone==='outline')?'transparent':system.colors[fill],stroke:options.tone==='outline'?system.colors.line:'transparent',strokeWidth:options.tone==='outline'?1.5:0,design:{...(!bar&&(options.tone==='plain'||options.tone==='outline')?{}:{fill}),...(options.tone==='outline'?{stroke:'line' as const}:{})}});};
   const text=(value:string,x:number,y:number,w:number,h:number,size=22,color:ColorRole=ink,bold=false,align:SlideElement['align']='left',role:TextRole='body')=>{
-    if(!value)return;const style=system.typography[role];add('text',{name:value.split('\n')[0].slice(0,100),text:value,x,y,w,h,fontSize:size*Math.max(1,Math.min(1.2,W/1000)),fontWeight:bold&&role==='body'?Math.max(500,style.fontWeight):style.fontWeight,lineHeight:style.lineHeight,align,textSizing:'fixed',clipText:true,design:{text:role,textScale:size*Math.max(1,Math.min(1.2,W/1000))/style.fontSize,fill:color,...(bold&&role==='body'?{overrides:['fontWeight' as const]}:{})}});
+    if(!value)return;const style=system.typography[role],requested=presenting?Math.max(size,bold?28:role==='caption'?22:24):size,multiplier=presenting?1:Math.max(1,Math.min(1.2,W/1000));
+    add('text',{name:value.split('\n')[0].slice(0,100),text:value,x,y,w,h,fontSize:requested*multiplier,fontWeight:bold&&role==='body'?Math.max(500,style.fontWeight):style.fontWeight,lineHeight:presenting?Math.min(1.3,style.lineHeight):style.lineHeight,align,textSizing:'fixed',clipText:true,design:{text:role,textScale:requested*multiplier/style.fontSize,fill:color,overrides:[...(bold&&role==='body'?['fontWeight' as const]:[]),...(presenting?['lineHeight' as const]:[])]}});
   };
   const line=(x1:number,y1:number,x2:number,y2:number,color:ColorRole='line')=>add('line',{name:'Connector',x:Math.min(x1,x2),y:Math.min(y1,y2),w:Math.max(1,Math.abs(x2-x1)),h:Math.max(1,Math.abs(y2-y1)),flipY:(x2-x1)*(y2-y1)<0,strokeWidth:2,stroke:system.colors[color],design:{stroke:color}});
   const labelHeight=(label:string,detail:string,w:number,h:number,preferred:number)=>{
@@ -83,9 +85,9 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
     const depths=items.map((_,i)=>depth(i)),levels=Math.max(...depths)+1;if(levels>4)throw new Error('Use up to four levels, or show peer nodes in a grid.');
     if(options.layout==='grid'){const cols=n===4?2:Math.min(3,n),rows=Math.ceil(n/cols),w=(width-gap*(cols-1))/cols,h=(height-gap*(rows-1))/rows;items.forEach((i,k)=>node(i,left+k%cols*(w+gap),top+Math.floor(k/cols)*(h+gap),w,h));}
     else{
-      const horizontal=options.layout==='horizontal'||options.layout==='auto'&&depths.some(d=>depths.filter(v=>v===d).length>4);
+      const horizontal=options.layout==='horizontal'||options.layout==='auto'&&depths.some(d=>depths.filter(v=>v===d).length>4),horizontalGap=Math.max(gap,64);
       const boxes=items.map((_,k)=>{const peers=depths.flatMap((d,index)=>d===depths[k]?[index]:[]),order=peers.indexOf(k);
-        if(horizontal){const w=(width-gap*(levels-1))/levels,h=Math.min(124,(height-gap*(peers.length-1))/peers.length);return {x:left+depths[k]*(w+gap),y:top+(height-(h+gap)*peers.length+gap)/2+order*(h+gap),w,h};}
+        if(horizontal){const w=(width-horizontalGap*(levels-1))/levels,h=Math.min(id==='architecture'?220:124,(height-gap*(peers.length-1))/peers.length);return {x:left+depths[k]*(w+horizontalGap),y:top+(height-(h+gap)*peers.length+gap)/2+order*(h+gap),w,h};}
         const long=options.showDetails&&(items[k].detail.length>80||[...items[k].detail].filter(c=>/[\u2e80-\uffff]/.test(c)).length>25),levelGap=items.some(i=>i.detail.length>80)?24:36,w=Math.min(long?560:320,(width-gap*(peers.length-1))/peers.length),h=(height-levelGap*(levels-1))/levels;return {x:left+(width-(w+gap)*peers.length+gap)/2+order*(w+gap),y:top+depths[k]*(h+levelGap),w,h};
       });
       boxes.forEach((child,k)=>{if(parents[k]<0)return;const parent=boxes[parents[k]];if(horizontal){const x=(parent.x+parent.w+child.x)/2;line(parent.x+parent.w,parent.y+parent.h/2,x,parent.y+parent.h/2,ink);line(x,parent.y+parent.h/2,x,child.y+child.h/2,ink);line(x,child.y+child.h/2,child.x,child.y+child.h/2,ink);}else{const y=(parent.y+parent.h+child.y)/2;line(parent.x+parent.w/2,parent.y+parent.h,parent.x+parent.w/2,y,ink);line(parent.x+parent.w/2,y,child.x+child.w/2,y,ink);line(child.x+child.w/2,y,child.x+child.w/2,child.y,ink);}});
@@ -102,10 +104,10 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
   }else if(['roadmap','kanban','comparison','metrics','swot'].includes(id)){
     if(vertical&&id!=='swot'){items.forEach((i,k)=>row(i,k));}
     else{const cols=id==='swot'||n===4&&options.layout==='auto'?2:options.layout==='grid'||options.layout==='auto'&&n>4?Math.min(3,n):n,rows=Math.ceil(n/cols),w=(width-gap*(cols-1))/cols,h=(height-gap*(rows-1))/rows;
-      items.forEach((i,k)=>{itemIndex=k;const x=left+k%cols*(w+gap),y=top+Math.floor(k/cols)*(h+gap),inset=20;box(x,y,w,h);
+      items.forEach((i,k)=>{itemIndex=k;const x=left+k%cols*(w+gap),y=top+Math.floor(k/cols)*(h+gap),inset=presenting&&id==='metrics'&&n>4?16:20;box(x,y,w,h);
         if(id==='metrics'){
-          const valueH=options.showMeta?Math.min(90,h*.28):0,labelH=h*.20,labelY=inset+(options.showMeta?valueH+8:0),detailY=labelY+labelH+8;
-          if(options.showMeta)text(i.meta,x+inset,y+inset,w-2*inset,valueH,Math.min(56,h*.26)*.86,options.tone==='accent'?accentInk:'accent',false,'left','heading');
+          const compactMetrics=presenting&&n>4,valueH=options.showMeta?(compactMetrics?52:presenting?Math.min(80,h*.36):Math.min(90,h*.28)):0,labelH=compactMetrics?30:presenting?36:h*.20,labelY=inset+(options.showMeta?valueH+(compactMetrics?4:6):0),detailY=labelY+labelH+(compactMetrics?4:6);
+          if(options.showMeta)text(i.meta,x+inset,y+inset,w-2*inset,valueH,compactMetrics?42:presenting?56:Math.min(56,h*.26)*.86,options.tone==='accent'?accentInk:'accent',false,'left','heading');
           text(i.label,x+inset,y+labelY,w-2*inset,labelH,24,panelInk,true);
           if(options.showDetails){const lines=i.detail.split('\n'),available=Math.max(16,h-inset-detailY);lines.forEach((v,j)=>text(v,x+inset,y+detailY+j*available/lines.length,w-2*inset,available/lines.length,20,panelMuted));}
         }
@@ -113,11 +115,11 @@ export function createDeckBlock(id:BlockId,input:BlockInput,page:Pick<Deck,'widt
       });
     }
   }else if(id==='gantt'){
-    const start=left+width*.28,col=(right-start)/options.periods,header=42,rowH=(height-header)/n;
-    for(let k=0;k<options.periods;k++){text(options.periodLabels[k]?.trim()||`W${k+1}`,start+k*col,top,col,28,18,ink,false,'center','caption');line(start+k*col,top+header,start+k*col,bottom);}
-    items.forEach((i,k)=>{itemIndex=k;const match=i.meta.match(/^\s*(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*$/);if(!match)throw new Error(`Enter a period range from 1–${options.periods}, such as 1–2.`);const a=Number(match[1]),b=Number(match[2]);if(a<1||b>options.periods)throw new Error(`Use periods from 1–${options.periods}.`);if(b<a)throw new Error('The end period must follow the start period.');const y=top+header+k*rowH;const labelH=labelHeight(i.label,i.detail,start-left-18,rowH-8,rowH*.55);text(i.label,left,y+4,start-left-18,labelH,22,ink,true);if(options.showDetails)text(i.detail,left,y+labelH+4,start-left-18,rowH-labelH-8,17,ink);box(start+(a-1)*col+6,y+8,(b-a+1)*col-12,rowH-16,true);});
+    const start=left+width*(presenting?.36:.28),col=(right-start)/options.periods,header=presenting?44:42,rowH=(height-header)/n;
+    for(let k=0;k<options.periods;k++){text(options.periodLabels[k]?.trim()||`W${k+1}`,start+k*col,top,col,presenting?34:28,18,ink,false,'center','caption');line(start+k*col,top+header,start+k*col,bottom);}
+    items.forEach((i,k)=>{itemIndex=k;const match=i.meta.match(/^\s*(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*$/);if(!match)throw new Error(`Enter a period range from 1–${options.periods}, such as 1–2.`);const a=Number(match[1]),b=Number(match[2]);if(a<1||b>options.periods)throw new Error(`Use periods from 1–${options.periods}.`);if(b<a)throw new Error('The end period must follow the start period.');const y=top+header+k*rowH;const labelH=presenting?Math.min(38,rowH*.45):labelHeight(i.label,i.detail,start-left-18,rowH-8,rowH*.55);text(i.label,left,y+4,start-left-18,labelH,22,ink,true);if(options.showDetails)text(i.detail,left,y+labelH+4,start-left-18,rowH-labelH-8,17,ink);box(start+(a-1)*col+6,y+8,(b-a+1)*col-12,rowH-16,true);});
   }else if(id==='funnel'){
-    const rowH=height/n;items.forEach((i,k)=>{itemIndex=k;const w=n===1?width:width-k*(width*.46/(n-1)),x=(W-w)/2,y=top+k*rowH;box(x,y,w,rowH-12);const labelH=labelHeight(i.label,i.detail,w*.6-24,rowH-24,rowH*.45);text(i.label,x+18,y+8,w*.6-24,labelH,24,panelInk,true);if(options.showDetails)text(i.detail,x+18,y+labelH+10,w*.6-24,rowH-labelH-24,18,panelMuted);if(options.showMeta)text(i.meta,x+w*.62,y+12,w*.38-18,rowH-28,24,panelInk,true,'right');});
+    const rowH=height/n;items.forEach((i,k)=>{itemIndex=k;const w=n===1?width:width-k*(width*.46/(n-1)),x=(W-w)/2,y=top+k*rowH,copyW=w*(presenting?.74:.6)-24;box(x,y,w,rowH-12);const labelH=presenting?Math.min(36,rowH*.4):labelHeight(i.label,i.detail,copyW,rowH-24,rowH*.45);text(i.label,x+18,y+8,copyW,labelH,24,panelInk,true);if(options.showDetails)text(i.detail,x+18,y+labelH+10,copyW,rowH-labelH-24,18,panelMuted);if(options.showMeta)text(i.meta,x+w*(presenting?.78:.62),y+12,w*(presenting?.22:.38)-18,rowH-28,24,panelInk,true,'right');});
   }
   group.block={kind:id,options,fingerprint:blockFingerprint(elements)};
   return {id,name:spec.label,w:W*scale,h:H*scale,elements,group,fitIssues};

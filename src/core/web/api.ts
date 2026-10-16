@@ -34,7 +34,7 @@ export async function browserJson(url:string,method='GET',body?:any,aiOptions:im
         resourceCatalog:()=>resources.browserResourceJson('/api/resources/catalog',new URLSearchParams(),'GET',undefined),
         importResource:input=>resources.browserResourceJson('/api/resources/import',new URLSearchParams(),'POST',input),
       };
-      return await ai.runAI(validateDeck(body.deck),body.prompt,body.scope,settings,{...aiOptions,services,workflowServices:body.creation?undefined:(await import('../workflow-client')).workflowServices,creation:body.creation,history:body.history});
+      return await ai.runAI(validateDeck(body.deck),body.prompt,body.scope,settings,{...aiOptions,services,workflowServices:body.creation?undefined:(await import('../workflow-client')).workflowServices,creation:body.creation,reviewEvidence:Boolean(body.creation),activeSlideId:body.activeSlideId,history:body.history});
     }
     catch(error){if(error instanceof TypeError)throw unavailable('The provider could not be reached from this browser. Check its browser access settings, or use the local edition.',502);throw error;}
   }

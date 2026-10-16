@@ -10,10 +10,10 @@ import {formatChartValue} from './chart-style';
 import {resolveGroupLayouts} from './object-layout';
 import {templatePageGrid} from './template-page-grid';
 
-const supported=new Set(['cover','summary','evidence','content','annotation','dashboard','category-chart','trend','composition','comparison','workstreams','matrix','hierarchy','case-study','decision','action-plan','appendix','freeform','agenda','insights','team','process','solution','timeline','gallery','table','quote','split','before-after','roadmap','metrics','risks']);
+const supported=new Set(['cover','summary','evidence','content','annotation','dashboard','category-chart','trend','composition','comparison','workstreams','matrix','hierarchy','case-study','decision','action-plan','appendix','freeform','agenda','insights','team','process','solution','timeline','gallery','table','quote','split','close','before-after','roadmap','metrics','risks']);
 export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:LayoutId,d:TemplatePainter,o:TemplateOptions={}):boolean{
   if(!supported.has(id))return false;
-  if(id==='cover'&&!o.noImage&&o.density!=='reading'){const width={portfolio:650,review:724,proposal:760,pitch:790,report:574,minimal:650}[c.id];if(inlineTextWidth(o.heading??p.heading,c.system.typography.title.fontSize,c.display)<=width*2)return false;}
+  if(id==='cover'&&!o.noImage&&!o.coverVisual&&o.density!=='reading'){const width={portfolio:650,review:724,proposal:760,pitch:790,report:574,minimal:650}[c.id];if(inlineTextWidth(o.heading??p.heading,c.system.typography.title.fontSize,c.display)<=width*2)return false;}
   const {s,text,shape,rule,label,image,photo,mockup}=d,reading=o.density==='reading';
   if(id==='quote'){s.background=c.system.colors.background;s.backgroundStyle='background';for(const e of s.elements.filter(e=>e.pageElement?.kind==='page-number')){e.fill=c.system.colors.muted;if(e.design)e.design.fill='muted';}}
   const contract=templateContract(id),n=o.items?.length??o.count??defaultTemplateCount(id);
@@ -56,7 +56,7 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     if(kind==='metrics')for(const e of s.elements.slice(start))if(e.animation)e.animation={...e.animation,trigger:'auto',order:1,duration:260,withTransition:false};
   };
   const nativeTable=(cells:string[][],y=286,h=412,box={x:84,w:1276})=>{
-    const e=element('table',{name:'Editable detail table',...box,y,h,fontFamily:c.body,fontSize:reading?26:28,lineHeight:1.2,fill:c.system.colors.ink,stroke:c.system.colors.line,cells,tableFit:{minimumFontSize:24,padding:8},design:{text:'body',textScale:(reading?26:28)/30,fill:'ink',stroke:'line',overrides:['lineHeight']}});s.elements.push(e);return e;
+    const e=element('table',{name:'Editable detail table',...box,y,h,fontFamily:c.body,fontSize:reading?26:28,lineHeight:1.2,fill:c.system.colors.ink,stroke:c.system.colors.line,cells,tableFit:{minimumFontSize:24,padding:8},tableStyle:{preset:'editorial',headerRow:true,borders:'rows',padding:8,verticalAlign:'middle',numericAlign:true},design:{text:'body',textScale:(reading?26:28)/30,fill:'ink',stroke:'line',overrides:['lineHeight']}});s.elements.push(e);return e;
   };
   const fullChart=(type:'bar'|'line'|'donut',labels:string[],values:number[],suffix='')=>{
     const chart:NonNullable<SlideElement['chart']>=o.chart?{...o.chart,adaptive:true}:{...sampleChart(),type,adaptive:true,colorRoles:['accent','ink','muted','line','surface'],labels,series:[{name:type==='line'?'Actual':'Atlas example',values}],legend:type==='donut',showValues:type!=='line',grid:type==='line',suffix,colors:[c.system.colors.accent,c.system.colors.ink,c.system.colors.muted,c.system.colors.line,c.system.colors.surface],textColor:c.system.colors.ink,source:type==='line'?'Illustrative Atlas data · May–Oct 2026':'Illustrative Atlas data · Q3 2026',forecastFrom:type==='line'?3:undefined};
@@ -64,7 +64,15 @@ export function composeProfessional(c:TemplateCollection,p:TemplatePage,id:Layou
     if(['trend','composition','category-chart'].includes(id))chart.sourceDisplay='caption';
     const e=element('chart',{name:p.name,x:84,y:284,w:1276,h:404,fontFamily:c.body,fontSize:26,fill:o.chartTheme==='local'?chart.colors[0]:c.system.colors.accent,stroke:o.chartTheme==='local'?chart.textColor:c.system.colors.ink,chart,design:{text:'body',textScale:26/30,...(o.chartTheme==='local'?{}:{fill:'accent',stroke:'ink'})}});s.elements.push(e);return e;
   };
-  if(id==='cover'){
+  if(id==='cover'&&o.coverVisual==='illustration'&&!o.noImage){
+    s.template.variant='illustrated';
+    flow('Cover introduction',[text(heading,84,220,724,280,'title',64),t(body,84,520,724,30,'muted')],84,220,724,440,30);
+    image('work-03-usability-test',880,230,480,360,'contain');rule(84,710,1276);
+  }else if(id==='close'){
+    s.background=c.system.colors.dark;s.backgroundStyle='dark';
+    flow('Closing takeaway',[text(heading,84,210,1150,244,'title',84,'onDark'),...(o.body?[text(o.body,84,490,1150,150,'body',32,'onDark')]:[])],84,210,1150,460,44);
+    for(const e of s.elements.filter(e=>e.pageElement)){e.fill=c.system.colors.onDark;if(e.design)e.design.fill='onDark';}
+  }else if(id==='cover'){
     flow('Cover introduction',[text(heading,84,176,o.noImage?1276:1040,306,'title',76)],84,176,o.noImage?1276:1040,306,0);
     flow('Cover context',[t(body,84,526,o.noImage?1276:870,32,'muted')],84,526,o.noImage?1276:870,166,0);
     if(!o.noImage)photo(1050,506,310,180,c.id==='minimal'?'minimal-orbit':c.id==='proposal'?'material':c.id==='pitch'?'glass':c.id==='report'?'ledger-folio':'paper');

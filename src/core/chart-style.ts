@@ -8,9 +8,4 @@ export function chartPresetPatch(id:ChartPreset):Partial<Chart>{
 export function chartPresetMatches(chart:Chart,id:ChartPreset){
   const p=chartPresetPatch(id);return chart.grid===p.grid&&chart.showValues===p.showValues&&chart.legend===p.legend&&JSON.stringify(chart.visual)===JSON.stringify(p.visual);
 }
-export function formatChartValue(chart:Pick<Chart,'prefix'|'suffix'|'numberFormat'>,value:number){
-  const f=chart.numberFormat;
-  if(!f)return `${chart.prefix}${value}${chart.suffix}`;
-  const number=new Intl.NumberFormat('en-US',{notation:f.notation??'standard',useGrouping:f.grouping??true,minimumFractionDigits:f.decimals,maximumFractionDigits:f.decimals??2}).format(value);
-  return `${chart.prefix}${number}${chart.suffix}`;
-}
+export {formatChartValue} from './chart-format';

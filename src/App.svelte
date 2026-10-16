@@ -56,7 +56,6 @@
   import NotificationOutlet from './components/NotificationOutlet.svelte';
   import { notificationUI } from './notification-ui.svelte';
   import {newAICreationState,saveAICreationBrief,clearAICreationBrief} from './core/ai-creation-state';
-  import {readAISession,saveAISession,appendAIHistory} from './core/ai-session';
   import type {Proposal} from './core/operations';
   import { uid, blankSlide, newDeck, type Deck, type SlideElement, type Slide } from './core/model';
   import { applyOperations, moveElements, ProposalSchema } from './core/operations';
@@ -314,9 +313,9 @@
   let uiMotion = $state<UIMotionPreference>('system');
   let aiCreation=$state(newAICreationState()),aiCreationSettingsReturn=$state(false),aiSessionVersion=$state(0);
   async function acceptAICreation(base:Deck,proposal:Proposal,request:string){base=$state.snapshot(base);proposal=$state.snapshot(proposal);
-    const {creationPreview}=await import('./core/ai-story-builder');const preview=creationPreview(base,proposal,aiCreation);const {embedTemplateArtwork}=await import('./core/templates');const portable=await embedTemplateArtwork(preview);proposal={...proposal,operations:proposal.operations.map(op=>op.op==='add_slide'?{...op,slide:portable.slides.find(s=>s.id===op.slide.id)!}:op)};if(editor.deck?.id!==base.id)await editor.create(base);if(editor.deck!.revision===proposal.baseRevision){editor.pending=proposal;editor.pendingId='';await editor.acceptProposal();}else await editor.flush();if(editor.pending||editor.dirty)throw new Error(editor.error||'The document could not be saved. Keep this draft and try again.');rememberDocument(base.id);const session=readAISession(base.id);saveAISession(base.id,{...session,scope:'deck',history:appendAIHistory(session.history,request,proposal.summary,'applied',editor.deck!.revision)});aiSessionVersion++;clearAICreationBrief();aiCreation=newAICreationState();modal='';showPanel('ai');editor.activeId=editor.deck!.slides[0].id;editor.notify('Document created');
+    const {creationPreview}=await import('./core/ai-story-builder');const preview=creationPreview(base,proposal,aiCreation.draftBrief??aiCreation);const {embedTemplateArtwork}=await import('./core/templates');const portable=await embedTemplateArtwork(preview);proposal={...proposal,operations:proposal.operations.map(op=>op.op==='add_slide'?{...op,slide:portable.slides.find(s=>s.id===op.slide.id)!}:op)};if(editor.deck?.id!==base.id)await editor.create(base);if(editor.deck!.revision===proposal.baseRevision){editor.pending=proposal;editor.pendingId='';await editor.acceptProposal();}else await editor.flush();if(editor.pending||editor.dirty)throw new Error(editor.error||'The document could not be saved. Keep this draft and try again.');rememberDocument(base.id);const {readAISession,saveAISession,appendAIHistory}=await import('./core/ai-session');const session=readAISession(base.id);saveAISession(base.id,{...session,scope:'deck',history:appendAIHistory(session.history,request,proposal.summary,'applied',editor.deck!.revision)});aiSessionVersion++;clearAICreationBrief();aiCreation=newAICreationState();modal='';showPanel('ai');editor.activeId=editor.deck!.slides[0].id;editor.notify('Document created');
   }
-    $effect(()=>{saveAICreationBrief({brief:aiCreation.brief,audience:aiCreation.audience,slideCount:aiCreation.slideCount,collection:aiCreation.collection,materials:aiCreation.materials});});
+    $effect(()=>{saveAICreationBrief({brief:aiCreation.brief,audience:aiCreation.audience,goal:aiCreation.goal,delivery:aiCreation.delivery,slideCount:aiCreation.slideCount,collection:aiCreation.collection,templateMode:aiCreation.templateMode,materials:aiCreation.materials});});
   let aiSettings = $state<AISettings>({provider: 'compatible', baseUrl: 'http://127.0.0.1:11434/v1', model: '', apiKey: ''});
   let health = $state<any>(null);
   let aiModels = $state<string[]>([]), aiConnection = $state('');
