@@ -24,6 +24,7 @@ await mkdir(resolve(out,'export-icons'),{recursive:true});
 for(const name of ['broadser.svg'])await cp(resolve(root,'public/export-icons',name),resolve(out,'export-icons',name));
 for(const name of ['favicon.svg','favicon.ico'])await cp(resolve(root,'public',name),resolve(out,name));
 await cp(resolve(root,'public/speaker.html'),resolve(out,'speaker.html'));
+await cp(resolve(root,'public/publication-preview.html'),resolve(out,'publication-preview.html'));
 for(const name of ['privacy.html','licenses.html','legal.css','licenses'])await cp(resolve(root,'public',name),resolve(out,name),{recursive:true});
 await mkdir(resolve(out,'examples'),{recursive:true});
 for (const name of ['decksprig-demo.deck.json', 'deckleaf-demo.deck.json']) await cp(resolve(root,'public/examples',name),resolve(out,'examples',name));
@@ -43,6 +44,9 @@ const websiteHeaders=await readFile(resolve(out,'_headers'),'utf8');
 if([...websiteHeaders.matchAll(/^\/assets\/\*\s*$/gm)].length!==1)throw new Error('Expected one website asset header block.');
 const editorHeaders=websiteHeaders.replace(/^\/assets\/\*\r?\n/m,`/assets/*\n  Content-Security-Policy: ${workerCsp}\n`);
 await writeFile(resolve(out,'_headers'),editorHeaders+`\n/app*\n  Content-Security-Policy: ${csp}\n  X-Robots-Tag: noindex\n\n/speaker*\n  Content-Security-Policy: ${csp}\n  X-Robots-Tag: noindex\n`);
+// Only this opaque sandbox hosts the generated HTML's inline player. The app
+// retains its hash-based script policy and never accepts document messages.
+await writeFile(resolve(out,'_headers'),(await readFile(resolve(out,'_headers'),'utf8'))+`\n/publication-preview.html\n  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https:; frame-src 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'self'; form-action 'none'; sandbox allow-scripts\n  X-Frame-Options: SAMEORIGIN\n  X-Robots-Tag: noindex\n`);
 const functions=resolve(root,'output/web-editor/functions');await mkdir(functions,{recursive:true});
 await bundle({entryPoints:[resolve(root,'netlify/functions/open-resources.ts')],outdir:functions,bundle:true,platform:'node',target:'node22',format:'cjs',define:{'import.meta.url':'__filename'},minify:true});
 const files={};

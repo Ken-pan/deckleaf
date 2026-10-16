@@ -13,18 +13,22 @@
  let busy=$state(''),error=$state(''),token=$state(''),connection=$state<{configured:boolean;connected:boolean;source?:string}>({configured:false,connected:false}),draft=$state<PublishDraft>(),preview=$state(''),html=$state.raw<Blob>();
  let connectionOpen=$state(false);
  let previewFrame=$state<HTMLIFrameElement>();
- const previewEscape='<script>addEventListener("keydown",e=>{if(e.key==="Escape"&&!e.isComposing&&!e.defaultPrevented){e.preventDefault();parent.postMessage("deck-studio-preview-escape","*");}},true);<\/script>';
+
  let disposed=false,timer:ReturnType<typeof setInterval>|undefined;
  onMount(()=>{connectionOpen=connectOnly;void status();if(!connectOnly)void prepare();});
- onDestroy(()=>{disposed=true;token='';if(preview)URL.revokeObjectURL(preview);if(timer)clearInterval(timer);});
+ onDestroy(()=>{disposed=true;token='';if(timer)clearInterval(timer);});
  async function status(){if(isBrowserEdition)return;try{connection=await api('/api/publishing/connection');}catch(e:any){if(!disposed)error=e.message;}}
  async function connect(){if(busy)return;busy='Connecting…';error='';try{connection=await api('/api/publishing/connection','PUT',{token});token='';if(connectOnly&&connection.connected)oncomplete?.({message:'Netlify connection verified',provider:'netlify',state:'connected'});}catch(e:any){error=e.message;}finally{busy='';}}
- async function prepare(){if(busy)return;busy='Preparing website…';error='';try{const deck=publicationDocument(await readDocument(),includeNotes);html=await (await import('../core/export')).buildHtml(deck);if(disposed)return;if(preview)URL.revokeObjectURL(preview);preview=URL.createObjectURL(new Blob([html,previewEscape],{type:'text/html'}));if(!isBrowserEdition)draft=await api('/api/publishing/prepare','POST',{deckId:deck.id,revision:deck.revision,html:await html.text()});if(draft)onprepared?.({message:'Website preview ready',artifactId:draft.id,provider:'netlify',state:'prepared'});}catch(e:any){if(!disposed)error=e.message;}finally{if(!disposed)busy='';}}
+ async function prepare(){if(busy)return;busy='Preparing website…';error='';try{const deck=publicationDocument(await readDocument(),includeNotes);html=await (await import('../core/export')).buildHtml(deck);if(disposed)return;preview='/publication-preview.html';if(!isBrowserEdition)draft=await api('/api/publishing/prepare','POST',{deckId:deck.id,revision:deck.revision,html:await html.text()});if(draft)onprepared?.({message:'Website preview ready',artifactId:draft.id,provider:'netlify',state:'prepared'});}catch(e:any){if(!disposed)error=e.message;}finally{if(!disposed)busy='';}}
  function downloadPackage(){if(!html)return;const url=URL.createObjectURL(html),link=document.createElement('a');link.href=url;link.download='presentation.html';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  async function check(){if(!draft)return;try{const latest=await api(`/api/publishing/${draft.id}`);if(disposed)return;draft=latest;if(latest.state==='published'){if(timer)clearInterval(timer);timer=undefined;busy='';oncomplete?.({message:'Presentation website published',url:latest.url,artifactId:latest.id,provider:'netlify',state:'published'});}else if(['failed','unknown'].includes(latest.state)){if(timer)clearInterval(timer);timer=undefined;busy='';error=latest.error||'The publication needs attention.';}}catch(e:any){if(!disposed){busy='';error=e.message;if(timer)clearInterval(timer);timer=undefined;}}}
  async function publish(){if(busy||!draft||!connection.connected)return;busy='Publishing website…';error='';try{draft=await api(`/api/publishing/${draft.id}/publish`,'POST',{confirmation:{deckId:draft.deckId,revision:draft.revision,sha256:draft.sha256}});if(disposed)return;if(draft!.state==='published'){busy='';oncomplete?.({message:'Presentation website published',url:draft!.url,artifactId:draft!.id,provider:'netlify',state:'published'});}else{let pending=false;timer=setInterval(async()=>{if(pending)return;pending=true;try{await check();}finally{pending=false;}},2000);}}catch(e:any){if(!disposed){error=e.message;busy='';if(draft)void check();}}}
 </script>
-<svelte:window onmessage={event=>{if(event.source===previewFrame?.contentWindow&&event.data==='deck-studio-preview-escape')onclose();}}/>
+<svelte:window onmessage={event=>{
+ if(event.source!==previewFrame?.contentWindow)return;
+ if(event.data==='deck-studio-preview-escape')onclose();
+ else if(event.data==='deck-studio-preview-ready'&&html){const frame=previewFrame,output=html;void output.text().then(content=>{if(!disposed&&frame===previewFrame&&html===output)frame?.contentWindow?.postMessage({type:'deck-studio-preview-render',html:content},'*');});}
+}}/>
 <Dialog title={connectOnly?'Connect Netlify':'Publish presentation website'} wide onclose={onclose}>
  <p class="dialog-intro">{connectOnly?'Connect Netlify to publish your presentation.':'Publishing makes this website public.'}</p>
  {#if !connectOnly}

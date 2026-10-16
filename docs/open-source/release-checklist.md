@@ -49,3 +49,5 @@ Search loading can be cancelled without a late popup. Native modal Tab order exc
 The development audit exercised 17 primary dialog types on desktop and simulated mobile, plus nested menus, formatting, tables/charts, prototype expansion, reduced motion and short viewports. The release candidate is verified separately for its public sample entry, browser storage, modal lifecycle, export downloads and existing startup budgets. External provider, physical-device, Safari and screen-reader acceptance remain separate.
 
 Optional sample-file preparation and Markdown export formatting load when requested, preserving the existing startup budget without changing their document path or output content.
+
+The hosted publication preview uses an isolated, same-origin frame with an opaque sandbox and a source-checked parent handshake. Its player policy is scoped to that frame; the main app keeps its existing script policy. Playback, nested source-panel Escape and original HTML downloads are checked under the hosted policies.

@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Presentation preview</title></head><body><p role="status">Preparing preview…</p><script>// Receives only the editor parent's generated export, inside an opaque sandbox.
+addEventListener('message',event=>{
+  if(parent===window||event.source!==parent||event.origin!==location.origin||event.data?.type!=='deck-studio-preview-render'||typeof event.data.html!=='string')return;
+  document.open();document.write(event.data.html);document.close();
+  addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&!event.defaultPrevented&&!event.isComposing&&event.keyCode!==229&&!document.querySelector('dialog:modal')){event.preventDefault();parent.postMessage('deck-studio-preview-escape','*');}
+  });
+});
+if(parent!==window)parent.postMessage('deck-studio-preview-ready','*');
+</script></body></html>
