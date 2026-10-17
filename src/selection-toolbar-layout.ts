@@ -7,6 +7,8 @@ export interface SelectionToolbarOptions { ids: string[]; editingId: string; rev
 export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOptions) {
   const stage = node.closest<HTMLElement>('.canvas-stage');
   if (!stage) return;
+  const footer = stage.closest('.stage-column')?.querySelector<HTMLElement>('.stage-footer');
+  const slot = footer?.querySelector<HTMLElement>('.canvas-dock-slot');
   let options = initial, frame = 0;
   let lastTextRect: ScreenRect | null = null;
   let textId = initial.editingId;
@@ -22,6 +24,23 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
     let boundary = canvasOverlayBounds(stage!);
     if (!boundary) { hide(); return; }
     const surface = stage!.parentElement!;
+    const contextDock = options.docked && footer && slot;
+    let dockBoundary: ScreenRect | null = null;
+    if (contextDock) {
+      const slotRect = slot.getBoundingClientRect(), footerRect = footer.getBoundingClientRect();
+      const leftTools = footer.querySelector<HTMLElement>('.canvas-utility-left')?.getBoundingClientRect();
+      const rightTools = footer.querySelector<HTMLElement>('.canvas-utility-right')?.getBoundingClientRect();
+      // Phones give the dock a stable row; wide footers share a row with utilities.
+      const area = slotRect.height ? slotRect : {
+        left: Math.max(footerRect.left, leftTools?.right ?? footerRect.left) + 8,
+        right: Math.min(footerRect.right, rightTools?.left ?? footerRect.right) - 8,
+        top: footerRect.top, bottom: footerRect.bottom,
+      };
+      const viewport = window.visualViewport;
+      dockBoundary = intersectRect(area, {left: viewport?.offsetLeft ?? 0, top: viewport?.offsetTop ?? 0,
+        right: (viewport?.offsetLeft ?? 0) + (viewport?.width ?? innerWidth),
+        bottom: (viewport?.offsetTop ?? 0) + (viewport?.height ?? innerHeight)});
+    }
     const header = surface.querySelector<HTMLElement>('.canvas-overlay-top');
     if (header?.offsetHeight) boundary.top = Math.max(boundary.top, header.getBoundingClientRect().bottom + 8);
     if (options.docked) {
@@ -30,6 +49,7 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
     }
     const status = surface.querySelector<HTMLElement>('.canvas-overlay-bottom');
     if (status?.offsetHeight) boundary.bottom = Math.min(boundary.bottom, status.getBoundingClientRect().top - 8);
+    if (dockBoundary) boundary = dockBoundary;
     if (boundary.right - boundary.left < 120 || boundary.bottom - boundary.top < 40) { hide(); return; }
     const elements = Array.from(render.querySelectorAll<HTMLElement>('[data-element-id]')).filter(el => options.ids.includes(el.dataset.elementId!));
     const draft = options.draft ? render.querySelector<HTMLElement>('.insertion-text-draft') : null;
@@ -53,14 +73,12 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
     const maxWidth = `${Math.floor(boundary.right - boundary.left - 16)}px`;
     if (node.style.maxWidth !== maxWidth) node.style.maxWidth = maxWidth;
     const rect = node.getBoundingClientRect();
-    // Short workspaces reserve a strip above the artwork, independent of the
-    // selected object's position. Enlarging the tools also enlarges that strip.
-    const space = options.docked ? `${Math.ceil(boundary.top - stage!.getBoundingClientRect().top + rect.height + 48)}px` : '';
-    if (stage!.style.getPropertyValue('--canvas-toolbar-space') !== space) {
-      if (space) stage!.style.setProperty('--canvas-toolbar-space', space);
-      else stage!.style.removeProperty('--canvas-toolbar-space');
-    }
-    const position = options.docked
+    const position = dockBoundary
+      ? rect.height <= boundary.bottom - boundary.top
+        ? {x: boundary.left + (boundary.right - boundary.left - rect.width) / 2,
+          y: boundary.top + (boundary.bottom - boundary.top - rect.height) / 2, placement: 'dock'}
+        : null
+      : options.docked
       ? intersectRect(anchor, boundary) && rect.height + 16 <= boundary.bottom - boundary.top
         ? {x: boundary.left + (boundary.right - boundary.left - rect.width) / 2, y: boundary.top + 8, placement: 'dock'}
         : null
@@ -76,6 +94,8 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
   hide();
   const resize = new ResizeObserver(schedule);
   resize.observe(stage); resize.observe(node);
+  if (footer) resize.observe(footer);
+  if (slot) resize.observe(slot);
   for (const region of stage.parentElement!.querySelectorAll('.canvas-overlay,.canvas-overlay-top,.canvas-overlay-bottom')) resize.observe(region);
   const canvas = stage.querySelector<HTMLElement>('.stage-canvas');
   if (canvas) resize.observe(canvas);
@@ -94,7 +114,6 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
   return {
     update(next: SelectionToolbarOptions) { options = next; schedule(); },
     destroy() {
-      stage!.style.removeProperty('--canvas-toolbar-space');
       cancelAnimationFrame(frame); resize.disconnect(); mutations.disconnect();
       document.removeEventListener('selectionchange', schedule);
       document.removeEventListener('scroll', schedule, true);
