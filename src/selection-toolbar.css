@@ -2,18 +2,12 @@
 .selection-context {
   position: fixed; left: 0; right: auto; top: 0; width: max-content; max-width: calc(100vw - 16px); visibility: hidden;
   flex-wrap: wrap; justify-content: center;
-  padding: 4px; gap: 4px; pointer-events: auto;
-  background: var(--surface-chrome); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-floating);
+  pointer-events: auto; z-index:25; align-content:start;
 }
 .selection-context { -webkit-tap-highlight-color:transparent; }
 .selection-completion-actions { display:flex; flex:none; gap:4px; }
 .canvas-touch-hint { display:none; }
-.selection-context > span { max-width: 120px; padding: 0 12px 0 8px; border-right: 1px solid var(--border-subtle); margin-right: 4px; }
-.selection-context button:not(:where([popover] button)) { border:0; box-shadow:none; background:transparent; min-width:36px; min-height:36px; height:auto; padding-block:6px; line-height:var(--ui-line-control); font-size:var(--ui-text); }
-.selection-context button:not(:where([popover] button)):is(:hover,:active,[aria-expanded='true']) { background:var(--state-hover); }
-.selection-context button:not(:where([popover] button))[aria-pressed='true'] { background:var(--state-selected); color:var(--text-link); }
-.selection-context button:not(:where([popover] button))[aria-pressed='mixed'] { background:var(--state-hover); }
+.selection-context > span { min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:var(--ui-meta); color:var(--text-secondary); max-width: 120px; padding: 0 12px 0 8px; border-right: 1px solid var(--border-subtle); margin-right: 4px; }
 .selection-context button:not(:where([popover] button)):disabled { color:var(--text-tertiary); }
 @media (max-width: 760px), (pointer: coarse) {
   .selection-context { gap:2px; }
@@ -21,5 +15,4 @@
   .canvas-keyboard-hint { display:none; }
   .canvas-touch-hint { display:inline; }
   .selection-context button:has(.selection-completion-label) { gap:4px; }
-  .selection-context button:not(:where([popover] button)) { min-width:44px; min-height:44px; padding-inline:8px; }
 }

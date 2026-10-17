@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { runInNewContext } from 'node:vm';
 import { createTypography } from '../src/core/typography';
+import {createImageRendering} from '../src/core/image-style';
 import { element } from '../src/core/model';
 
 test('downloaded HTML typography works in a context with no application imports', () => {
@@ -11,7 +12,7 @@ test('downloaded HTML typography works in a context with no application imports'
   const text = element('text', {padding: {top: 4, right: 8, bottom: 4, left: 8}});
   assert.match(styles.textBoxStyle(text), /padding:4px 8px 4px 8px/);
   assert.match(styles.runStyle({text: 'Independent export', bold: true, fontFamily: 'Manrope'}), /font-weight:700/);
-  assert.match(styles.imageStyle(element('image', {fit: 'contain'})), /object-fit:contain/);
+  assert.match(createImageRendering().imageStyle(element('image', {fit: 'contain'})), /object-fit:contain/);
 });
 
 test('portable HTML embeds repeated local evidence once without mutating source documents',async()=>{

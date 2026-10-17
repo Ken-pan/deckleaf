@@ -1,13 +1,15 @@
 <script lang="ts" generics="T extends Feature">
-  import { onDestroy, untrack } from 'svelte';
+  import { onDestroy, untrack, setContext } from 'svelte';
   import { loadFeature, type Feature, type FeatureProps } from '../features';
   import Dialog from './LazyDialog.svelte';
   import Button from './ui/Button.svelte';
   import EmptyState from './ui/EmptyState.svelte';
   import { CircleAlert } from '@lucide/svelte';
-  let { feature, props = {} as FeatureProps[T], onclose, modalTitle }: {feature: T; props?: FeatureProps[T]; onclose?: () => void; modalTitle?: string} = $props();
+  import InsertToolsFrame from './InsertToolsFrame.svelte';
+  let { feature, props = {} as FeatureProps[T], onclose, modalTitle, focusOrigin:providedFocusOrigin }: {feature: T; props?: FeatureProps[T]; onclose?: () => void; modalTitle?: string;focusOrigin?:HTMLElement|null} = $props();
   // Retain the real invoker across the loading dialog and the loaded feature.
-  const focusOrigin = untrack(() => modalTitle && typeof document !== 'undefined' ? document.activeElement as HTMLElement | null : null);
+  const focusOrigin = untrack(() => providedFocusOrigin ?? (modalTitle && typeof document !== 'undefined' ? document.activeElement as HTMLElement | null : null));
+  setContext('deck-studio-feature-focus',()=>modalTitle&&feature!=='presentation'?focusOrigin:null);
   onDestroy(() => {
     if (!modalTitle) return;
     queueMicrotask(() => {
@@ -26,7 +28,9 @@
 </script>
 
 {#snippet status(state:'loading'|'error')}
-  {#if toolbarFeature}
+  {#if feature==='insert-tools'}
+    <InsertToolsFrame failed={state==='error'} compact={Boolean((props as FeatureProps['insert-tools']).compact)}/>
+  {:else if toolbarFeature}
     <div class="feature-status feature-compact">
       <span role={state==='error'?'alert':'status'}>{#if state==='loading'}<span class="spinner" aria-hidden="true"></span>Loading controls…{:else}{toolbarName} could not load{/if}</span>
       {#if state==='error'}<Button variant="secondary" size="sm" onclick={() => window.location.reload()}>Refresh app</Button>{/if}

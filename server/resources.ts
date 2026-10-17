@@ -17,6 +17,10 @@ import {graphicSearchScore,graphicFacets,graphicInfo,normalizeGraphicRecipe} fro
 import {GraphicRecipeSchema,type GraphicRecipe} from '../src/core/graphic-recipe';
 export { resourceCatalog } from './resource-catalog';
 
+let iconLicenses: Promise<Record<string, {url: string}>> | undefined;
+function iconLicenseIndex() {
+  return iconLicenses ??= readFile(resolve('public/resources/licenses/index.json'), 'utf8').then(raw => JSON.parse(raw) as Record<string, {url: string}>).catch(error => {iconLicenses = undefined; throw error;});
+}
 const imageLimit = 12_000_000;
 const cache = new Map<string, {expires: number; page: ResourcePage}>();
 const photos = new Map<string, ResourceItem & {downloadUrl: string; thumbnailUrl: string}>();
@@ -86,7 +90,7 @@ async function iconItem(id: string): Promise<ResourceItem> {
   const set = ICON_SETS.find(s => s.id === prefix);
   if (!set || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name ?? '')) throw new Error('Unsupported icon collection.');
   const library = await iconLibrary(prefix), info = library.info;
-  const index = JSON.parse(await readFile(resolve('public/resources/licenses/index.json'), 'utf8'));
+  const index = await iconLicenseIndex();
   const resource: ResourceAttribution = {id: `iconify:${id}`, kind: 'icon', provider: set.label, title: name.replaceAll('-', ' '), creator: info.author.name, sourceUrl: `https://icon-sets.iconify.design/${prefix}/${name}/`, license: prefix === 'lucide' ? 'ISC / MIT (Feather)' : info.license.title, licenseUrl: index[prefix].url, attributionRequired: false, attribution: ''};
   return {...resource, attribution: attributionText(resource), previewUrl: `/api/resources/preview?id=${encodeURIComponent(resource.id)}`, width: library.data.width || 24, height: library.data.height || 24, colorable: true, collection: prefix};
 }

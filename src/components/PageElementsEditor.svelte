@@ -1,4 +1,6 @@
 <script lang="ts">
+  import {Trash2} from '@lucide/svelte';
+  import NumberField from './ui/NumberField.svelte';
   import {onMount} from 'svelte';
   import Notice from './ui/Notice.svelte';
   import {editor} from '../core/editor.svelte';
@@ -38,7 +40,9 @@
     if (scope === 'slide') return pageElementFitIssues(deck, preview.slide);
     return deck.slides.flatMap((slide, index) => slide.elements.some(e => e.pageElement && e.locked) ? [] : pageElementFitIssues(deck, setSlidePageElements(deck, slide, settings, index)));
   });
+  let numberValid=$state(true);
   function apply() {
+    if(!numberValid)return;
     if (fontsLoading || fitIssues.length) return;
     if (editor.deck?.id !== capturedId) {error = 'The document changed. Reopen Slide details.'; return;}
     const result = PageElementsSchema.safeParse(settings);
@@ -74,13 +78,13 @@
           </div>
           {#if settings.pageNumbers}<div class="number-fields">
             <label class="field-label">Format<select aria-label="Page number format" bind:value={settings.numberFormat}><option value="padded">01, 02, 03</option><option value="number">1, 2, 3</option><option value="total">1 / Total</option></select></label>
-            <label class="field-label">Start at<input aria-label="First page number" type="number" min="0" max="10000" step="1" bind:value={settings.startAt} /></label>
+            <NumberField label="First page number" prefix="Start at" preset="page" min={0} max={10000} value={settings.startAt} onvaliditychange={valid=>numberValid=valid} onchange={value=>settings.startAt=value}/>
           </div>{/if}
           <label class="field-label">Footer note<input aria-label="Footer note" bind:value={settings.footer} maxlength="300" placeholder="Confidential · Optional" /></label>
           <label class="field-label">Date<input aria-label="Date text" bind:value={settings.date} maxlength="100" placeholder="Optional" /></label>
           <div class="logo-settings">
             <span class="field-label">Logo</span>
-            {#if settings.logo}<div class="chosen-logo"><img src={settings.logo.src} alt="Selected logo" /><span>{settings.logo.name}</span><Button variant="secondary" onclick={() => settings.logo = undefined}>Remove</Button></div>{/if}
+            {#if settings.logo}<div class="chosen-logo"><img src={settings.logo.src} alt="Selected logo" /><span>{settings.logo.name}</span><Button tone="danger" aria-label="Remove logo" onclick={() => settings.logo = undefined}><Trash2 size={16}/>Remove</Button></div>{/if}
             <input bind:this={logoFile} class="logo-file" tabindex="-1" type="file" aria-label="Upload logo image" accept="image/png,image/jpeg,image/webp" onchange={e => void uploadLogo(e.currentTarget.files?.[0])} />
             <Button variant="secondary" onclick={() => logoFile.click()}>{settings.logo ? 'Replace image' : 'Add image'}</Button>
           </div>
@@ -101,7 +105,7 @@
     </div>
   </div>
   {#snippet footer()}<DialogFooter>
-    {#snippet actions()}<Button variant="secondary" onclick={onclose}>Cancel</Button><Button variant="primary" disabled={Boolean(fontsLoading || preview.error || lockedSlides || fitIssues.length)} onclick={apply}>Apply details</Button>{/snippet}
+    {#snippet actions()}<Button variant="secondary" onclick={onclose}>Cancel</Button><Button variant="primary" disabled={Boolean(!numberValid || fontsLoading || preview.error || lockedSlides || fitIssues.length)} onclick={apply}>Apply details</Button>{/snippet}
   </DialogFooter>{/snippet}
 </Dialog>
 
@@ -122,5 +126,5 @@
   p{margin:0}
   details summary{cursor:pointer;font-size:var(--ui-text);min-height:32px;align-content:center}
   .extra-settings{padding-top:16px}code{font-size:inherit;overflow-wrap:anywhere}
-  @media(max-width:760px){.page-elements-workspace{grid-template-columns:minmax(0,1fr);gap:24px}.page-elements-preview{order:-1}.check-label,details summary{min-height:44px}.number-fields input,.number-fields select{min-height:44px}}
+  @media(max-width:760px){.page-elements-workspace{grid-template-columns:minmax(0,1fr);gap:24px}.page-elements-preview{order:-1}.check-label,details summary{min-height:44px}.number-fields select{min-height:44px}}
 </style>

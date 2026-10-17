@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {element,blankSlide,newDeck} from '../src/core/model';
 import {tablePresentation,tablePresetStyle} from '../src/core/table-appearance';
-import {resizeTableColumns,tableColumnStyle} from '../src/core/table-columns';
+import {resizeTableColumns,resizeColumnWidths,tableColumnStyle} from '../src/core/table-columns';
 import {chartPointFromRender} from '../src/core/chart-points';
 import {sampleChart} from '../src/core/charts';
 import {renderChartSvg} from '../src/core/chart-render';
@@ -37,4 +37,8 @@ test('bar/pie/minimal-line points have source identities only in interactive can
     if(type==='line'||type==='area')assert.ok(editable.includes('data-chart-line-hit="true"'));
     assert.equal(JSON.stringify(e),before);assert.equal(renderChartSvg(e),plain);
   }
+});
+
+test('resizing an imported narrow column preserves its current minimum without jumping',()=>{
+ const widths=[10,100,90];assert.deepEqual(resizeColumnWidths(widths,0,0,40),widths);assert.deepEqual(resizeColumnWidths(widths,0,4,40),[14,96,90]);assert.deepEqual(resizeColumnWidths(widths,0,-4,40),widths);assert.deepEqual(resizeColumnWidths(widths,0,200,40),[70,40,90]);assert.deepEqual(widths,[10,100,90]);
 });

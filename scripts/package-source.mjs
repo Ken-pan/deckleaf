@@ -13,7 +13,7 @@ const candidate = join(output, '.decksprig-stage-' + releaseId);
 const finalCandidate = join(output, 'decksprig');
 if (relative(root, output).startsWith('..') || !relative(root, output).split(/[\\/]/).includes('output')) throw new Error('Source packages must be staged inside a project output directory.');
 const files = ['.gitignore', 'README.md', 'README.zh-CN.md', 'LICENSE', 'ASSET_LICENSES.md', 'PRIVACY.md', 'SECURITY.md', 'CONTRIBUTING.md', 'THIRD_PARTY_NOTICES.md', 'package.json', 'package-lock.json', 'index.html', 'brand.html', 'characters.html', 'svelte.config.js', 'tsconfig.json', 'vite.config.ts', 'netlify.toml', 'website.netlify.toml', 'docs/branding.md', 'docs/provenance.md'];
-const scripts = ['build-brand.mjs', 'adopt-brand.mjs', 'build-figma-plugin.mjs', 'check-startup.mjs', 'compress-assets.mjs', 'build-browser.mjs', 'build-browser-resources.ts', 'build-website.mjs', 'public-origin.mjs', 'build-character-library.mjs', 'review-character-library.ts', 'package-source.mjs', 'release-content.mjs', 'generate-notices.mjs', 'build-deck-graphics.mjs', 'build-release-demo.ts', 'refresh-website-templates.ts'];
+const scripts = ['build-template-covers.ts','public-assets.mjs','distribution.mjs','package-distribution.mjs','package-export-sources.mjs','build-template-fonts.py','build-icon-counts.mjs','check-startup.mjs','build-brand.mjs', 'adopt-brand.mjs', 'build-figma-plugin.mjs', 'check-startup.mjs', 'compress-assets.mjs', 'build-browser.mjs', 'build-browser-resources.ts', 'build-website.mjs', 'public-origin.mjs', 'build-character-library.mjs', 'review-character-library.ts', 'package-source.mjs', 'release-content.mjs', 'generate-notices.mjs', 'build-deck-graphics.mjs', 'build-release-demo.ts', 'refresh-website-templates.ts'];
 const resources = new Set(['blue-black-v1', 'characters-v1', 'deck-graphics-v1', 'doodles', 'illlustrations', 'licenses']);
 const motionExamples = new Set(['modern-transitions-showcase.html', 'modern-transitions-showcase.json', 'smart-motion-studies.html', 'smart-motion-studies.json', 'motion-prototype-fixture.html', 'motion-choreography-demo.html', 'motion-choreography-demo.json', 'decksprig-demo.deck.json', 'deckleaf-demo.deck.json']);
 const privateText = /\bim-(?:compare|collection|search)\b|portfolio\d{4}|\/Users\/[^/\s]+\/(?:Projects|Documents)\//;
@@ -41,7 +41,7 @@ for (const dir of ['src', 'server', 'tests', 'plugins', 'netlify', 'public', '.g
   await cp(resolve(root, dir), resolve(candidate, dir), {recursive: true, filter: publicFile});
 }
 await mkdir(join(candidate, 'scripts'));
-for (const script of scripts) await cp(join(root, 'scripts', script), join(candidate, 'scripts', script));
+for (const script of new Set(scripts)) await cp(join(root, 'scripts', script), join(candidate, 'scripts', script));
 await cp(join(root, 'docs/open-source'), join(candidate, 'docs/open-source'), {recursive: true, filter: path => !path.endsWith('research.md')});
 // Generator and regression-test source inputs must survive the ancestor filters.
 for (const input of ['public/brand/references/approved-logo-source.png', 'public/brand/references/approved-logo-vector.svg', 'public/brand/references/approved-logo-trace.json', 'public/resources/blue-black-v1/manifest.json', 'public/resources/characters-v1/reviews.json', 'public/examples/template-assets/paper-study.jpg']) {

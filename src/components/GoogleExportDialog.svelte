@@ -5,6 +5,7 @@
  import {keynoteState} from '../core/keynote-source';
  import Dialog from './Dialog.svelte';
  import {Button,DialogFooter} from './ui';
+ import {ChevronDown} from '@lucide/svelte';
  let {readDocument,onclose,oncomplete,onconnection}:{readDocument:()=>Promise<Deck>;onclose:()=>void;oncomplete?:(result:{url:string})=>void;onconnection?:(connected:boolean)=>void}=$props();
  let token=$state(''),busy=$state(false),error=$state(''),url=$state(''),configured=$state(false),connected=$state(false),connecting=$state(false),checking=$state(true),disconnecting=$state(false);
  let failedAction=$state<'check'|'connect'|'disconnect'|'export'>('check');
@@ -39,14 +40,14 @@
  }
  function retry(){if(working)return;if(failedAction==='check')void checkConnection();else if(failedAction==='connect')void connect();else if(failedAction==='disconnect')void disconnect();else void exporting();}
 </script>
-<Dialog title="Export to Google Slides" {onclose}>
+<Dialog class="ui-control-surface ui-property-surface" title="Export to Google Slides" {onclose}>
  {#if url}<p>Your copy is ready.</p><a class="text-btn primary" href={url} target="_blank" rel="noopener noreferrer">Open exported copy</a>
  {:else}<p class="dialog-intro">Export a copy with text and slide visibility changes.</p>
  <p class="hint">For layout or style changes, export PowerPoint instead.</p>
  {#if checking}<Notice tone="progress" message="Checking Google connection…"/>
  {:else if connected}<p role="status">Google is connected for this session.</p><Button variant="quiet" busy={disconnecting} onclick={disconnect} disabled={working}>Disconnect Google</Button><Button variant="quiet" busy={connecting} onclick={connect} disabled={working}>Choose source in Google</Button>
  {:else}<p class="hint">Choose the original presentation when connecting. Only selected files are accessible.</p>{#if !configured && !error}<p class="hint">Google sign-in is unavailable. Use an access token below.</p>{/if}{/if}
- {#if !connected}<details class="settings-disclosure"><summary>Use an access token</summary><div class="settings-disclosure-body"><label class="field-label">OAuth access token<input type="password" aria-label="OAuth access token for Google export" bind:value={token} autocomplete="off" disabled={working}/></label><p class="hint">Needs presentation and Drive copy access. Used for this export only.</p></div></details>{/if}
+ {#if !connected}<details class="settings-disclosure ui-control-disclosure"><summary><span>Use an access token</span><ChevronDown size={14}/></summary><div class="settings-disclosure-body"><label class="field-label">OAuth access token<input class="ui-property-input" type="password" aria-label="OAuth access token for Google export" bind:value={token} autocomplete="off" disabled={working}/></label><p class="hint">Needs presentation and Drive copy access. Used for this export only.</p></div></details>{/if}
  {#if busy||connecting||disconnecting}<Notice tone="progress" indicator={false} message={busy?'Creating an editable copy…':connecting?'Complete Google sign-in in the opened window.':'Disconnecting Google…'}/>{/if}{/if}
  {#if error}<Notice tone="error" title={failedAction==='export'?'Copy could not be exported':failedAction==='check'?'Connection status unavailable':'Google connection could not update'} message={error}>
   {#snippet actions()}<Button variant="secondary" disabled={working} onclick={retry}>Try again</Button>{/snippet}

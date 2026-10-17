@@ -7,7 +7,7 @@
   import { Button } from './ui';
   import Notice from './ui/Notice.svelte';
   let {kind, owner}: {kind: 'feedback' | 'toast'; owner?: HTMLDialogElement} = $props();
-  const active = $derived(owner ? notificationUI.dialog === owner : !notificationUI.dialog);
+  const active = $derived(owner ? notificationUI.dialog === owner : kind === 'feedback' || !notificationUI.dialog);
   function placement(node:HTMLElement) { if(!owner)return positionNotification(node); }
   const lifetime=$derived.by(()=>{
     const id=editor.noticeSequence;

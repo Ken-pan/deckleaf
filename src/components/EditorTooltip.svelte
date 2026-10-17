@@ -13,6 +13,36 @@
     let oldDescription: string | null = null;
     let pointerHeld = false, hoverPoint: {x: number; y: number} | null = null;
     let overBubble = false, bubbleBounds: {left:number;right:number;top:number;bottom:number} | undefined;
+    const names = new WeakMap<HTMLElement, string>();
+    function hasVisibleText(el: HTMLElement) {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const parent = node.parentElement;
+        if (!/[\p{L}\p{N}]/u.test(node.textContent ?? '') || !parent || parent.closest('svg,.sr-only,[aria-hidden="true"]')) continue;
+        const style = getComputedStyle(parent);
+        if (style.visibility !== 'visible' || style.clipPath === 'inset(50%)') continue;
+        const range = document.createRange(); range.selectNodeContents(node);
+        if (Array.from(range.getClientRects()).some(rect => rect.width > 0 && rect.height > 0)) return true;
+      }
+      return false;
+    }
+    function name(el: HTMLElement) {
+      if (el.closest('.number-property') || hasVisibleText(el)) return '';
+      const text = el.dataset.tooltip || el.getAttribute('aria-label') || names.get(el) || '';
+      return text.split(/\s*·\s*|\n|:\s*/)[0].trim();
+    }
+    function prepareButton(el: HTMLElement) {
+      const title = el.getAttribute('title');
+      if (title) {
+        // Preserve a title-only icon's accessible name before removing native help.
+        names.set(el, title);
+        if (!el.hasAttribute('aria-label') && !hasVisibleText(el)) el.setAttribute('aria-label', title);
+        el.removeAttribute('title');
+      }
+      // Captions inside a labelled button must not create a second native tooltip.
+      for (const child of el.querySelectorAll('[title]')) child.removeAttribute('title');
+    }
     function hide() {
       clearTimeout(showTimer); clearTimeout(hideTimer); overBubble=false; bubbleBounds=undefined; if (!disposed) visible = false;
       if (bubble.matches(':popover-open')) bubble.hidePopover();
@@ -21,17 +51,24 @@
       anchor = null;
     }
     function deferHide() { clearTimeout(showTimer); clearTimeout(hideTimer); hideTimer = setTimeout(hide, 160); }
-    function target(event: Event) { return event.target instanceof Element ? event.target.closest<HTMLElement>('button[data-tooltip],button.icon-btn[aria-label]') : null; }
+    function target(event: Event) {
+      const el = event.target instanceof Element ? event.target.closest<HTMLElement>('button') : null;
+      if (el) prepareButton(el);
+      return el && name(el) ? el : null;
+    }
     function prepareTitles(root: ParentNode) {
       for (const el of root.querySelectorAll<HTMLElement>('button[title]')) {
-        el.dataset.tooltip = el.title; el.removeAttribute('title');
+        prepareButton(el);
       }
+      for (const el of root.querySelectorAll<HTMLElement>('button [title]')) el.removeAttribute('title');
     }
     prepareTitles(document);
     const observer = new MutationObserver(records => {
       for (const record of records) {
-        if (record.type === 'attributes' && record.target instanceof HTMLButtonElement && record.target.hasAttribute('title')) { record.target.dataset.tooltip = record.target.title; record.target.removeAttribute('title'); }
-        for (const node of record.addedNodes) if (node instanceof Element) { if (node instanceof HTMLButtonElement && node.title) { node.dataset.tooltip = node.title; node.removeAttribute('title'); } prepareTitles(node); }
+        if (record.type === 'attributes' && record.target instanceof HTMLElement && record.target.hasAttribute('title')) {
+          const button = record.target.closest<HTMLElement>('button'); if (button) prepareButton(button);
+        }
+        for (const node of record.addedNodes) if (node instanceof Element) { const button = node.closest<HTMLElement>('button'); if (button) prepareButton(button); prepareTitles(node); }
       }
     });
     observer.observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['title']});
@@ -39,8 +76,8 @@
       if (!el.isConnected || anchor !== el) return;
       if (document.querySelector('[data-context-menu]:popover-open')) { hide(); return; }
       if (pointerHeld || isPointerGestureActive()) { hide(); return; }
-      label = el.dataset.tooltip || el.getAttribute('aria-label') || '';
-      if (!label) return;
+      label = name(el);
+      if (!label) { hide(); return; }
       // Native dialogs and popovers own the top layer; follow the current trigger there.
       (el.closest('dialog[open], [popover]:popover-open') || document.body).append(bubble);
       visible = true;
@@ -88,8 +125,8 @@
     }
     function resumeHover() {
       if (!hoverPoint || pointerHeld || isPointerGestureActive()) return;
-      const el = document.elementFromPoint(hoverPoint.x, hoverPoint.y)?.closest<HTMLElement>('button[data-tooltip],button.icon-btn[aria-label]');
-      if (el) schedule(el, 450);
+      const el = document.elementFromPoint(hoverPoint.x, hoverPoint.y)?.closest<HTMLElement>('button');
+      if (el && name(el)) schedule(el, 450);
     }
     function beginPress(event: PointerEvent) { pointerHeld = true; if (event.pointerType === 'touch') hoverPoint = null; hide(); }
     function endPress() { pointerHeld = false; resumeHover(); }
@@ -102,10 +139,10 @@
     // Keep noninteractive help hoverable without intercepting the control beneath it.
     // The help layer is loaded on demand; include the hover/focus that loaded it.
     const focused = document.activeElement;
-    const hovered = document.querySelector<HTMLElement>('button[data-tooltip]:hover,button.icon-btn[aria-label]:hover');
-    if (focused instanceof HTMLElement && focused.matches(':focus-visible') && focused.matches('button[data-tooltip],button.icon-btn[aria-label]')) schedule(focused, 150);
-    else if (hovered) schedule(hovered, 450);
-
+    const hovered = document.querySelector<HTMLElement>('button:hover');
+    if (focused instanceof HTMLElement && focused.matches('button:focus-visible') && name(focused)) schedule(focused, 150);
+    else if (hovered && name(hovered)) schedule(hovered, 450);
+    
     document.addEventListener('pointerover', over); document.addEventListener('pointerout', out);
     document.addEventListener('focusin', focus); document.addEventListener('focusout', blur);
     document.addEventListener('pointermove', track, true);

@@ -2,19 +2,18 @@
   import {slideLabel} from './core/slide-label';
   import {presentationStartIndex} from './core/slide-visibility';
   import {selectedSlideActions} from './slide-selection-actions';
-  import { tick } from 'svelte';
-  import { ArrowLeft, ArrowRight, Plus, MousePointer2, Play, Upload, Download, Type, Square, Circle, Minus, Table2, ChartColumn, Settings2, Sparkles, FileText, Copy, Trash2, Scan, X, MoveUp, MoveDown, Layers, BookOpen, Info, SquareDashedMousePointer, ExternalLink, Eye, EyeOff } from '@lucide/svelte';
+  import { ArrowLeft, ArrowRight, ClipboardPaste, Scissors, Pencil, Plus, MousePointer2, Play, Type, Square, Circle, Minus, Table2, ChartColumn, Sparkles, FileText, Copy, Trash2, Scan, X, MoveUp, MoveDown, SquareDashedMousePointer, ExternalLink, Eye, EyeOff } from '@lucide/svelte';
   import { ResourcesIcon } from './components/icons/workspace-icons';
   import ContextMenu from './components/ui/ContextMenu.svelte';
   import { textContext } from './text-context-menu';
   import { editor } from './core/editor.svelte';
-  import { focusCanvasSelection, objectAction } from './editor-focus';
-  import {pasteFromClipboard,canvasPastePoint,slideClipboardActions} from './editor-clipboard';
+  import { focusCanvasSelection } from './editor-focus';
+  import {pasteFromClipboard,canvasPastePoint,copySelection} from './editor-clipboard';
   import type { ContextActions, ContextMenuItem, ContextRequest } from './context-menu';
   import type { LibraryDocument } from './core/document-library-view';
-  import type { PrimitiveInsertTool, InsertTool } from './core/insertion';
+  import type { PrimitiveInsertTool, CanvasTool } from './core/insertion';
   type Host = {
-    modal:string; library:LibraryDocument[]; presenting:boolean; proposalDeck:boolean; insertTool:InsertTool|null; canvasFocus:boolean; busy:boolean; contextKey:string;
+    modal:string; library:LibraryDocument[]; presenting:boolean; proposalDeck:boolean; insertTool:CanvasTool|null; canvasFocus:boolean; busy:boolean; contextKey:string;
     openModal:(name:string)=>void; cancelPointer:()=>void; finishInlineText:()=>void; cancelInsertion:()=>void;
     openDeck:(id:string)=>Promise<void>; beginRename:(id:string,title:string)=>void; duplicateDocument:(id:string)=>Promise<void>;
     returnCurrentVersion:()=>void; showPanel:(panel:'design'|'ai')=>void; closePresentation:()=>void; presentFrom:(id?:string)=>void;
@@ -26,11 +25,8 @@
   const contextKey=$derived(host.contextKey);
   let menu=$state<{openAt:(request:ContextRequest)=>void}>();
   export function openAt(request:ContextRequest){menu?.openAt(request);}
-  let contextAlignment=$state<{openAt:(rect:DOMRect)=>void}>();
-  let ContextAlignment=$state<typeof import('./components/AlignmentControls.svelte').default>();
-  async function openContextAlignment(rect:DOMRect){ContextAlignment??=(await import('./components/AlignmentControls.svelte')).default;await tick();contextAlignment?.openAt(rect);}
-  async function sceneContext({target,x,y}:ContextRequest):Promise<ContextActions|undefined> {
-    const {modal,library,presenting,proposalDeck,insertTool,canvasFocus,busy,openModal,cancelPointer,finishInlineText,cancelInsertion,openDeck,beginRename,duplicateDocument,returnCurrentVersion,showPanel,closePresentation,presentFrom,toggleSlideHidden,addSlideAfter,duplicateSlide,slideOrder,enterEditable,setZoom,openResources,insert,historyAction,setCanvasFocus,showLayers,openLibrary,openExport}=host;
+  async function sceneContext({target,x,y,keyboard}:ContextRequest):Promise<ContextActions|undefined> {
+    const {library,presenting,proposalDeck,insertTool,busy,openModal,cancelPointer,finishInlineText,cancelInsertion,openDeck,beginRename,duplicateDocument,returnCurrentVersion,showPanel,closePresentation,presentFrom,toggleSlideHidden,addSlideAfter,duplicateSlide,slideOrder,enterEditable,setZoom,openResources,insert}=host;
     const text=textContext(target,message=>editor.notify(message));if(text)return text;
     const action=(label:string,onselect:()=>void,icon?:ContextMenuItem['icon']):ContextMenuItem=>({label,onselect,icon});
     if(proposalDeck)return{label:'AI preview',items:[action('Return to current version',returnCurrentVersion,ArrowLeft),action('Review changes',()=>showPanel('ai'),Sparkles)]};
@@ -46,7 +42,7 @@
     const link=target.closest<HTMLAnchorElement>('a[href]');
     if(link)return {label:link.textContent?.trim()||'Link',items:[action('Open link',()=>link.click(),ExternalLink),{label:'Copy link',icon:Copy,onselect:()=>copyText(link.href)}]};
     const documentRow=target.closest<HTMLElement>('.doc-library-file[data-deck-id]');
-    if(documentRow){const item=library.find(d=>d.id===documentRow.dataset.deckId);if(item)return{label:item.title,items:[action('Open document',()=>void openDeck(item.id),FileText),action('Rename',()=>beginRename(item.id,item.title)),{label:'Duplicate document',icon:Copy,disabled:Boolean(busy)||Boolean(proposalDeck),onselect:()=>duplicateDocument(item.id)}]};}
+    if(documentRow){const item=library.find(d=>d.id===documentRow.dataset.deckId);if(item)return{label:item.title,items:[action('Open document',()=>void openDeck(item.id),FileText),action('Rename',()=>beginRename(item.id,item.title),Pencil),{label:'Duplicate document',icon:Copy,disabled:Boolean(busy)||Boolean(proposalDeck),onselect:()=>duplicateDocument(item.id)}]};}
     if(presenting)return{label:'Presentation',items:[action('Previous slide',()=>document.querySelector<HTMLButtonElement>('[aria-label="Previous slide or step"]')?.click(),ArrowLeft),action('Next slide',()=>document.querySelector<HTMLButtonElement>('[aria-label="Next slide or step"]')?.click(),ArrowRight),{...action('Exit presentation',closePresentation,X),divider:true}]};
     const thumb=target.closest<HTMLElement>('.slide-thumb[data-slide-id]');
     if(thumb&&editor.deck){
@@ -54,13 +50,24 @@
       const selection=window.getSelection(),range=returnFocus&&selection?.rangeCount?selection.getRangeAt(0).cloneRange():undefined;
       const slide=editor.deck.slides.find(s=>s.id===thumb.dataset.slideId);
       if(slide&&!editor.selectedSlides.includes(slide.id)){cancelPointer();finishInlineText();editor.chooseSlide(slide.id);}
-      if(slide&&editor.selectingSlides)return{label:`${editor.selectedSlides.length} slides selected`,items:selectedSlideActions(host.setSelectedSlidesHidden)};
+      if(slide&&editor.selectingSlides){
+        const actions=selectedSlideActions(host.setSelectedSlidesHidden);
+        const move=actions.filter(item=>item.label.startsWith('Move ')&&!item.disabled).map(item=>({...item,divider:false}));
+        const items:ContextMenuItem[]=actions.filter(item=>['Duplicate slides','Copy slides','Paste slides','Hide slides','Unhide slides'].includes(item.label)&&!item.disabled);
+        if(move.length)items.push({label:'Move slides',icon:MoveUp,divider:true,children:move});
+        items.push(...actions.filter(item=>['Done selecting','Delete slides'].includes(item.label)));
+        return{label:`${editor.selectedSlides.length} slides selected`,items};
+      }
       if(slide){const index=editor.deck.slides.indexOf(slide),start=presentationStartIndex(editor.deck.slides,index);return{label:slideLabel(index),returnFocus,restore:()=>{if(range&&returnFocus?.isConnected){selection?.removeAllRanges();selection?.addRange(range);}},items:[
         {label:slide.hidden?'Unhide slide':'Hide slide',icon:slide.hidden?Eye:EyeOff,shortcut:'⇧⌘H',onselect:()=>toggleSlideHidden(slide.id)},
-        ...slideClipboardActions(slide.id),
+        {label:'Cut slide',icon:Scissors,shortcut:'⌘X',disabled:editor.deck.slides.length<2,onselect:()=>copySelection({cut:true,slideId:slide.id})},
+        {label:'Copy slide',icon:Copy,shortcut:'⌘C',onselect:()=>copySelection({slideId:slide.id})},
+        {label:'Paste slides',icon:ClipboardPaste,shortcut:'⌘V',onselect:()=>pasteFromClipboard({slidesOnly:true})},
         action('Add slide after this',()=>addSlideAfter(slide.id),Plus),action('Duplicate slide',()=>duplicateSlide(slide.id),Copy),
-        {label:'Move earlier',icon:MoveUp,divider:true,disabled:index<1,onselect:()=>slideOrder(slide.id,-1)},
-        {label:'Move later',icon:MoveDown,disabled:index>=editor.deck.slides.length-1,onselect:()=>slideOrder(slide.id,1)},
+        ...(editor.deck.slides.length>1?[{label:'Move slide',icon:MoveUp,divider:true,children:[
+          ...(index>0?[action('Move earlier',()=>slideOrder(slide.id,-1),MoveUp)]:[]),
+          ...(index<editor.deck.slides.length-1?[action('Move later',()=>slideOrder(slide.id,1),MoveDown)]:[]),
+        ]}]:[]),
         {label:slide.hidden&&start!==null?`Present from slide ${start+1}`:'Present from here',icon:Play,disabled:start===null,onselect:()=>presentFrom(slide.id)},
         {label:'Delete slide',icon:Trash2,tone:'danger',divider:true,disabled:editor.deck.slides.length<2,onselect:()=>editor.commit([{op:'delete_slide',slideId:slide.id}])},
       ]};}
@@ -72,31 +79,28 @@
       const id=layer?.dataset.layerRow??object?.dataset.elementId??object?.dataset.chromeId;
       if(id){if(layer?.classList.contains('layer-group')){if(editor.selectedContainer!==id)editor.chooseGroup(id);}else if(!editor.selected.includes(id))editor.choose(id,false,Boolean(layer));}
       editor.hovered='';
-      if(editor.selection.length){const key=host.contextKey;const {objectContextActions}=await import('./object-context-actions');if(host.contextKey!==key)return;return objectContextActions({properties:()=>showPanel('design'),replace:id=>void openResources(id),align:()=>void openContextAlignment(new DOMRect(x,y,0,0)),pastePoint:canvas?canvasPastePoint(x,y):undefined});}
+      if(editor.selection.length){const key=host.contextKey;const {objectContextActions}=await import('./object-context-actions');if(host.contextKey!==key)return;return objectContextActions({fromLayer:Boolean(layer),properties:()=>showPanel('design'),replace:id=>void openResources(id)});}
     }
-    if(canvas||target.closest('.slide-rail,.layer-browser')){
+    if(target.closest('.slide-rail'))return{label:'Slides',items:[
+      action('Add slide',()=>openModal('layout'),Plus),
+      {label:'Paste slides',icon:ClipboardPaste,shortcut:'⌘V',onselect:()=>pasteFromClipboard({slidesOnly:true})},
+      {label:'Select all slides',icon:SquareDashedMousePointer,shortcut:'⌘A',onselect:()=>editor.selectAllSlides()},
+    ]};
+    if(canvas||target.closest('.layer-browser')){
       cancelPointer();finishInlineText();
       const items:ContextMenuItem[]=[
         ...(insertTool?[action('Cancel insertion',cancelInsertion,X)]:[]),
-        {label:'Paste',icon:Copy,shortcut:'⌘V',disabled:!editor.slide,onselect:()=>pasteFromClipboard()},
-        {label:'Paste as text',disabled:!editor.slide,onselect:()=>pasteFromClipboard({textOnly:true})},
-        {label:'Paste in place',shortcut:'⇧⌘V',disabled:!editor.slide,onselect:()=>pasteFromClipboard({inPlace:true})},
-        ...(canvas?[{label:'Paste here',disabled:!editor.slide,onselect:()=>pasteFromClipboard({point:canvasPastePoint(x,y)})}]:[]),
-        {label:'Insert',icon:Plus,disabled:!editor.slide,children:[action('Text',()=>insert('text'),Type),action('Rectangle',()=>insert('rect'),Square),action('Ellipse',()=>insert('ellipse'),Circle),action('Line',()=>insert('line'),Minus),action('Table',()=>insert('table'),Table2),action('Chart',()=>insert('chart'),ChartColumn),action('Resource library',()=>void openResources(),ResourcesIcon)]},
-        {label:'Select all objects',icon:SquareDashedMousePointer,shortcut:'⌘A',disabled:!editor.slide?.elements.length,onselect:()=>{editor.selectAll();void focusCanvasSelection();}},
-        {label:'Undo',shortcut:'⌘Z',divider:true,disabled:!editor.past.length,onselect:()=>historyAction('undo')},
-        {label:'Redo',shortcut:'⇧⌘Z',disabled:!editor.future.length,onselect:()=>historyAction('redo')},
-        {label:'View',icon:Scan,divider:true,children:[action('Fit to window',()=>setZoom('fit'),Scan),action('Actual size',()=>setZoom(1)),{label:'Layout guides',checked:editor.layoutGuides,onselect:()=>{editor.layoutGuides=!editor.layoutGuides;}},{label:'Focus canvas',checked:canvasFocus,onselect:()=>void setCanvasFocus(!canvasFocus)},action('Show layers',()=>{showLayers();},Layers)]},
+        {label:canvas&&!keyboard?'Paste here':'Paste',icon:ClipboardPaste,shortcut:'⌘V',disabled:!editor.slide,onselect:()=>pasteFromClipboard(canvas&&!keyboard?{point:canvasPastePoint(x,y)}:{})},
+        ...(canvas?[{label:'Insert',icon:Plus,disabled:!editor.slide,children:[action('Text',()=>insert('text'),Type),action('Rectangle',()=>insert('rect'),Square),action('Ellipse',()=>insert('ellipse'),Circle),action('Line',()=>insert('line'),Minus),action('Table',()=>insert('table'),Table2),action('Chart',()=>insert('chart'),ChartColumn),action('Resource library',()=>void openResources(),ResourcesIcon)]}]:[]),
+        ...(editor.slide?.elements.length?[{label:editor.editingGroup?'Select all group members':'Select all objects',icon:SquareDashedMousePointer,shortcut:'⌘A',onselect:()=>{editor.selectAll();void focusCanvasSelection();}}]:[]),
+        ...(canvas?[{...action('Fit to window',()=>setZoom('fit'),Scan),divider:true}]:[]),
         ...(editor.editingGroup?[action('Done editing group',()=>{editor.exitGroup();void focusCanvasSelection();},ArrowLeft)]:[]),
-        action('Add slide',()=>openModal('layout'),Plus),
-      ];return{label:target.closest('.slide-rail')?'Slides':target.closest('.layer-browser')?'Layers':'Canvas',items};
+      ];return{label:canvas?'Canvas':'Layers',items};
     }
-    const button=target.closest<HTMLElement>('button,summary,select');
-    if(button){const label=button.getAttribute('aria-label')||button.getAttribute('title')||button.textContent?.trim()||'Control';return{label,items:[{label:label.length>48?'Activate control':label,disabled:button.matches(':disabled,[aria-disabled="true"]'),onselect:()=>button.click()}]};}
-    const dialog=target.closest<HTMLDialogElement>('dialog:modal');
-    if(dialog){const label=dialog.querySelector('h2')?.textContent||'Dialog';return{label,items:[...(copied?.toString()?[{label:'Copy selected text',icon:Copy,onselect:()=>copyText(copied.toString())}]:[]),action('Close',()=>dialog.querySelector<HTMLButtonElement>('[aria-label^="Close"]')?.click(),X)]};}
-    return{label:'Decksprig',items:[...(copied?.toString()?[{label:'Copy selected text',icon:Copy,onselect:()=>copyText(copied.toString())}]:[]),action('Document library',()=>void openLibrary(),BookOpen),action('New document',()=>openModal('templates'),Plus),action('Import document',()=>openModal('import'),Upload),{label:'Export document',icon:Download,disabled:!editor.deck,onselect:openExport},{...action('Settings',()=>openModal('settings'),Settings2),divider:true},action('Keyboard shortcuts',()=>openModal('help'),Info)]};
+    // Ordinary controls already expose their own actions. Do not turn empty
+    // chrome into another document/settings menu.
+    if(copied?.toString())return{label:'Text',items:[{label:'Copy selected text',icon:Copy,onselect:()=>copyText(copied.toString())}]};
+    return;
   }
 </script>
 <ContextMenu bind:this={menu} resolve={sceneContext} {contextKey} allowRegistered={!host.proposalDeck} onerror={message=>editor.notify(message, 'warning')}/>
-{#if ContextAlignment}<ContextAlignment compact hiddenTrigger bind:this={contextAlignment}/>{/if}

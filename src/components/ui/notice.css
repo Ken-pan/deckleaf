@@ -17,7 +17,7 @@
 .ui-notice-actions > button { max-width:100%; height:auto; min-height:36px; white-space:normal; text-align:start; }
 .ui-notice .ui-notice-dismiss { margin:calc((var(--notice-first-line) - var(--notice-dismiss-size)) / 2) -4px calc((var(--notice-first-line) - var(--notice-dismiss-size)) / 2) 0; flex:none; }
 :root .ui-notice .ui-notice-dismiss:focus-visible { outline-offset:-3px; }
-.notification-feedback { display:flex; flex-direction:column; gap:8px; flex:none; padding:12px 16px; max-height:36%; overflow:auto; overscroll-behavior:contain; background:var(--surface-chrome); border-bottom:1px solid var(--border-subtle); }
+.notification-feedback { display:flex; flex-direction:column; gap:8px; flex:none; padding:12px 16px; max-height:36%; overflow:auto; overscroll-behavior:contain; background:var(--surface-chrome); border-bottom:1px solid var(--border-subtle); ;scrollbar-gutter:stable;}
 .notification-feedback:empty { display:none; }
 .notification-feedback .ui-notice { border-color:var(--border-subtle); }
 /* Wrapping is intrinsic: enlarged type naturally returns actions below copy. */
@@ -26,9 +26,9 @@
   .notification-feedback:not(.notification-in-dialog) .ui-notice-content:has(.ui-notice-actions) .ui-notice-copy { flex:1 1 32rem; }
   .notification-feedback:not(.notification-in-dialog) .ui-notice-actions { margin-top:0; }
 }
-.notification-outlet { position:fixed; width:360px; max-width:calc(var(--ui-viewport-width,100vw) - 24px); overflow:auto; z-index:var(--z-toast); border-radius:var(--r-popover); box-shadow:var(--shadow-floating); }
+.notification-outlet { position:fixed; width:360px; max-width:calc(var(--ui-viewport-width,100vw) - 24px); overflow:auto; z-index:var(--z-toast); border-radius:var(--r-popover); box-shadow:var(--shadow-floating); ;scrollbar-gutter:stable;}
 .notification-outlet .ui-notice { box-shadow:none; }
-.notification-outlet .ui-notice-content { max-height:calc(var(--notification-max-height,100dvh) - 26px); overflow:auto; overscroll-behavior:contain; }
+.notification-outlet .ui-notice-content { max-height:calc(var(--notification-max-height,100dvh) - 26px); overflow:auto; overscroll-behavior:contain; ;scrollbar-gutter:stable;}
 .notification-outlet[data-notification-hidden='true'] { visibility:hidden; pointer-events:none; }
 .notification-feedback.notification-in-dialog { padding:0; max-height:none; overflow:visible; background:none; border:0; margin-bottom:16px; }
 .notification-feedback.notification-in-dialog:empty { margin:0; }

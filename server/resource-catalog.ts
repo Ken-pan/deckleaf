@@ -1,18 +1,51 @@
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import iconCounts from './icon-counts.json';
 import { getIconData } from '@iconify/utils';
 import { ICON_SETS, DOODLES, resourceMatches, type ResourceCatalog } from '../src/core/resources';
 import { blueBlackLibrary } from './blue-black';
 import {graphicLibrary} from './deck-graphics';
 const require = createRequire(import.meta.url);
-const libraries = new Map<string, {data: any; info: any; names: string[]}>();
-export async function iconLibrary(prefix: string) {
-  if (!ICON_SETS.some(s => s.id === prefix)) throw new Error('Unsupported icon collection.');
-  const cached = libraries.get(prefix); if (cached) return cached;
-  const [raw, info] = await Promise.all([readFile(require.resolve(`@iconify-json/${prefix}/icons.json`), 'utf8'), readFile(require.resolve(`@iconify-json/${prefix}/info.json`), 'utf8')]);
-  const data = JSON.parse(raw), library = {data, info: JSON.parse(info), names: Object.keys(data.icons)};
-  libraries.set(prefix, library); return library;
+type IconInfo = {total: number; author: {name: string}; license: {title: string}};
+type IconLibrary = {data: any; info: IconInfo; names: string[]};
+const metadata = new Map<string, Promise<IconInfo>>();
+const libraries = new Map<string, Promise<IconLibrary>>();
+const counts = new Map<string, Promise<number>>();
+async function iconCount(prefix: string): Promise<number> {
+  let request = counts.get(prefix);
+  if (!request) {
+    request = (async () => {
+      const recorded = (iconCounts as Record<string, {version: string; count: number}>)[prefix];
+      const installed = require(`@iconify-json/${prefix}/package.json`).version;
+      if (recorded?.version === installed) return recorded.count;
+      // Development dependency updates remain correct before regenerating the index.
+      const data = JSON.parse(await readFile(require.resolve(`@iconify-json/${prefix}/icons.json`), 'utf8'));
+      return Object.keys(data.icons).length;
+    })().catch(error => {counts.delete(prefix); throw error;});
+    counts.set(prefix, request);
+  }
+  return request;
+}
+export function iconInfo(prefix: string): Promise<IconInfo> {
+  if (!ICON_SETS.some(s => s.id === prefix)) return Promise.reject(new Error('Unsupported icon collection.'));
+  let request = metadata.get(prefix);
+  if (!request) {
+    request = readFile(require.resolve(`@iconify-json/${prefix}/info.json`), 'utf8').then(raw => JSON.parse(raw) as IconInfo).catch(error => {metadata.delete(prefix); throw error;});
+    metadata.set(prefix, request);
+  }
+  return request;
+}
+export function iconLibrary(prefix: string): Promise<IconLibrary> {
+  if (!ICON_SETS.some(s => s.id === prefix)) return Promise.reject(new Error('Unsupported icon collection.'));
+  let request = libraries.get(prefix);
+  if (!request) {
+    request = Promise.all([readFile(require.resolve(`@iconify-json/${prefix}/icons.json`), 'utf8'), iconInfo(prefix)]).then(([raw, info]) => {
+      const data = JSON.parse(raw); return {data, info, names: Object.keys(data.icons)};
+    }).catch(error => {libraries.delete(prefix); throw error;});
+    libraries.set(prefix, request);
+  }
+  return request;
 }
 export async function localIcon(prefix: string, name: string) { const library = await iconLibrary(prefix); return getIconData(library.data, name); }
 export function iconStyle(prefix: string, name: string) {
@@ -50,7 +83,7 @@ export function illustrationCategory(text: string) {
 }
 
 export async function resourceCatalog(): Promise<ResourceCatalog> {
-  const collections = await Promise.all(ICON_SETS.map(async set => { const library = await iconLibrary(set.id); return {...set, count: library.names.length, license: library.info.license.title}; }));
+  const collections = await Promise.all(ICON_SETS.map(async set => { const info = await iconInfo(set.id); return {...set, count: await iconCount(set.id), license: info.license.title}; }));
   const count = (await illustrationLibrary()).length;
   return {iconCount: collections.reduce((sum, c) => sum + c.count, 0), illustrationCount: DOODLES.length + count + (await blueBlackLibrary()).length + (await graphicLibrary()).length, collections};
 }

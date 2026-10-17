@@ -20,6 +20,15 @@ for (const file of assets) {
   if (file.endsWith('.js')) javascript += size;
   if (file.endsWith('.css')) css += size;
 }
+// Browser-only transports must be removed before dependency discovery, rather
+// than emitted as unreachable chunks in the local distribution.
+if (process.env.VITE_DECK_RUNTIME !== 'browser' && Object.keys(manifest).some(key => key.startsWith('src/core/web/'))) {
+  throw new Error('Local build includes the browser-only backend. Keep transport imports behind build-time branches.');
+}
+const welcome = manifest['src/components/WorkspaceWelcome.svelte'];
+if (welcome && [...welcome.imports || [], ...welcome.dynamicImports || []].includes('src/core/templates.ts')) {
+  throw new Error('Welcome previews must use generated covers instead of generating full template stories. Run npm run build:previews.');
+}
 const deferred = /(?:ObjectInspector|ResourceLibrary|CharacterLibrary|AutoLayoutDialog|Presentation|FontLibrary|FidelityReview|AIPanel|MotionPanel|PrintDocument|CanvasLayoutGuides|CanvasContainerDrop|proposal-copy|arrangement-operations|pptx|pdf|export|google-native)/i;
 // Match the stable chunk name. A content hash may coincidentally contain
 // "pdf" or another feature name even when the chunk is editor infrastructure.

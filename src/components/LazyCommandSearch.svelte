@@ -3,7 +3,7 @@
   import {Search} from '@lucide/svelte';
   import Button from './ui/Button.svelte';
   import type {SearchAction} from '../search-actions';
-  let {actions,onexpand,class:className=''}:{actions:SearchAction[];onexpand:(query:string)=>void;class?:string}=$props();
+  let {actions,onexpand,onprepare,class:className=''}:{actions:SearchAction[];onexpand:(query:string)=>void;onprepare?:()=>Promise<void>;class?:string}=$props();
   let View=$state<typeof import('./ui/CommandSearch.svelte')['default']>();
   let handle=$state<{toggle:()=>void;close:()=>void;focus:()=>void}>(),loading=$state(false),requested=false;
   let host:HTMLDivElement;
@@ -11,7 +11,7 @@
   export function toggle(){
     if(handle){handle.toggle();return;}
     requested=!requested;if(loading||!requested)return;
-    loading=true;void import('./ui/CommandSearch.svelte').then(async (module)=>{const focused=host.contains(document.activeElement);View=module.default;await tick();if(requested){requested=false;handle?.toggle();}else if(focused&&document.activeElement===document.body)handle?.focus();}).catch(()=>{if(requested)onexpand('');requested=false;}).finally(()=>loading=false);
+    loading=true;void Promise.all([import('./ui/CommandSearch.svelte'),onprepare?.()]).then(async ([module])=>{const focused=host.contains(document.activeElement);View=module.default;await tick();if(requested){requested=false;handle?.toggle();}else if(focused&&document.activeElement===document.body)handle?.focus();}).catch(()=>{if(requested)onexpand('');requested=false;}).finally(()=>loading=false);
   }
   function cancel(event:KeyboardEvent){if(!requested||handle||event.isComposing||event.keyCode===229||!['Escape','Tab'].includes(event.key))return;requested=false;if(event.key==='Escape'){event.preventDefault();event.stopPropagation();}}
 </script>

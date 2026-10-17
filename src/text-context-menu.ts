@@ -1,3 +1,4 @@
+import {Undo2,Redo2,Scissors,Copy,ClipboardPaste,TextSelect} from '@lucide/svelte';
 import type { ContextActions, ContextMenuItem } from './context-menu';
 
 export function textContext(target: HTMLElement, report: (message: string) => void): ContextActions | undefined {
@@ -34,22 +35,25 @@ export function textContext(target: HTMLElement, report: (message: string) => vo
     catch { report('Clipboard access is unavailable. Use the keyboard shortcut.'); }
   }
   const items: ContextMenuItem[] = [
-    {label:'Undo', shortcut:'⌘Z', disabled:!writable || !document.queryCommandEnabled('undo'), onselect:() => {restore(); document.execCommand('undo');}},
-    {label:'Redo', shortcut:'⇧⌘Z', disabled:!writable || !document.queryCommandEnabled('redo'), onselect:() => {restore(); document.execCommand('redo');}},
-    {label:'Cut', shortcut:'⌘X', divider:true, disabled:!writable || !selected || secret, onselect:() => copy(true)},
-    {label:'Copy', shortcut:'⌘C', disabled:!selected || secret, onselect:() => copy()},
-    {label:'Paste', shortcut:'⌘V', disabled:!writable, onselect:async () => {
+    {label:'Undo',icon:Undo2, shortcut:'⌘Z', disabled:!writable || !document.queryCommandEnabled('undo'), onselect:() => {restore(); document.execCommand('undo');}},
+    {label:'Redo',icon:Redo2, shortcut:'⇧⌘Z', disabled:!writable || !document.queryCommandEnabled('redo'), onselect:() => {restore(); document.execCommand('redo');}},
+    {label:'Cut',icon:Scissors, shortcut:'⌘X', divider:true, disabled:!writable || !selected || secret, onselect:() => copy(true)},
+    {label:'Copy',icon:Copy, shortcut:'⌘C', disabled:!selected || secret, onselect:() => copy()},
+    {label:'Paste',icon:ClipboardPaste, shortcut:'⌘V', disabled:!writable, onselect:async () => {
       try {
         const text = await navigator.clipboard.readText();
         if (!field?.isConnected || input && input.value !== original || !input && (field.innerText !== originalText || range && !field.contains(range.commonAncestorContainer))) { report('The text changed. Open the menu again to paste.'); return; }
         replace(text);
       } catch { report('Clipboard access is unavailable. Use the keyboard shortcut.'); }
     }},
-    {label:'Select all', shortcut:'⌘A', divider:true, onselect:() => {
+    {label:'Select all',icon:TextSelect, shortcut:'⌘A', divider:true, onselect:() => {
       field.focus({preventScroll:true});
       if (input) input.select();
       else { const all = document.createRange(); all.selectNodeContents(field); selection?.removeAllRanges(); selection?.addRange(all); }
     }},
   ];
-  return {label:field.getAttribute('aria-label') || 'Text', items, restore};
+  const available=items.filter(item=>!item.disabled&&(item.label!=='Select all'||Boolean(input?original:originalText)));
+  if(!available.length)return;
+  available.forEach((item,index)=>{if(index===0)item.divider=false;});
+  return {label:field.getAttribute('aria-label') || 'Text', items:available, restore};
 }

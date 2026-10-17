@@ -33,15 +33,8 @@ export function mergeStylePreset(current:DesignSystem,preset:DesignSystem,scope:
   else for(const role of TEXT_ROLES)next.typography[role]={...next.typography[role],fontFamily:preset.typography[role].fontFamily,fontWeight:preset.typography[role].fontWeight};
   return next;
 }
-/** Changes only failing text roles, with the smallest tested blend toward black or white. */
-export function readableTextColor(foreground:string,background:string,target=4.5):string {
-  if(contrastRatio(foreground,background)>=target)return foreground;
-  const end=contrastRatio('#000000',background)>contrastRatio('#ffffff',background)?'#000000':'#ffffff';
-  const blend=(amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(foreground.slice(i,i+2),16)*(1-amount)+parseInt(end.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
-  // Integer RGB quantization is included in every contrast check.
-  for(let n=1;n<=100;n++){const candidate=blend(n/100);if(contrastRatio(candidate,background)>=target)return candidate;}
-  return end;
-}
+export {readableTextColor} from './color-contrast';
+import {readableTextColor} from './color-contrast';
 export function improveStyleContrast(system:DesignSystem):DesignSystem {
   const next=cloneDocumentData(system);
   next.colors.ink=readableTextColor(system.colors.ink,system.colors.background);

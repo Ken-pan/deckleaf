@@ -1,0 +1,40 @@
+/* Application chrome only. Native scrolling, wheel, touch and keyboard stay intact. */
+:root {
+  --scroll-thumb: color-mix(in srgb, var(--text-secondary) 60%, transparent);
+}
+
+#app * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+/* Reserve only vertical reading panes. Applying this to every overflow:hidden
+   box would shrink slide renders, clipped labels and nested dialog frames. */
+:where(.slide-list, .inspector-properties, .layer-list,
+  .modal-body:not(.dialog-workspace-body), .ui-popover-body,
+  .ui-action-menu, .ui-command-results, .canvas-controls-popover,
+  .canvas-layer-picker, textarea) {
+  scrollbar-gutter: stable;
+}
+
+/* Reveal by color only: hover/focus must never change scrollbar geometry. */
+@media (hover: hover) and (pointer: fine) and (not (any-pointer: coarse)) {
+  #app * {
+    scrollbar-color: transparent transparent;
+  }
+  #app *:is(:hover, :focus-within) {
+    scrollbar-color: var(--scroll-thumb) transparent;
+  }
+}
+
+/* On compact layouts these become horizontal or non-scrolling compositions. */
+
+@media (max-width: 1100px) {
+  .slide-list { scrollbar-gutter: auto; overflow-x: scroll; }
+}
+/* Respect the user's high-contrast scrollbar and target size. */
+@media (forced-colors: active) {
+  #app * {
+    scrollbar-width: auto;
+  }
+}

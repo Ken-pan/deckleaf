@@ -7,7 +7,8 @@ import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import { compileModule } from 'svelte/compiler';
 import { newDeck, blankSlide, element } from '../src/core/model';
-import {layoutItemOperations} from '../src/core/group-commands';
+import {beginPropertyGesture} from '../src/core/property-gesture';
+import {layoutItemOperations,canAddAutoLayout} from '../src/core/group-commands';
 import {createCanvasMoveScene} from '../src/core/canvas-container-move';
 import {selectMovedLayers} from '../src/core/moved-layer-selection';
 
@@ -25,6 +26,52 @@ const compiled=compileModule(javascript,{generate:'client',filename:'editor.svel
   .replace(/(['"])svelte\/internal\/client\1/g,()=>JSON.stringify(import.meta.resolve('svelte/internal/client')));
 await writeFile(join(directory,'editor.mjs'),compiled);
 const {Editor}=await import(pathToFileURL(join(directory,'editor.mjs')).href) as {Editor:new()=>EditorType};
+
+test('property drags form one undo entry across pauses and isolate the next gesture',()=>{
+  const e=new Editor(),slide=blankSlide();slide.elements=[element('rect',{id:'a',x:20})];e.deck=newDeck('Numeric gesture',[slide]);e.activeId=slide.id;e.choose('a');
+  try{
+    e.patch({x:30},'prop-x');
+    const drag=beginPropertyGesture(e);
+    drag.apply(()=>e.patch({x:40},'prop-x'));
+    e.lastMergeTime=0; // A long pause must not split the pointer gesture.
+    drag.apply(()=>e.patch({x:70},'prop-x'));drag.finish();
+    assert.equal(e.past.length,2);assert.equal(e.selection[0].x,70);
+    e.undo();assert.equal(e.selection[0].x,30);e.redo();assert.equal(e.selection[0].x,70);
+    const next=beginPropertyGesture(e);next.apply(()=>e.patch({x:80},'prop-x'));next.finish();
+    assert.equal(e.past.length,3);e.undo();assert.equal(e.selection[0].x,70);
+  }finally{clearTimeout(e.timer);}
+});
+
+test('cancelled property drags restore the value and redo history without touching a new selection',()=>{
+  const e=new Editor(),slide=blankSlide();slide.elements=[element('rect',{id:'a',x:20}),element('rect',{id:'b',x:200})];e.deck=newDeck('Cancel numeric gesture',[slide]);e.activeId=slide.id;e.choose('a');
+  try{
+    e.patch({x:30},'prop-x');e.undo();
+    const future=e.future;
+    const drag=beginPropertyGesture(e);drag.apply(()=>e.patch({x:50},'prop-x'));drag.finish(true);
+    assert.equal(e.selection[0].x,20);assert.equal(e.past.length,0);assert.equal(e.future,future);e.redo();assert.equal(e.selection[0].x,30);
+    const stale=beginPropertyGesture(e);e.choose('b');stale.apply(()=>e.patch({x:500},'prop-x'));stale.finish(true);
+    assert.equal(e.selection[0].x,200);
+  }finally{clearTimeout(e.timer);}
+});
+
+test('property gestures stop after an external revision and never roll it back',()=>{
+  const e=new Editor(),slide=blankSlide();slide.elements=[element('rect',{id:'a',x:20,y:30})];e.deck=newDeck('Interrupted numeric gesture',[slide]);e.activeId=slide.id;e.choose('a');
+  try{
+    const drag=beginPropertyGesture(e);assert(drag.apply(()=>e.patch({x:40},'prop-x')));
+    e.patch({y:90});assert.equal(drag.isCurrent(),false);
+    assert.equal(drag.apply(()=>e.patch({x:80},'prop-x')),false);assert.equal(drag.finish(true),false);
+    assert.equal(e.selection[0].x,40);assert.equal(e.selection[0].y,90);assert.equal(e.past.length,2);
+  }finally{clearTimeout(e.timer);}
+});
+
+test('cancelling a property drag preserves a full undo stack',()=>{
+  const e=new Editor(),slide=blankSlide();slide.elements=[element('rect',{id:'a',x:20})];e.deck=newDeck('Full numeric history',[slide]);e.activeId=slide.id;e.choose('a');
+  try{
+    for(let x=21;x<=70;x++)e.patch({x});const past=e.past;
+    const drag=beginPropertyGesture(e);drag.apply(()=>e.patch({x:80},'prop-x'));assert(drag.finish(true));
+    assert.equal(e.past,past);assert.equal(e.past.length,50);assert.equal(e.selection[0].x,70);
+  }finally{clearTimeout(e.timer);}
+});
 
 test('batch duplicate, delete and reorder each have one undo step and restore the correct page selection',()=>{
   const e=new Editor(),slides=Array.from({length:5},(_,i)=>({...blankSlide(),notes:`Notes ${i}`,hidden:i===1,elements:[element('text',{text:`Page ${i}`,locked:true})],source:{provider:'Fixture',fidelity:'source-render' as const,render:'data:image/png;base64,AA==',warnings:[]}}));
@@ -395,4 +442,22 @@ test('Move to slide preserves a selected nested container and rejects a changed 
  const e=editingFixture();try{e.enterGroup('outer');e.chooseGroup('child');const before=e.snapshot();assert.equal(await e.moveOutOfGroup(true),true);assert.equal(e.selectedContainer,'child');assert.equal(e.editingGroup,'');for(const member of e.slide!.elements)assert.deepEqual(member,before.slides[0].elements.find(v=>v.id===member.id));assert.equal(e.slide!.groups!.find(g=>g.id==='child')!.parent,undefined);e.undo();assert.equal(e.selectedContainer,'child');assert.equal(e.editingGroup,'outer');assert.equal(e.slide!.groups!.find(g=>g.id==='child')!.parent,'outer');
  const pending=e.moveOutOfGroup();e.choose('t',false,true);const revision=e.deck!.revision;assert.equal(await pending,false);assert.equal(e.deck!.revision,revision);assert.match(e.error,/selection changed/);
  }finally{clearTimeout(e.timer);}
+});
+
+
+test('auto layout creation requires multiple objects or a selected group, including a one-member group',async()=>{
+  const e=new Editor(),slide=blankSlide();
+  slide.groups=[{id:'group',name:'Group'}];
+  slide.elements=[element('rect',{id:'a'}),element('rect',{id:'b',x:200}),element('rect',{id:'child',group:'group',x:400})];
+  e.deck=newDeck('Auto layout eligibility',[slide]);e.activeId=slide.id;
+  try{
+    e.choose('a');assert.equal(canAddAutoLayout(e.selected.length,e.selectedContainer),false);
+    const revision=e.deck.revision;await e.autoLayout();
+    assert.equal(e.deck.revision,revision);assert.equal(e.past.length,0);assert.equal(e.slide?.autoLayouts?.length??0,0);
+    e.selected=['a','b'];assert.equal(canAddAutoLayout(e.selected.length,e.selectedContainer),true);
+    await e.autoLayout();assert.equal(e.slide?.autoLayouts?.length,1);
+    e.chooseGroup('group');assert.equal(e.selection.length,1);assert.equal(canAddAutoLayout(e.selected.length,e.selectedContainer),true);
+    await e.autoLayout();assert(e.slide?.autoLayouts?.some(layout=>layout.id==='group'));
+    e.choose('child',false,true);assert.equal(e.selectedContainer,'');assert.equal(canAddAutoLayout(e.selected.length,e.selectedContainer),false);
+  }finally{clearTimeout(e.timer);}
 });

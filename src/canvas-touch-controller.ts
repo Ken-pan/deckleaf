@@ -23,7 +23,7 @@ export function canvasTouch(node:HTMLElement, options:TouchOptions) {
     if(!points.size&&event.isPrimary===false){options.cancel();blocked=true;}
     points.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if(blocked){event.preventDefault();event.stopImmediatePropagation();capture(event.pointerId);return;}
-    if(points.size===1){origin=touchFrame([...points.values()]);scroll={x:node.scrollLeft,y:node.scrollTop};pan=!event.target.closest('.slide-element,.resize-handle,.insertion-surface');return;}
+    if(points.size===1){origin=touchFrame([...points.values()]);scroll={x:node.scrollLeft,y:node.scrollTop};pan=!event.target.closest('.slide-element,.resize-handle,.insertion-surface,.drawing-surface');return;}
     options.cancel();event.preventDefault();event.stopImmediatePropagation();
     navigating=true;pan=false;node.dataset.touchNavigating='';
     for(const id of points.keys())capture(id);

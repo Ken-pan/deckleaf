@@ -35,7 +35,7 @@
     {label:'Duplicate current slide',icon:Copy,onselect:duplicateSlide},
     {label:'Move earlier',icon:MoveUp,disabled:activeIndex<1,onselect:()=>slideOrder(-1)},
     {label:'Move later',icon:MoveDown,disabled:activeIndex>=(editor.deck?.slides.length||1)-1,onselect:()=>slideOrder(1)},
-    {label:'Delete current slide',icon:Trash2,divider:true,disabled:(editor.deck?.slides.length||0)<2,onselect:()=>editor.slide&&editor.commit([{op:'delete_slide',slideId:editor.slide.id}])},
+    {label:'Delete current slide',icon:Trash2,tone:'danger' as const,divider:true,disabled:(editor.deck?.slides.length||0)<2,onselect:()=>editor.slide&&editor.commit([{op:'delete_slide',slideId:editor.slide.id}])},
   ];}
   function slideKey(event: KeyboardEvent) {
     if(event.defaultPrevented||event.isComposing||event.keyCode===229)return;

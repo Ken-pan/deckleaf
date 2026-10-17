@@ -3,7 +3,7 @@ import type {TableMerge,TableCellStyle,TableStyle} from './table-schema';
 import {validateTableStyle} from './table-schema';
 import {tableColumnStyle} from './table-columns';
 import {tablePresentation} from './table-appearance';
-import {cellBounds,type Cell,type CellRange} from './table-grid';
+import {cellBounds,pasteCellRange,type Cell,type CellRange} from './table-grid';
 import type {DesignSystem} from './design-system-schema';
 export const tableColumns=(cells:string[][])=>Math.max(1,...cells.map(row=>row.length));
 export function cellMerge(style:TableStyle|undefined,row:number,column:number){return style?.merges?.find(m=>row>=m.row&&row<m.row+m.rowSpan&&column>=m.column&&column<m.column+m.columnSpan);}
@@ -59,3 +59,10 @@ export function changeTableAxis(e:SlideElement,axis:'row'|'column',index:number,
   validateTableStyle(cells,tableStyle);return {cells,tableStyle};
 }
 export function pastedTableStyle(e:SlideElement,range:CellRange){return mergeTableRange(e,range,true).tableStyle;}
+
+/** All table editors paste data and split intersecting merges in one transaction. */
+export function pasteTableRange(e:SlideElement,text:string,range:CellRange){
+  const result=pasteCellRange(e.cells??[],text,range),b=cellBounds(range);
+  const destination={anchor:{row:b.top,column:b.left},head:{row:b.top+result.rows-1,column:b.left+result.columns-1}};
+  return {...result,tableStyle:e.tableStyle?.merges?.length?pastedTableStyle(e,destination):e.tableStyle};
+}

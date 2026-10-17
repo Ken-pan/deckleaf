@@ -1,3 +1,5 @@
+import {adaptSlideColors, restoreSlideColors} from './slide-colors';
+export {contrastRatio} from './color-contrast';
 import {isThemedIllustration} from './resource-purpose';
 import { COLOR_ROLES, TYPE_PROPERTIES, DEFAULT_DESIGN_SYSTEM, DesignSystemSchema, type ColorRole, type TextRole, type DesignSystem, type StyleBinding } from './design-system-schema';
 import { cloneDocumentData } from './document-data';
@@ -81,8 +83,9 @@ export function patternElement(slide:Slide,deck:Pick<Deck,'width'|'height'>,syst
   return element('image',{id:`pattern-${slide.id.slice(0,110)}`,name:`Background · ${kind==='dots'?'Dots':'Grid'}`,x:0,y:0,w:deck.width,h:deck.height,src:`data:image/svg+xml;base64,${btoa(svg)}`,locked:true,designPattern:true});
 }
 export function styleSlide(slide:Slide,deck:Pick<Deck,'width'|'height'>,system:DesignSystem):Slide {
+  slide=restoreSlideColors(slide);
   const result={...slide,background:slide.backgroundStyle?system.colors[slide.backgroundStyle]:slide.background,elements:slide.elements.filter(e=>!e.designPattern).map(e=>styledElement(e,system,deck))};
-  const pattern=patternElement(result,deck,system);if(pattern)result.elements.unshift(pattern);return result;
+  const pattern=patternElement(result,deck,system);if(pattern)result.elements.unshift(pattern);return adaptSlideColors(result,system);
 }
 /** Concrete values are saved alongside bindings so every renderer/export shares the result. */
 export function applyDeckDesignSystem(deck:Deck,system:DesignSystem,adopt=false):Deck {
@@ -95,10 +98,6 @@ export function styleOverrides(e:SlideElement,patch:Partial<SlideElement>):Style
   const b=cloneDocumentData(e.design);b.overrides=[...new Set([...(b.overrides??[]),...TYPE_PROPERTIES.filter(key=>patch[key]!==undefined&&patch[key]!==e[key])])];
   if(patch.fontFamily!==undefined&&patch.fontFamily!==e.fontFamily)delete b.font;
   if(patch.fill!==undefined&&patch.fill.toLowerCase()!==e.fill.toLowerCase())delete b.fill;if(patch.stroke!==undefined&&patch.stroke.toLowerCase()!==e.stroke.toLowerCase())delete b.stroke;return b;
-}
-export function contrastRatio(a:string,b:string):number {
-  const luminance=(hex:string)=>{const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
-  const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
 }
 export function designSystemCoverage(deck:Deck):{objects:number;slides:number;overrides:number} {
   const elements=deck.slides.flatMap(s=>s.elements);return {objects:elements.filter(e=>e.design&&!e.locked).length,slides:deck.slides.filter(s=>s.backgroundStyle).length,overrides:elements.filter(e=>e.design?.overrides?.length).length};

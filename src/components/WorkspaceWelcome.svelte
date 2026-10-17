@@ -21,14 +21,14 @@
     { id: 'review', name: 'Studio', category: 'Project review' },
     { id: 'minimal', name: 'Minimalist', category: 'General presentation' },
   ] as const;
-  let previews = $state<Deck[]>([]);
+  let previews = $state.raw<Deck[]>([]);
   let creating = $state(false);
   onMount(() => {
     let disposed = false;
     // Render the actual template covers, with their own fonts and artwork.
     // Keep template generation outside the editor's startup dependency graph.
-    void Promise.all([import('../core/templates'), import('../core/font-loading')]).then(async ([templates, fonts]) => {
-      const decks = starters.map(starter => templates.templateDeck(starter.id));
+    void Promise.all([import('../core/template-covers.json'), import('../core/font-loading')]).then(async ([covers, fonts]) => {
+      const decks = covers.default as Deck[];
       await fonts.loadLibraryTypography(decks.map(deck => deck.slides[0]));
       if (!disposed) previews = decks;
     }).catch(() => {}); // Starting a document remains available without previews.
@@ -90,6 +90,7 @@
 @media (max-height: 600px) and (min-width: 761px) {
   :global(.editor-app.welcome-workspace .canvas-stage) { padding-block: 24px; }
 }
+
 
   .workspace-welcome { width: min(100%, 960px); padding: 16px 8px; margin-block: auto; }
   .welcome-intro { text-align: center; margin-bottom: 48px; }

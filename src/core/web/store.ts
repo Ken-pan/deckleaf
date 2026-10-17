@@ -1,6 +1,7 @@
 import {validateDeck, type Deck} from '../model';
+import {summarizeDeck, requirePreviewRevision, type LibrarySummary, type LibraryPreview} from '../library-summary';
 
-const stores = ['documents', 'history', 'proposals', 'sources', 'metadata'] as const;
+const stores = ['documents', 'history', 'proposals', 'sources', 'metadata', 'library'] as const;
 let opening: Promise<IDBDatabase> | undefined;
 const failure = (message: string, status = 409) => Object.assign(new Error(message), {status});
 const id = (value: string) => { if (!/^[\w.:-]{1,120}$/.test(value)) throw failure('Invalid document ID.', 422); return value; };
@@ -11,21 +12,35 @@ function storageError(error: unknown): Error {
 export function webDatabase(): Promise<IDBDatabase> {
   if (opening) return opening;
   const promise = new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open('deck-studio-web-documents', 1);
+    const request = indexedDB.open('deck-studio-web-documents', 2);
+    let blocked = false;
     request.onupgradeneeded = () => {
       for (const name of stores) {
+        if (request.result.objectStoreNames.contains(name)) continue;
         const store = request.result.createObjectStore(name, {keyPath: name === 'history' ? ['deckId','revision'] : 'id'});
         if (name === 'history' || name === 'proposals') store.createIndex('byDocument', 'deckId');
       }
+      // Upgrade existing installations once, with bounded cursor ownership.
+      // Originals are untouched; malformed documents remain available for recovery.
+      const tx = request.transaction!;
+      const cursor = tx.objectStore('documents').openCursor();
+      cursor.onsuccess = () => {
+        const record = cursor.result;
+        if (!record) return;
+        try { tx.objectStore('library').put(summarizeDeck(validateDeck(record.value))); }
+        catch { /* Match the local library's malformed-document behavior. */ }
+        record.continue();
+      };
     };
     request.onsuccess = () => {
       const db = request.result;
+      if (blocked) { db.close(); return; }
       db.onversionchange = () => { db.close(); if (opening === promise) opening = undefined; };
       db.onclose = () => { if (opening === promise) opening = undefined; };
       resolve(db);
     };
     request.onerror = () => reject(storageError(request.error));
-    request.onblocked = () => reject(failure('Close older Decksprig tabs, then reload to open browser storage.'));
+    request.onblocked = () => { blocked = true; reject(failure('Close older Decksprig tabs, then reload to open browser storage.')); };
   });
   opening = promise;
   void promise.catch(() => { if (opening === promise) opening = undefined; });
@@ -59,7 +74,7 @@ export async function saveWebDeck(raw: unknown, expectedRevision: number | null)
   const deck = validateDeck(raw); id(deck.id);
   const db = await webDatabase();
   return new Promise((resolve,reject) => {
-    const tx = db.transaction(['documents','history'],'readwrite');
+    const tx = db.transaction(['documents','history','library'],'readwrite');
     let reason: unknown;
     const documents = tx.objectStore('documents'), request = documents.get(deck.id);
     request.onsuccess = () => {
@@ -68,6 +83,7 @@ export async function saveWebDeck(raw: unknown, expectedRevision: number | null)
         validateBrowserSave(old,deck,expectedRevision);
         if (old) tx.objectStore('history').put({deckId:old.id,revision:old.revision,deck:old});
         documents.put(deck);
+        tx.objectStore('library').put(summarizeDeck(deck));
       } catch(error) { reason=error;tx.abort(); }
     };
     tx.oncomplete = () => resolve(deck);
@@ -80,10 +96,30 @@ export async function readWebDeck(key: string): Promise<Deck> {
   if (!deck) throw failure('Document not found in this browser.',404);
   return validateDeck(deck);
 }
-export async function listWebDecks(includePreview=true) {
-  const db=await webDatabase();
-  const decks=await new Promise<Deck[]>((resolve,reject)=>{const r=db.transaction('documents').objectStore('documents').getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(storageError(r.error));});
-  return decks.map(validateDeck).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)).map(d=>({id:d.id,title:d.title,revision:d.revision,width:d.width,height:d.height,updatedAt:d.updatedAt,count:d.slides.length,provider:d.provenance?.provider,...(includePreview?{firstSlide:d.slides[0]}:{})}));
+export async function readWebLibraryPreview(key: string, expectedRevision?: number): Promise<LibraryPreview> {
+  const deck = await readWebDeck(key);
+  requirePreviewRevision(deck.revision, expectedRevision);
+  return {...summarizeDeck(deck), firstSlide: deck.slides[0]};
+}
+export async function listWebDecks(includePreview=true): Promise<LibraryPreview[]> {
+  const db = await webDatabase();
+  const entries = await new Promise<LibrarySummary[]>((resolve, reject) => {
+    const request = db.transaction('library').objectStore('library').getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(storageError(request.error));
+  });
+  entries.sort((a,b) => b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id));
+  if (!includePreview) return entries;
+  // Preserve the legacy full-list contract, without cloning every document at once.
+  const previews: LibraryPreview[] = new Array(entries.length);
+  let cursor = 0;
+  await Promise.all(Array.from({length: Math.min(4, entries.length)}, async () => {
+    while (cursor < entries.length) {
+      const index = cursor++;
+      previews[index] = await readWebLibraryPreview(entries[index].id);
+    }
+  }));
+  return previews;
 }
 export async function webHistory(key:string, revision?:number) {
   await readWebDeck(key); const db=await webDatabase();

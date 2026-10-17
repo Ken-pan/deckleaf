@@ -5,6 +5,17 @@ const i=(label:string,detail='',meta='')=>({label,detail,meta});
 function explicitParents(id:BlockId,items:BlockOptions['items']):BlockOptions['items'] {
   return items.map((item,index)=>({...item,...(['architecture','organization'].includes(id)?{parent:item.parent??(index>0?(id==='architecture'&&index>1?1:0):-1)}:{})}));
 }
+export function blockParentCandidates(id:BlockId,items:BlockOptions['items'],index:number):number[] {
+  const source=explicitParents(id,items);
+  return source.flatMap((_,candidate)=>{
+    let parent=candidate;const seen=new Set<number>();
+    while(parent>=0&&parent<source.length&&!seen.has(parent)){
+      if(parent===index)return [];
+      seen.add(parent);parent=source[parent].parent??-1;
+    }
+    return [candidate];
+  });
+}
 export function moveBlockItem(id:BlockId,items:BlockOptions['items'],index:number,step:number):BlockOptions['items'] {
   const source=explicitParents(id,items),indices=source.map((_,i)=>i);
   if(index<0||index>=source.length||index+step<0||index+step>=source.length)return source;

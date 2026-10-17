@@ -1,3 +1,4 @@
+import {canEditText} from './shapes';
 import { OnlineFontSchema, type OnlineFont, type Deck } from './model';
 import { FONT_LIBRARY, nearestWeight, type LibraryFont } from './fonts';
 
@@ -159,8 +160,8 @@ export function onlineFontUses(deck: Deck) {
   for (const s of deck.slides) for (const e of s.elements) {
     if (e.hidden) continue;
     const runs = e.paragraphs?.length ? e.paragraphs.flatMap(p => p.runs) : e.runs;
-    if (e.type === 'text' && runs?.length) for (const r of runs) add(r.fontFamily || e.fontFamily, r.fontWeight ?? (r.bold === true ? 700 : r.bold === false ? 400 : e.fontWeight), r.italic ?? e.italic, r.text);
-    else if (e.type === 'text') add(e.fontFamily, e.fontWeight, e.italic, e.text);
+    if (canEditText(e) && runs?.length) for (const r of runs) add(r.fontFamily || e.fontFamily, r.fontWeight ?? (r.bold === true ? 700 : r.bold === false ? 400 : e.fontWeight), r.italic ?? e.italic, r.text);
+    else if (canEditText(e)) add(e.fontFamily, e.fontWeight, e.italic, e.text);
     else if (e.type === 'table') add(e.fontFamily, e.fontWeight, e.italic, e.cells?.flat().join(' ') || '');
     else if (e.type === 'chart') add(e.fontFamily, e.fontWeight, e.italic, e.chart ? JSON.stringify(e.chart) : e.values?.map(v => `${v.label} ${v.value}`).join(' ') || '');
   }

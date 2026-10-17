@@ -1,3 +1,4 @@
+import {isDrawingElement} from './drawing-identity';
 import type {Slide, SlideElement} from './model';
 import type {Operation} from './operations';
 import {DEFAULT_SHADOW, type ElementShadow} from './shape-schema';
@@ -13,7 +14,7 @@ export function inspectorCapabilities(items: SlideElement[]) {
     shapeType: every(item => isShape(item) && item.type !== 'line'),
     fill: every(item => isShape(item) && item.type !== 'line') || sameType && !['image', 'prototype', 'line'].includes(items[0].type),
     stroke: every(isShape) || sameType && items[0].type === 'table',
-    radius: every(item => hasShapeCorners(item) || item.type === 'image'),
+    radius: every(item => hasShapeCorners(item) || item.type === 'image' && !isDrawingElement(item)),
   };
 }
 

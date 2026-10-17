@@ -53,14 +53,15 @@ export async function enhancePptxTemplate(bytes:Uint8Array,deck:Deck,template=fa
       shapeIds.set(e.id,object);
       const semantic=['text','image','table','chart'].includes(e.type),slot=++idx,major=e.design?.text==='title'||e.design?.text==='heading';
       const nativeW=nativeWidth(e);if(nativeW!==e.w)shape=shape.replace(/(<a:ext cx=")\d+/,`$1${emu(nativeW)}`);
+      const adaptive=s.adaptiveColors&&s.backgroundStyle==='dark';
       if(e.design){
-        if(e.type==='text')shape=shape.replace(/<p:txBody>[\s\S]*?<\/p:txBody>/,textBodyXml(originals.get(e.id)??e,{fill:e.design.fill?roles[e.design.fill]:undefined,font:e.design.overrides?.includes('fontFamily')?undefined:major?'mj':'mn',absoluteLineSpacing:true}));
-        else if(e.type==='rect'||e.type==='ellipse'||e.type==='line'||e.type==='diamond')shape=shape.replace(/<p:spPr>[\s\S]*?<\/p:spPr>/,paint=>{
+        if(e.type==='text')shape=shape.replace(/<p:txBody>[\s\S]*?<\/p:txBody>/,textBodyXml(originals.get(e.id)??e,{fill:!adaptive&&e.design.fill?roles[e.design.fill]:undefined,font:e.design.overrides?.includes('fontFamily')?undefined:major?'mj':'mn',absoluteLineSpacing:true}));
+        else if(!adaptive&&(e.type==='rect'||e.type==='ellipse'||e.type==='line'||e.type==='diamond'))shape=shape.replace(/<p:spPr>[\s\S]*?<\/p:spPr>/,paint=>{
           const stroke=paint.match(/<a:ln\b[\s\S]*?<\/a:ln>/)?.[0],bind=(value:string,role:keyof typeof roles)=>value.replace(/<a:srgbClr\b[^>]*\/>|<a:srgbClr\b[^>]*>([\s\S]*?)<\/a:srgbClr>/,(_,children)=>children?`<a:schemeClr val="${roles[role]}">${children}</a:schemeClr>`:`<a:schemeClr val="${roles[role]}"/>`);
           if(stroke)paint=paint.replace(stroke,'__STROKE__');if(e.design!.fill)paint=bind(paint,e.design!.fill);if(stroke)paint=paint.replace('__STROKE__',e.design!.stroke?bind(stroke,e.design!.stroke):stroke);return paint;
         });
       }
-      if(e.type==='table'&&e.design){
+      if(e.type==='table'&&e.design&&!adaptive){
         const cells=shape.match(/<a:tr\b[^>]*>[\s\S]*?<\/a:tr>/g)??[];
         cells.forEach((row,ri)=>{const themed=row.replace(/<a:tc>[\s\S]*?<\/a:tc>/g,cell=>{
           cell=cell.replace(/<a:(latin|ea)\b[^>]*typeface="[^"]*"[^>]*\/>/g,(_,script)=>`<a:${script} typeface="+mn-${script==='ea'?'ea':'lt'}"/>`);
@@ -73,7 +74,7 @@ export async function enhancePptxTemplate(bytes:Uint8Array,deck:Deck,template=fa
         const type=e.type==='image'?'pic':e.type==='table'?'tbl':e.type==='chart'?'chart':e.id===titleId?'title':'body';
         const ph=`<p:ph type="${type}" idx="${slot}"/>`;
         shape=shape.replace(/<p:nvPr(?:\s*\/>|>([\s\S]*?)<\/p:nvPr>)/,(_,children)=>`<p:nvPr>${ph}${children??''}</p:nvPr>`);
-        const font=Math.round(e.fontSize*75),fill=e.design?.fill?`<a:schemeClr val="${roles[e.design.fill]}"/>`:`<a:srgbClr val="${e.fill.slice(1)}"/>`;
+        const font=Math.round(e.fontSize*75),fill=!adaptive&&e.design?.fill?`<a:schemeClr val="${roles[e.design.fill]}"/>`:`<a:srgbClr val="${e.fill.slice(1)}"/>`;
         const placeholder=`<p:sp><p:nvSpPr><p:cNvPr id="${object}" name="${esc(e.name)}"/><p:cNvSpPr/><p:nvPr>${ph}</p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(e.x)}" y="${emu(e.y)}"/><a:ext cx="${emu(nativeWidth(e))}" cy="${emu(e.h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="${font}"><a:solidFill>${fill}</a:solidFill><a:latin typeface="+${major?'mj':'mn'}-lt"/></a:defRPr></a:pPr><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp>`;
         slots.push(placeholder);layoutParts.push(placeholder);
       }else layoutParts.push(shape);
@@ -106,8 +107,8 @@ export async function enhancePptxTemplate(bytes:Uint8Array,deck:Deck,template=fa
       if(e.chart.type==='bar')x=x.replace(/<c:catAx>[\s\S]*?<\/c:catAx>/g,axis=>axis.replace(/<c:orientation val="minMax"\/>/,'<c:orientation val="maxMin"/>')).replace(/<c:valAx>[\s\S]*?<\/c:valAx>/g,axis=>axis.replace(/<c:crosses val="autoZero"\/>/,'<c:crosses val="max"/>'));
       x=x.replace(/<c:pt idx="\d+"><c:v><\/c:v><\/c:pt>/g,'');
       if(e.design&&!e.design.overrides?.includes('fontFamily'))x=x.replace(/<a:latin typeface="[^"]*"\s*\/>/g,'<a:latin typeface="+mn-lt"/>');
-      if(e.design?.stroke)x=x.replace(new RegExp('<a:srgbClr val="'+e.chart.textColor.slice(1)+'"\\s*\\/>','gi'),`<a:schemeClr val="${roles[e.design.stroke]}"/>`);
-      if(e.chart.colorRoles){let k=0;x=x.replace(/<c:ser>[\s\S]*?<\/c:ser>/g,ser=>{const role=e.chart!.colorRoles![k++%e.chart!.series.length];return role?ser.replace(/<c:spPr>[\s\S]*?<\/c:spPr>/,pr=>pr.replace(/<a:srgbClr val="[^"]*"\s*\/>/g,`<a:schemeClr val="${roles[role]}"/>`)).replace(/<c:marker>[\s\S]*?<\/c:marker>/,marker=>marker.replace(/<a:srgbClr val="[^"]*"\s*\/>/g,`<a:schemeClr val="${roles[role]}"/>`)):ser;});}
+      if(!(s.adaptiveColors&&s.backgroundStyle==='dark')&&e.design?.stroke)x=x.replace(new RegExp('<a:srgbClr val="'+e.chart.textColor.slice(1)+'"\\s*\\/>','gi'),`<a:schemeClr val="${roles[e.design.stroke]}"/>`);
+      if(!(s.adaptiveColors&&s.backgroundStyle==='dark')&&e.chart.colorRoles){let k=0;x=x.replace(/<c:ser>[\s\S]*?<\/c:ser>/g,ser=>{const role=e.chart!.colorRoles![k++%e.chart!.series.length];return role?ser.replace(/<c:spPr>[\s\S]*?<\/c:spPr>/,pr=>pr.replace(/<a:srgbClr val="[^"]*"\s*\/>/g,`<a:schemeClr val="${roles[role]}"/>`)).replace(/<c:marker>[\s\S]*?<\/c:marker>/,marker=>marker.replace(/<a:srgbClr val="[^"]*"\s*\/>/g,`<a:schemeClr val="${roles[role]}"/>`)):ser;});}
       zip.file(path,x);
     }
   }

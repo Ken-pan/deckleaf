@@ -5,10 +5,17 @@ Import primitives from `src/components/ui`. Their visual contract lives in
 `text-btn`, `icon-btn`, `field-label` and `seg` controls use the same contract.
 The copied Broadser source and document rendering styles remain separate.
 
+Buttons with visible text do not show tooltips. Icon-only buttons show a short
+action name; keep their full accessible label in `aria-label`, and use
+`data-tooltip` only when that label includes an object name or other context.
+Do not put shortcuts or instructions in tooltips. `EditorTooltip` checks the
+rendered label so responsive buttons follow the same rule when text is hidden.
+Numeric inputs and their drag labels do not show tooltips.
+
 | Component | Contract | Current consumers |
 | --- | --- | --- |
 | EmptyState | neutral icon, status title and description, recovery actions; roomy / compact / inline densities | libraries, search, panels and presentation |
-| Button | quiet / secondary / primary / danger; sm / md / lg; native attributes; busy feedback disables repeated activation | font, resource and automatic layout actions; prototype insertion |
+| Button | quiet / secondary / primary / danger; optional danger tone for destructive utilities; sm / md / lg; native attributes; busy feedback disables repeated activation | font, resource and automatic layout actions; prototype insertion |
 | IconButton | required accessible label; shared hit area and focus ring | all dialog close controls |
 | ActionMenu | native popover; grouped actions; arrow navigation, Home/End, Escape and Tab dismissal; viewport-bounded placement | more insertion tools and inspector object utilities |
 | PopoverPanel | native non-modal top layer; shared header/close target, scrolling body, anchored placement and focus return; fixed or content-driven height | quick settings, search and resource library |
@@ -17,6 +24,15 @@ The copied Broadser source and document rendering styles remain separate.
 | SegmentedControl | labeled native button group; pressed state; Left/Right/Home/End navigation; disabled options skipped | font source and UI motion preferences |
 | DialogFooter | status on the left, actions on the right; common divider, spacing and surface; inset and stacked variants | font library, resource library, automatic layout, prototype form |
 | Dialog | shared native top layer, title, header, close control, scrolling body and optional footer; standard, wide, resource, review and workspace layouts | every editor dialog, including automatic layout |
+
+Use `tone="danger"` on quiet or secondary destructive Buttons and IconButtons,
+`data-tone="danger"` on native buttons, and `tone: 'danger'` on menu items.
+`feedback.css` keeps labels and icons on the same foreground. Inline utilities
+use their normal neutral foreground at rest and danger red on hover, keyboard
+focus and press; destructive menu items use danger red at rest. Disabled controls
+use the same disabled foreground for labels and icons. The filled `variant="danger"`
+keeps its contrasting foreground. Search/filter/selection clearing and favorites
+toggles stay neutral.
 
 Quick resource, search and settings panels share a 12px gutter, an 8px anchor
 gap and 12px viewport clearance. Native `popover="auto"` keeps these sibling
@@ -60,12 +76,14 @@ Overlay keyboard and focus details:
 - Alignment, page layout and cell context menus follow `visualViewport` changes.
   Table cells expose actions with Shift+F10 or the Menu key; their inline editor
   retains its cell-navigation Tab/Enter contract.
-- Publishing's generated preview forwards Escape from its owned iframe to its
-  parent. This bridge belongs only to the preview Blob; downloaded HTML remains
-  unchanged. External prototype iframes own their keyboard events; preserve
-  visible outer close controls and the normal Tab route back to them.
+- Publishing uses a dedicated, opaque sandbox frame and a source-checked parent
+  handshake. Its hosted player policy is scoped to the preview route; the main
+  application retains its script policy. The preview forwards unconsumed Escape
+  to its parent; downloaded HTML contains no preview bridge. External prototype
+  iframes own their keyboard events; preserve visible outer close controls and
+  the normal Tab route back to them.
 
-Release scope and validation boundaries: `docs/open-source/release-checklist.md`.
+Desktop/mobile evidence and limitations: `output/overlays-20261016/README.md`.
 
 Use native controls inside a shared primitive when the interaction is specialized
 (a font listbox, color swatch, slide thumbnail or canvas handle). Preserve their
@@ -300,3 +318,36 @@ Use EmptyState for missing content, search misses and unmet setup prerequisites.
 Explain the state in a short heading and one sentence, then provide a supported next step. Clear or reset search for no matches, browse for empty favorites/recent lists, and settings for missing configuration. Keep data-loss errors distinct from empty results. Loading exposes busy status and one spinner. Status contains only the title and description; recovery buttons remain outside it. Preserve component-specific keyboard and focus-return behavior, touch targets, document provenance and storage contracts.
 
 Regional loading and failure views use FeedbackState over EmptyState densities. Inline action feedback uses Notice. Put live copy outside busy result containers; recovery actions stay outside live copy. Use one spinner per action and retain the action label. Set Notice indicator=false when its action button already shows progress. Failed module imports offer Refresh app because browsers may cache a failed module request. Preserve entered values after recoverable failures.
+
+## Numeric fields
+
+Use `NumberField` for numeric properties and drafts, including compact chart
+cells. Set `preset` to the semantic family (font, spacing, duration, percent,
+count, etc.); use `presets` for contextual values such as slide fractions. The
+control filters suggestions against the field's range and step. Keep arbitrary
+text/table content in its existing text editor.
+
+The prefix is a drag handle. Horizontal dragging previews values, Shift uses
+larger steps, Alt adds precision to fractional fields, and Escape cancels the
+gesture. A document gesture makes one undo entry even after a pause; a draft
+gesture restores only its draft value. An external revision ends the gesture.
+Click the input for presets; Alt + Down focuses the options. Escape dismisses
+that menu before its containing dialog. Empty/invalid drafts stay visible and
+must block Apply; draft forms can use `numericFieldValidity()` to collect child
+validity, including conditionally mounted fields. Use `oninput` to preserve raw
+draft edits and `onchange` to accept valid numeric changes. NumberField owns
+keyboard arrows; data grids may provide `onkeydown` and `onpaste` to preserve
+cell navigation and tabular paste.
+
+
+## Inspector property controls
+
+Use `PropertyRow` for labeled color and compact select rows, and
+`ui-property-input` for native selects, URLs and text drafts. Use
+`ui-property-check` on native checkbox labels. Keep the frame at 36px on
+desktop and 48px on touch (44px internal targets). Do not add a separate
+stacked numeric variant. Pair coordinates and dimensions; give longer
+numeric labels their own row. Show px, %, degrees or ms on the field.
+Use 16px action/section glyphs and 14px disclosure/numeric glyphs.
+Reserve icons for established meanings (rotation, radius, alignment, sizing);
+use short property names for other numeric handles, never an empty prefix.

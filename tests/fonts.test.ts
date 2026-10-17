@@ -35,23 +35,25 @@ test('font search combines name, Chinese aliases, category, language and favorit
   assert.deepEqual(searchFonts('', 'all', 'all', ['Lora']).map(f => f.family), ['Lora']);
   assert.equal(searchFonts('missing font').length, 0);
 });
-test('batch family changes preserve individual contents, rich styles, provenance and locked objects', () => {
+test('batch family changes include shape labels and preserve contents, provenance and noneditable objects', () => {
   const slide = blankSlide();
   const a = element('text', {text: 'Alpha', fontWeight: 300, runs: [{text: 'Al', color: '#ff0000', bold: true, fontFamily: 'Arial'}, {text: 'pha', italic: true, fontSize: 22}]});
   const b = element('text', {text: 'Different content', fontWeight: 800});
   const locked = element('text', {text: 'Locked', locked: true});
-  const shape = element('rect'); slide.elements = [a, b, locked, shape];
+  const shape = element('rect', {text: 'Shape label'}), image = element('image', {src: 'data:image/png;base64,aA=='}), lockedShape = element('rect', {text: 'Locked label', locked: true});
+  slide.elements = [a, b, locked, shape, image, lockedShape];
   slide.source = {provider: 'Fixture', fidelity: 'converted', warnings: ['Original reference']};
   const deck = newDeck('Font changes', [slide]), before = JSON.stringify(deck);
   const ops = fontOperations(deck, slide.id, slide.elements.map(e => e.id), 'Lora');
-  assert.equal(ops.length, 2);
+  assert.deepEqual(ops.map(op => 'elementId' in op ? op.elementId : undefined), [a.id, b.id, shape.id]);
   const next = applyOperations(deck, ops);
   assert.equal(JSON.stringify(deck), before);
-  const [na, nb, nl, ns] = next.slides[0].elements;
+  const [na, nb, nl, ns, ni, nls] = next.slides[0].elements;
   assert.equal(na.text, 'Alpha'); assert.equal(nb.text, 'Different content');
   assert.equal(na.fontWeight, 400); assert.equal(nb.fontWeight, 700);
   assert.deepEqual(na.runs, a.runs!.map(r => ({...r, fontFamily: 'Lora'})));
-  assert.deepEqual(nl, locked); assert.deepEqual(ns, shape);
+  assert.deepEqual(ns, {...shape, fontFamily: 'Lora', fontWeight: 400});
+  assert.deepEqual(nl, locked); assert.deepEqual(ni, image); assert.deepEqual(nls, lockedShape);
   assert.deepEqual(next.slides[0].source, deck.slides[0].source);
   assert.equal(next.revision, deck.revision + 1);
 });

@@ -21,12 +21,8 @@ function textFlowStyle(e: SlideElement) {
   const balanced=e.wrap&&e.textSizing!=='auto-width'&&!e.sourceId&&!e.nativeTextLayout&&!e.paragraphs?.length&&['title','heading'].includes(e.design?.text??'');
   return `width:100%;flex-shrink:0;${balanced?'text-wrap:balance;':''}${e.maxLines ? `display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:${e.maxLines};overflow:hidden;` : ''}`;
 }
-function imageStyle(e: SlideElement) {
-  const c = e.crop;
-  return c ? `position:absolute;max-width:none;width:${100 / (1 - c.left - c.right)}%;height:${100 / (1 - c.top - c.bottom)}%;left:${-c.left * 100 / (1 - c.left - c.right)}%;top:${-c.top * 100 / (1 - c.top - c.bottom)}%;object-fit:fill;` : `width:100%;height:100%;object-fit:${e.fit};`;
-}
 
-return {runStyle, paragraphStyle, textBoxStyle, textFlowStyle, imageStyle};
+return {runStyle, paragraphStyle, textBoxStyle, textFlowStyle};
 }
-export const {runStyle, paragraphStyle, textBoxStyle, textFlowStyle, imageStyle} = createTypography(fontStack);
+export const {runStyle, paragraphStyle, textBoxStyle, textFlowStyle} = createTypography(fontStack);
 export { resizeTextStyle as scaledTextStyle };

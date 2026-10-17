@@ -1,68 +1,87 @@
 <script lang="ts">
-  import {pasteFromClipboard} from '../editor-clipboard';
-  import { MousePointer2, Type, Square, Table2, ChartColumn, AppWindow, Plus, Star, PanelsTopBottom, LayoutTemplate } from '@lucide/svelte';
+  import { MousePointer2, Type, PenLine, Paintbrush, Highlighter, Eraser, ChevronUp, Table2, ChartColumn, AppWindow, Plus, Star, LayoutTemplate } from '@lucide/svelte';
+  import LineTools from './LineTools.svelte';
+  import InsertToolsFrame from './InsertToolsFrame.svelte';
+  import DrawingTools from './DrawingTools.svelte';
+  import {drawingState} from '../drawing-state.svelte';
+  import {DRAWING_BRUSHES} from '../core/drawing-settings';
   import { resourceIcons, shapeToolIcons } from './icons';
-  import {SHAPE_TOOLS, SHAPE_LABELS, isShapeTool} from '../core/shapes';
-  import { ActionMenu } from './ui';
-  import { type InsertTool, type PrimitiveInsertTool } from '../core/insertion';
+  import {SHAPE_TOOLS, SHAPE_LABELS, isShapeTool, type ShapeInsertTool} from '../core/shapes';
+  import { ActionMenu, Button } from './ui';
+  import { type CanvasTool, type PrimitiveInsertTool } from '../core/insertion';
   import type { ResourceQuickView } from './resource-library-view';
-  let {insertTool, resourceOpen, resourceActiveView, resourceBusy = false, disabled = false, compact = false, onselect, oninsert, onresource, onchart, onprototype, onpageelements, onblocks}: {
-    insertTool: InsertTool | null; resourceOpen: boolean; resourceActiveView?: ResourceQuickView; resourceBusy?: boolean; disabled?: boolean; compact?: boolean;
-    onselect: () => void; oninsert: (tool: PrimitiveInsertTool) => void; onresource: (view: ResourceQuickView, anchor: HTMLButtonElement) => void;
-    onchart: () => void; onprototype: () => void; onpageelements: () => void; onblocks: () => void;
+  let {insertTool, resourceOpen, resourceActiveView, resourceBusy = false, disabled = false, compact = false, onselect, oninsert, onresource, onchart, onprototype, onblocks}: {
+    insertTool: CanvasTool | null; resourceOpen: boolean; resourceActiveView?: ResourceQuickView; resourceBusy?: boolean; disabled?: boolean; compact?: boolean;
+    onselect: () => void; oninsert: (tool: PrimitiveInsertTool | 'draw', focus?: boolean) => void; onresource: (view: ResourceQuickView, anchor: HTMLButtonElement) => void;
+    onchart: () => void; onprototype: () => void; onblocks: () => void;
   } = $props();
   let moreGroup = $state<HTMLDivElement>();
-  const ShapeIcon = $derived(isShapeTool(insertTool) ? shapeToolIcons[insertTool] : Square);
-  function openGraphics() { const anchor = moreGroup?.querySelector<HTMLButtonElement>('button'); if (anchor) onresource('graphics', anchor); }
-  function openCompactResource(view: ResourceQuickView) { const anchor = moreGroup?.querySelector<HTMLButtonElement>('button'); if (anchor) onresource(view, anchor); }
+  let lastShape = $state<ShapeInsertTool>('rect');
+  const drawingIcons = {pen: PenLine, brush: Paintbrush, highlighter: Highlighter};
+  const DrawingIcon = $derived(drawingState.settings.mode === 'erase' ? Eraser : drawingIcons[drawingState.settings.brush]);
+  const drawingLabel = $derived(DRAWING_BRUSHES.find(brush => brush.id === drawingState.settings.brush)?.label ?? 'Pen');
+  const currentShape = $derived(isShapeTool(insertTool) && insertTool !== 'line' ? insertTool : lastShape);
+  const ShapeIcon = $derived(shapeToolIcons[currentShape]);
+  $effect(() => { if (isShapeTool(insertTool) && insertTool !== 'line') lastShape = insertTool; });
+  function openResource(view: ResourceQuickView) { const anchor = moreGroup?.querySelector<HTMLButtonElement>('button'); if (anchor) onresource(view, anchor); }
   const resourceTools = [
     {id: 'photo', label: 'Photos', title: 'Photos', icon: resourceIcons.photo},
     {id: 'icon', label: 'Icons', title: 'Icons', icon: resourceIcons.icon},
     {id: 'illustration', label: 'Art', title: 'Illustrations', icon: resourceIcons.illustration},
   ] as const;
 </script>
-      <div class="toolbar-group insert-tools" aria-label="Insert tools">
-        <div class="insert-primary" role="group" aria-label="Canvas tools">
-        <button class="text-btn dock-select" aria-label="Select" title="Select · Esc" aria-pressed={!insertTool && !resourceOpen} onclick={onselect}><MousePointer2 /><span class="dock-label">Select</span></button>
-        <button class="text-btn text-entry" class:active={insertTool === 'text'} aria-pressed={insertTool === 'text'} {disabled} onclick={() => oninsert('text')} title="Place text · T" aria-label="Insert text"><Type /><span class="dock-label">Text</span></button>
-        <ActionMenu label="Insert shapes" active={isShapeTool(insertTool)} {disabled} items={SHAPE_TOOLS.map(tool=>({label:SHAPE_LABELS[tool],icon:shapeToolIcons[tool],shortcut:tool==='rect'?'R':undefined,divider:tool==='line',onselect:()=>oninsert(tool)}))}><ShapeIcon size={16} /><span class="dock-label">Shapes</span></ActionMenu>
-        <button class="text-btn table-entry" class:active={insertTool === 'table'} aria-pressed={insertTool === 'table'} {disabled} onclick={() => oninsert('table')} title="Insert table" aria-label="Insert table"><Table2 size={16}/><span class="dock-label">Table</span></button>
+      <InsertToolsFrame {compact}>
+        {#snippet primary()}
+        <Button kind="icon" class="dock-select" aria-label="Select" title="Select · Esc" aria-pressed={!insertTool && !resourceOpen} onclick={onselect}><MousePointer2 size={16} /><span class="dock-label">Select</span></Button>
+        <Button kind="icon" class="text-entry" aria-pressed={insertTool === 'text'} {disabled} onclick={() => oninsert('text')} title="Place text · T" aria-label="Insert text"><Type size={16} /><span class="dock-label">Text</span></Button>
+        <div class="drawing-split" role="group" aria-label="Drawing tools">
+        <Button kind="icon" class="draw-entry" aria-pressed={insertTool === 'draw'} {disabled} onclick={() => oninsert('draw')} title={drawingState.settings.mode==='erase'?'Erase strokes':`Draw · ${drawingLabel}`} aria-label={drawingState.settings.mode==='erase'?'Erase strokes':'Draw'}><DrawingIcon size={16}/><span class="dock-label">{drawingState.settings.mode==='erase'?'Erase':'Draw'}</span></Button>
+        <div class="drawing-options"><DrawingTools settings={drawingState.settings} onchange={settings => {drawingState.settings=settings;if(insertTool!=='draw')oninsert('draw',false);}} active={insertTool === 'draw'} ondone={onselect} {disabled}/></div>
         </div>
-        <div class="resource-tools" class:compact role="group" aria-label="Resource categories">
-        <button class="text-btn resource-entry" class:active={insertTool==='block'} {disabled} onclick={onblocks} title="Blocks · Diagrams, plans and business content" aria-label="Blocks" aria-haspopup="dialog"><LayoutTemplate size={16}/><span class="dock-label">Blocks</span></button>
+        <div class="shape-split" role="group" aria-label="Shape tools">
+          <Button kind="icon" class="shape-entry" aria-label={`Insert shapes · ${SHAPE_LABELS[currentShape]}`} title={`Place ${SHAPE_LABELS[currentShape].toLowerCase()}`} aria-pressed={isShapeTool(insertTool) && insertTool !== 'line'} {disabled} onclick={() => oninsert(currentShape)}><ShapeIcon size={16} /><span class="dock-label">Shapes</span></Button>
+          <ActionMenu class="shape-options" iconOnly label="More shapes" {disabled} items={SHAPE_TOOLS.filter(tool=>tool!=='line').map(tool=>({label:SHAPE_LABELS[tool],icon:shapeToolIcons[tool],shortcut:tool==='rect'?'R':undefined,checked:currentShape===tool,onselect:()=>{lastShape=tool;oninsert(tool);}}))}><ChevronUp size={13} /></ActionMenu>
+        </div>
+        <LineTools active={insertTool==='line'} {disabled} oninsert={()=>oninsert('line')}/>
+        {/snippet}
+        {#snippet resources()}
         {#each resourceTools as tool}
-          <button class="text-btn resource-entry" data-resource-view={tool.id} class:active={resourceOpen && resourceActiveView === tool.id} disabled={disabled || resourceBusy} title={tool.title} aria-label={tool.label === tool.title ? `${tool.title} resources` : `${tool.label} · ${tool.title} resources`} aria-haspopup="dialog" aria-controls="workspace-resource-popover" aria-expanded={resourceOpen && resourceActiveView === tool.id} popovertarget="workspace-resource-popover" popovertargetaction="show" onclick={event => { event.preventDefault(); void onresource(tool.id, event.currentTarget); }} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && event.key === 'ArrowDown') { event.preventDefault(); if (!resourceOpen || resourceActiveView !== tool.id) void onresource(tool.id, event.currentTarget); } }}><tool.icon size={16} /><span class="dock-label">{tool.label}</span></button>
+          <Button kind="icon" data-resource-view={tool.id} class={resourceOpen && resourceActiveView === tool.id ? 'resource-entry active' : 'resource-entry'} disabled={disabled || resourceBusy} title={tool.title} aria-label={tool.label === tool.title ? `${tool.title} resources` : `${tool.label} · ${tool.title} resources`} aria-haspopup="dialog" aria-controls="workspace-resource-popover" aria-expanded={resourceOpen && resourceActiveView === tool.id} popovertarget="workspace-resource-popover" popovertargetaction="show" onclick={event => { event.preventDefault(); void onresource(tool.id, event.currentTarget); }} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && event.key === 'ArrowDown') { event.preventDefault(); if (!resourceOpen || resourceActiveView !== tool.id) void onresource(tool.id, event.currentTarget); } }}><tool.icon size={16} /><span class="dock-label">{tool.label}</span></Button>
         {/each}
-        </div>
-        <div class="insert-secondary" bind:this={moreGroup}>
-        <ActionMenu label="More insert tools" active={insertTool === 'chart' || resourceOpen && ['graphics','favorites'].includes(resourceActiveView??'')} {disabled} items={[
+        {/snippet}
+        {#snippet more()}
+        <div bind:this={moreGroup}>
+        <ActionMenu iconOnly label="More insert tools" active={['chart','table','block'].includes(insertTool??'') || resourceOpen && ['graphics','favorites'].includes(resourceActiveView??'')} {disabled} items={[
+          {label:'Table',icon:Table2,checked:insertTool==='table',onselect:()=>oninsert('table')},
+          {label:'Chart',icon:ChartColumn,onselect:onchart},
+          {label:'Blocks',icon:LayoutTemplate,onselect:onblocks},
+          {label:'Interactive prototype',icon:AppWindow,onselect:onprototype},
           ...(compact ? [
-            {label:'Blocks',icon:LayoutTemplate,onselect:onblocks},
-            ...resourceTools.map(tool=>({label:tool.title,icon:tool.icon,disabled:resourceBusy,onselect:()=>openCompactResource(tool.id)})),
+            ...resourceTools.map((tool,index)=>({label:tool.title,icon:tool.icon,divider:index===0,disabled:resourceBusy,onselect:()=>openResource(tool.id)})),
           ] : []),
-          {label:'Paste',shortcut:'⌘V',onselect:()=>{onselect();return pasteFromClipboard();}},
-          {label:'Paste as text',onselect:()=>{onselect();return pasteFromClipboard({textOnly:true});}},
-          {label: 'Saved resources', icon: Star, disabled: resourceBusy, onselect: () => { const anchor=moreGroup?.querySelector<HTMLButtonElement>('button'); if(anchor)onresource('favorites',anchor); }},
-          {label: 'Patterns & textures', icon: resourceIcons.graphics, disabled: resourceBusy, onselect: openGraphics},
-          {label: 'Chart', icon: ChartColumn, onselect: onchart},
-          {label: 'Slide details', icon: PanelsTopBottom, divider: true, onselect: onpageelements},
-          {label: 'Interactive prototype', icon: AppWindow, divider: true, onselect: onprototype},
-          
+          {label:'Patterns & textures',icon:resourceIcons.graphics,divider:!compact,disabled:resourceBusy,onselect:()=>openResource('graphics')},
+          {label:'Saved resources',icon:Star,disabled:resourceBusy,onselect:()=>openResource('favorites')},
         ]}><Plus size={16} /><span class="dock-label">More</span></ActionMenu>
         </div>
-      </div>
+        {/snippet}
+      </InsertToolsFrame>
 <style>
-  .insert-primary, .resource-tools { display: flex; align-items: center; gap: 4px; min-width: 0; }
-  .resource-tools { border-left: 1px solid var(--border-subtle); padding-left: 8px; margin-left: 4px; }
-  .insert-primary > button, .resource-tools > button { width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; }
-  .resource-entry[aria-expanded='true'] { background: var(--state-selected); color: var(--text-link); }
-  .resource-tools.compact { display:none; }
+  .shape-split, .drawing-split { display: flex; align-items: center; width: 44px; min-width: 0; border-radius: var(--r-control); }
+  .shape-split > :global(.shape-entry), .drawing-split > :global(.draw-entry) { width: 32px; min-width: 32px; padding: 0; border-radius: var(--r-control); }
+  .shape-split > :global(.shape-options), .drawing-options { width: 12px; }
+  .shape-split > :global(.shape-options > button), .drawing-options :global(.ui-panel-trigger > button) { width: 12px; min-width: 12px; padding: 0; border-radius: var(--r-control); }
+  .shape-split > :global(.shape-options > button > svg), .drawing-options :global(.ui-panel-trigger > button > svg) { width: 10px; height: 10px; }
+  @media (min-width: 761px) and (pointer: fine) {
+    .shape-split, .drawing-split { width: 56px; }
+    .shape-split > :global(.shape-entry), .drawing-split > :global(.draw-entry) { width: 40px; min-width: 40px; min-height: 44px; }
+    .shape-split > :global(.shape-options), .drawing-options { width: 16px; }
+    .shape-split > :global(.shape-options > button), .drawing-options :global(.ui-panel-trigger > button) { width: 16px; min-width: 16px; min-height: 44px; }
+    .shape-split > :global(.shape-options > button > svg), .drawing-options :global(.ui-panel-trigger > button > svg) { width: 12px; height: 12px; }
+  }
   @media (max-width: 760px), (pointer: coarse) {
-    :global(.canvas-insert-dock) .insert-tools { display: grid; grid-template-columns: repeat(5,minmax(44px,1fr)); gap: 4px; }
-    .insert-primary { grid-column: 1 / 5; grid-row: 1; justify-content: center; }
-    .insert-secondary { grid-column: 5; grid-row: 1; }
-    .resource-tools { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; border-left: 0; border-top: 1px solid var(--border-subtle); padding: 4px 0 0; margin: 0; }
-    .insert-primary > button, .resource-tools > button { width: auto; min-width: 44px; height: auto; min-height: 52px; padding: 4px 6px; flex-direction: column; gap: 4px; }
-    .resource-tools > button { font-size: var(--ui-meta); }
+    .shape-split, .drawing-split { width: 56px; }
+    .shape-split > :global(.shape-entry), .drawing-split > :global(.draw-entry) { width: 44px; min-width: 44px; min-height: 44px; }
+    .shape-split > :global(.shape-options > button), .drawing-options :global(.ui-panel-trigger > button) { min-height: 44px; }
+    .shape-split > :global(.shape-entry), .drawing-split > :global(.draw-entry) { flex-direction: column; gap: 2px; padding: 2px 4px; }
   }
 </style>

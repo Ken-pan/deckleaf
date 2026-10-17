@@ -6,5 +6,5 @@
 
 <header class="modal-head ui-dialog-header {className}" {hidden}>
   <div class="dialog-heading"><h2 id={titleId} bind:this={heading} tabindex="-1">{title}</h2>{#if subtitle}<p class="dialog-subtitle">{subtitle}</p>{/if}</div>
-  <IconButton label={closeLabel} size="lg" onclick={onclose}><X aria-hidden="true" /></IconButton>
+  <IconButton label={closeLabel} size="lg" onclick={onclose}><X size={16} aria-hidden="true" /></IconButton>
 </header>

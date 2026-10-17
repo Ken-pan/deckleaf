@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createDeckBlock,defaultBlockOptions,placeDeckBlock,updateDeckBlock,blockFingerprint} from '../src/core/deck-blocks';
-import {applyBlockPreset,parseBlockItems,moveBlockItem,duplicateBlockItem,removeBlockItem} from '../src/core/deck-block-presets';
+import {createDeckBlock,defaultBlockOptions,placeDeckBlock,updateDeckBlock,blockFingerprint,blockErrorMessage,DECK_BLOCKS} from '../src/core/deck-blocks';
+import {applyBlockPreset,parseBlockItems,moveBlockItem,duplicateBlockItem,removeBlockItem,blockParentCandidates} from '../src/core/deck-block-presets';
 import {blankSlide,newDeck,element,validateDeck} from '../src/core/model';
 import {applyOperations,moveElements} from '../src/core/operations';
 import {applyDeckDesignSystem,contrastRatio} from '../src/core/deck-design-system';
@@ -49,6 +49,39 @@ test('diagram reordering and duplication preserve relationships including implic
   }
   const options=applyBlockPreset('architecture','platform',defaultBlockOptions('architecture'));
   assert.equal(options.items[0].parent,-1);assert.equal(moveBlockItem('architecture',options.items,0,1)[1].parent,-1);
+});
+test('resized inserted blocks reopen at their content scale and keep their frame through updates',()=>{
+  for(const spec of DECK_BLOCKS)for(const factor of [.5,.75,1,1.5]){
+    const slide=blankSlide(),deck=newDeck('Scaled blocks',[slide]),options=defaultBlockOptions(spec.id);
+    const block=createDeckBlock(spec.id,options,deck,slide),geometry={x:125,y:90,w:block.w*factor,h:block.h*factor};
+    const p=placeDeckBlock(block,geometry,slide.id),saved=applyOperations(deck,p.operations),group=saved.slides[0].groups![0];
+    assert.equal(group.block!.sizing,'scaled');
+    const reopened=createDeckBlock(spec.id,group.block!.options,saved,saved.slides[0],geometry,group.block!.sizing);
+    assert.deepEqual(reopened.fitIssues,[],`${spec.id} at ${factor} remains editable`);
+    const oldText=saved.slides[0].elements.filter(e=>e.type==='text'),newText=reopened.elements.filter(e=>e.type==='text');
+    for(const [i,text] of oldText.entries())assert.ok(Math.abs(text.fontSize-newText[i].fontSize)<.01,`${spec.id} keeps font size`);
+    const next=applyOperations(saved,updateDeckBlock(saved.slides[0],group.id,reopened).operations),frame=next.slides[0].elements.find(e=>e.name==='Block frame')!;
+    assert.deepEqual([frame.x,frame.y,frame.w,frame.h],[geometry.x,geometry.y,geometry.w,geometry.h]);
+    assert.equal(validateDeck(JSON.parse(JSON.stringify(next))).slides[0].groups![0].block!.sizing,'scaled');
+    const themed=applyDeckDesignSystem(next,{...COLLECTIONS[0].system,typography:next.designSystem!.typography});
+    for(const text of next.slides[0].elements.filter(e=>e.type==='text'))assert.equal(themed.slides[0].elements.find(e=>e.id===text.id)!.fontSize,text.fontSize,`${spec.id} preserves scaled type through color theme changes`);
+  }
+});
+test('parent choices prevent cycles while deep diagrams can use their suggested grid layout',()=>{
+  for(const kind of ['architecture','organization'] as const){
+    const items=defaultBlockOptions(kind).items;
+    assert.deepEqual(blockParentCandidates(kind,items,0),[]);
+    assert.deepEqual(blockParentCandidates(kind,items,1),kind==='architecture'?[0]:[0,2,3]);
+    const options=defaultBlockOptions(kind);options.items=Array.from({length:5},(_,i)=>({label:`Level ${i+1}`,detail:'',meta:'',parent:i-1}));
+    assert.throws(()=>createDeckBlock(kind,options,{width:1440,height:810}),/grid/);
+    options.layout='grid';assert.doesNotThrow(()=>createDeckBlock(kind,options,{width:1440,height:810}));
+  }
+});
+test('invalid block content has actionable field messages',()=>{
+  const options=defaultBlockOptions('agenda');options.items[0].label='';
+  try{createDeckBlock('agenda',options,{width:1440,height:810});assert.fail('Expected invalid label');}catch(e){assert.equal(blockErrorMessage(e),'Enter a label for item 1.');}
+  const gantt=defaultBlockOptions('gantt');gantt.periodLabels=['A'.repeat(31)];
+  try{createDeckBlock('gantt',gantt,{width:1440,height:810});assert.fail('Expected invalid period label');}catch(e){assert.equal(blockErrorMessage(e),'Keep period label 1 within 30 characters.');}
 });
 test('all relevant template pages offer the correct stored native component and collection typography',()=>{
   for(const c of COLLECTIONS){

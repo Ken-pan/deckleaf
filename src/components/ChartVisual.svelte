@@ -9,7 +9,7 @@
   let {element,fonts,editable=false,activePoint,onpoint,ontext}:{element:SlideElement;fonts?:import('../core/model').Deck['fonts'];editable?:boolean;activePoint?:{series:number;category:number};onpoint?:(series:number,category:number)=>void;ontext?:(target:ChartTextTarget)=>void}=$props();
   let root=$state<HTMLDivElement>(),focusedPoint=$state<{series:number;category:number}|null>(null),hoverPoint=$state<{series:number;category:number}|null>(null);
   let attempt = $state(0),lastChart=$state<{svg:string;description:string}>(),failed=$state(false);
-  const signature = $derived(JSON.stringify([element.chart, element.values, element.w, element.h, element.fontSize, element.fontFamily, element.fill, element.name,editable]));
+  const signature = $derived(JSON.stringify([element.chart, element.values, element.w, element.h, element.fontSize, element.fontFamily, element.fill, element.stroke, element.name,editable]));
   const request = $derived.by(() => {
     signature;
     attempt;

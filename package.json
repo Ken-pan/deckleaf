@@ -1,6 +1,6 @@
 {
   "name": "decksprig",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,19 +10,24 @@
     "dev": "tsx server/index.ts",
     "start": "NODE_ENV=production tsx server/index.ts",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit",
-    "build": "npm run build:brand && npm run build:figma && vite build && node scripts/check-startup.mjs && node scripts/compress-assets.mjs",
+    "build": "npm run build:icons && npm run build:brand && npm run build:previews && npm run build:figma && vite build && node scripts/check-startup.mjs && node scripts/compress-assets.mjs",
     "characters:build": "tsx scripts/build-character-library.mjs",
     "characters:review": "tsx scripts/review-character-library.ts",
     "build:brand": "node scripts/build-brand.mjs",
     "adopt:brand": "node scripts/adopt-brand.mjs",
     "test": "tsx --test tests/*.test.ts",
     "mcp": "tsx server/mcp.ts",
-    "pretest": "npm run build:brand",
+    "pretest": "npm run build:brand && npm run build:previews",
     "build:figma": "node scripts/build-figma-plugin.mjs",
-    "build:web": "npm run build:brand && npm run build:figma && node scripts/build-browser.mjs",
+    "build:web": "npm run build:icons && npm run build:brand && npm run build:previews && npm run build:figma && node scripts/build-browser.mjs",
     "package:source": "node scripts/package-source.mjs",
     "licenses:generate": "node scripts/generate-notices.mjs",
-    "demo:build": "tsx scripts/build-release-demo.ts"
+    "demo:build": "tsx scripts/build-release-demo.ts",
+    "build:icons": "node scripts/build-icon-counts.mjs",
+    "build:previews": "tsx scripts/build-template-covers.ts",
+    "build:website": "node scripts/build-website.mjs",
+    "package:distribution": "node scripts/package-distribution.mjs",
+    "package:export-sources": "node scripts/package-export-sources.mjs"
   },
   "dependencies": {
     "@iconify-json/bi": "^1.2.7",
@@ -65,13 +70,5 @@
   },
   "license": "MIT",
   "author": "Ken Pan",
-  "description": "A local-first slide editor with reviewable AI proposals and portable presentations.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Ken-pan/decksprig.git"
-  },
-  "homepage": "https://decksprig.kens-toolbox.com",
-  "bugs": {
-    "url": "https://github.com/Ken-pan/decksprig/issues"
-  }
+  "description": "A local-first slide editor with reviewable AI proposals and portable presentations."
 }

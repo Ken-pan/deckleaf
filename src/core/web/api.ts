@@ -1,10 +1,10 @@
 import {validateDeck} from '../model';
 import {ProposalSchema,applyOperations} from '../operations';
-import {listWebDecks,readWebDeck,saveWebDeck,webHistory} from './store';
+import {listWebDecks,readWebLibraryPreview,readWebDeck,saveWebDeck,webHistory} from './store';
 
 const unavailable = (message:string,status=409) => Object.assign(new Error(message),{status});
 export async function browserJson(url:string,method='GET',body?:any,aiOptions:import('../../../server/ai').AIRunOptions={}):Promise<any> {
-  const target=new URL(url,globalThis.location?.href || 'https://decksprig.kens-toolbox.com'),path=target.pathname;
+  const target=new URL(url,globalThis.location?.href || 'https://deck-studio.kens-toolbox.com'),path=target.pathname;
   if(path.startsWith('/api/workflows'))return (await import('./workflows')).browserWorkflow(path,method,body,target.searchParams);
   if(path.startsWith('/api/publishing/'))throw unavailable('Website hosting connections require the local edition. Export the HTML presentation here and publish it with your hosting provider.');
   if(path==='/api/health')return {ok:true,runtime:'browser',storage:'indexeddb',converters:{keynote:false,libreoffice:false},ai:{configured:false,model:''}};
@@ -12,6 +12,8 @@ export async function browserJson(url:string,method='GET',body?:any,aiOptions:im
     if(method==='GET')return listWebDecks(target.searchParams.get('view')!=='summary');
     if(method==='POST')return saveWebDeck(body,null);
   }
+  const preview=path.match(/^\/api\/decks\/([\w.:-]+)\/preview$/);
+  if(preview&&method==='GET')return readWebLibraryPreview(preview[1],target.searchParams.has('revision')?Number(target.searchParams.get('revision')):undefined);
   const document=path.match(/^\/api\/decks\/([\w.:-]+)$/);
   if(document){
     if(method==='GET')return readWebDeck(document[1]);

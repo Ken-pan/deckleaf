@@ -19,6 +19,36 @@ test('moving inside a plain group keeps paint order and never targets its own su
 test('locked flows block a drop before mutation and locked subtrees stay intact in multi-selection',()=>{const s=fixture();s.elements.find(e=>e.id==='c')!.locked=true;const before=structuredClone(s),scene=createCanvasMoveScene(s,['a'],'a'),drop=scene.target({x:640,y:140},500,0);assert.match(drop.reason!,/Unlock/);assert.deepEqual(scene.operations(drop,500,0),[]);assert.deepEqual(s,before);s.elements.find(e=>e.id==='hidden')!.locked=true;const multi=createCanvasMoveScene(s,['a','b','loose']);assert.deepEqual(multi.roots,['loose']);});
 test('editing scope keeps fully selected direct children independent, and slot previews reuse their cached plan',()=>{const s=fixture(),scene=createCanvasMoveScene(s,['a','b'],editingSelectionScope('left'));assert.deepEqual(scene.roots,['a','nested']);const one=scene.target({x:640,y:140},500,0),two=scene.target({x:641,y:141},501,1);assert.equal(two,one);});
 test('exit tolerance prevents a slight boundary crossing from detaching a child',()=>{const s=fixture(),box=s.autoLayouts![0],scene=createCanvasMoveScene(s,['a'],'a');const drop=scene.target({x:box.x-3,y:box.y+30},-30,0,6);assert.equal(drop.parent,'left');assert.equal(scene.target({x:box.x-20,y:box.y+30},-50,0,6).parent,undefined);});
+test('an entered flow remains targeted across small boundary jitter and releases after deliberate exit',()=>{
+ const s=fixture(),box=s.autoLayouts![1],scene=createCanvasMoveScene(s,['loose'],'loose');
+ scene.target({x:box.x+2,y:box.y+30},-300,-280,6);
+ for(const offset of [-2,1,-5,0])assert.equal(scene.target({x:box.x+offset,y:box.y+30},-300+offset,-280,6).parent,'right');
+ assert.equal(scene.target({x:box.x-12,y:box.y+30},-312,-280,6).parent,undefined);
+ assert.equal(scene.target({x:box.x-2,y:box.y+30},-302,-280,6).parent,undefined);
+ assert.equal(scene.flowInteraction,true);
+});
+test('horizontal and vertical slot midpoints have a stable dead band in both directions',()=>{
+ for(const direction of ['horizontal','vertical'] as const){
+  const s=fixture();s.autoLayouts![1].direction=direction;const measured=resolveGroupLayouts(s,false),scene=createCanvasMoveScene(measured,['loose'],'loose'),c=measured.elements.find(e=>e.id==='c')!,axis=direction==='horizontal'?'x':'y',size=direction==='horizontal'?'w':'h',mid=c[axis]+c[size]/2;
+  const at=(offset:number)=>{const center={x:c.x+c.w/2,y:c.y+c.h/2};center[axis]=mid+offset;return scene.target({x:center.x,y:center.y},center.x-940,center.y-430,6);};
+  const before=at(-12);assert.equal(before.drop.position,'before');
+  for(const offset of [-1,1,-2,4])assert.equal(at(offset),before);
+  const after=at(8);assert.notEqual(after,before);
+  for(const offset of [1,-1,2,-4])assert.equal(at(offset),after);
+  assert.equal(at(-8).drop.position,'before');
+ }
+});
+test('a touch dead band at low zoom still allows reordering into a small first slot',()=>{
+ for(const direction of ['horizontal','vertical'] as const){
+  const s=fixture();s.autoLayouts![1].direction=direction;
+  const measured=resolveGroupLayouts(s,false),scene=createCanvasMoveScene(measured,['d'],'d'),c=measured.elements.find(e=>e.id==='c')!,d=measured.elements.find(e=>e.id==='d')!,main=direction==='vertical'?'y':'x',size=direction==='vertical'?'h':'w';
+  const at=(value:number)=>{const center={x:d.x+d.w/2,y:d.y+d.h/2};center[main]=value;return scene.target(center,center.x-(d.x+d.w/2),center.y-(d.y+d.h/2),80);};
+  const after=at(d[main]+d[size]/2);assert.equal(after.drop.position,'after');
+  for(const offset of [4,-4,2,-2])assert.equal(at(c[main]+c[size]/2+offset),after);
+  const before=at(c[main]+2);assert.equal(before.drop.position,'before');assert.equal(before.parent,'right');
+  const next=applyOperations(newDeck('Small slots',[measured]),scene.operations(before,0,0)).slides[0];assert.deepEqual(next.autoLayouts!.find(l=>l.id==='right')!.order,['d','c']);
+ }
+});
 test('container IDs containing colons cannot reuse another destination slot',()=>{const s=blankSlide();s.groups=[{id:'x:y',name:'First'},{id:'x',name:'Second'}];s.elements=[element('rect',{id:'z',group:'x:y',w:100,h:60}),element('rect',{id:'y:z',group:'x',w:100,h:60}),element('rect',{id:'loose',x:900,y:100,w:80,h:60})];s.autoLayouts=[flow('x:y',['z'],100,100),flow('x',['y:z'],600,100)];const scene=createCanvasMoveScene(resolveGroupLayouts(s,false),['loose'],'loose'),first=scene.target({x:130,y:130},-800,0),second=scene.target({x:630,y:130},-300,0);assert.equal(first.parent,'x:y');assert.equal(second.parent,'x');assert.equal(first.drop.position,second.drop.position);assert.notEqual(first,second);});
 test('editing the only visible plain child never translates an unselected enclosing auto-layout frame',()=>{const s=blankSlide();s.groups=[{id:'frame',name:'Frame'},{id:'plain',name:'Plain',parent:'frame'}];s.elements=[element('rect',{id:'one',group:'plain',x:110,y:110,w:100,h:80}),element('rect',{id:'hidden',group:'plain',hidden:true,x:110,y:200,w:100,h:80})];s.autoLayouts=[flow('frame',['plain'],100,100)];const measured=resolveGroupLayouts(s,false),scene=createCanvasMoveScene(measured,['one'],'one'),drop=scene.target({x:160,y:150},10,5),next=applyOperations(newDeck('Scope',[measured]),scene.operations(drop,10,5)).slides[0];assert.equal(drop.parent,'plain');assert.equal(next.autoLayouts![0].x,100);assert.equal(next.autoLayouts![0].y,100);assert.equal(next.elements.find(e=>e.id==='one')!.x-next.elements.find(e=>e.id==='hidden')!.x,measured.elements.find(e=>e.id==='one')!.x-measured.elements.find(e=>e.id==='hidden')!.x+10);assert(next.elements.find(e=>e.id==='hidden')!.hidden);});
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {canEditText} from '../core/shapes';
   import FeedbackState from './FeedbackState.svelte';
   import Notice from './ui/Notice.svelte';
   import { floatingPlacement, visualBounds } from '../ui-viewport';
@@ -35,7 +36,7 @@
   let generation = 0, disposed = false, hoverTimer: ReturnType<typeof setTimeout> | undefined;
   let targetKey = '';
   let target = $state<{deckId: string; slideId: string; revision: number; ids: string[]} | null>(null);
-  const selected = $derived(editor.selection.filter(e => e.type === 'text' && !e.locked));
+  const selected = $derived(editor.selection.filter(e => canEditText(e) && !e.locked));
   const familyState = $derived(textPropertyState(editor.selection, 'fontFamily'));
   const currentFamily = $derived(familyState.value ?? 'Manrope');
   const mixedFamily = $derived(familyState.mixed);

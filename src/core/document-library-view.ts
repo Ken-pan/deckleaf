@@ -2,6 +2,7 @@ import type { Deck, Slide } from './model';
 
 export type LibraryDocument = Pick<Deck, 'id' | 'title' | 'width' | 'height' | 'updatedAt'> & {
   count: number;
+  revision?: number;
   firstSlide?: Slide;
 };
 export type LibrarySort = 'recent' | 'oldest' | 'title';

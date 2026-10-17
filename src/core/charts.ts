@@ -26,7 +26,7 @@ export function sampleChart(): Chart {
 /** Old single-series chart objects remain readable without a document migration. */
 export function chartFromElement(element: SlideElement): Chart {
   if (element.chart) return validateChart({...element.chart, colors: [/^#[\da-fA-F]{6}$/.test(element.fill) ? element.fill : element.chart.colors[0], ...element.chart.colors.slice(1)]});
-  return validateChart({...sampleChart(),visual:undefined,numberFormat:undefined, labels: (element.values ?? []).map(v => v.label), series: [{name: element.name || 'Series 1', values: (element.values ?? []).map(v => v.value)}], colors: /^#[\da-fA-F]{6}$/.test(element.fill) ? [element.fill] : chartPalettes[0].colors, source: '', showValues: true, legend: false});
+  return validateChart({...sampleChart(),visual:undefined,numberFormat:undefined, textColor:/^#[\da-fA-F]{6}$/.test(element.stroke)?element.stroke:sampleChart().textColor, labels: (element.values ?? []).map(v => v.label), series: [{name: element.name || 'Series 1', values: (element.values ?? []).map(v => v.value)}], colors: /^#[\da-fA-F]{6}$/.test(element.fill) ? [element.fill] : chartPalettes[0].colors, source: '', showValues: true, legend: false});
 }
 export function chartNumber(raw: string): number {
   raw = raw.trim();

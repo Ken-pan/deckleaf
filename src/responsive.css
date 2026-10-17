@@ -1,6 +1,12 @@
 /* The visible viewport can shrink independently of the page when a keyboard opens. */
 :root { --ui-viewport-left: 0px; --ui-viewport-top: 0px; --ui-viewport-width: 100vw; --ui-viewport-height: 100dvh; }
-.editor-app { height:var(--ui-workspace-height,100dvh); position:relative; top:var(--ui-workspace-top,0px); }
+.editor-app { overflow:clip; height:var(--ui-workspace-height,100dvh); position:relative; top:var(--ui-workspace-top,0px); }
+/* Dialog feedback keeps its background space without obscuring the canvas. */
+.workspace-feedback { flex:none; max-height:36%; overflow:auto; scrollbar-gutter:stable; }
+.workspace-feedback:empty { display:none; }
+.workspace-feedback.feedback-in-dialog { visibility:hidden; }
+.workspace-feedback > .notification-feedback { max-height:none; overflow:visible; scrollbar-gutter:auto; }
+@media(max-width:760px) { .workspace-feedback { max-height:40%; } }
 :root :is(.modal, .prototype-shell.is-focused) {
   inset: var(--ui-viewport-top) calc(100% - var(--ui-viewport-left) - var(--ui-viewport-width)) calc(100% - var(--ui-viewport-top) - var(--ui-viewport-height)) var(--ui-viewport-left);
   max-width: calc(var(--ui-viewport-width) - 48px);
@@ -11,6 +17,12 @@
 .panel-swap[hidden] { display:none; }
 /* Center fitted pages; overflowing artwork starts inside the scrollable area. */
 .canvas-stage { align-items:safe center; justify-content:safe center; overflow-anchor:none; overscroll-behavior:contain; }
+/* Fit measures clientHeight. Reserve the horizontal scrollbar so out-of-page
+   selection handles cannot toggle its height and start a fit/overflow loop. */
+.canvas-stage:not(.manual-zoom):has(.stage-canvas) { overflow-x:scroll; }
+/* Loading group navigation must never enter the canvas centering calculation. */
+.canvas-group-navigation { position:absolute; inset:0; pointer-events:none; }
+.canvas-group-navigation > * { pointer-events:auto; }
 .canvas-stage.manual-zoom .stage-canvas { margin:var(--canvas-pan-y,0px) var(--canvas-pan-x,0px); }
 .slide-list, .inspector-properties, .layer-list, .ai-panel, .notes-panel textarea { overscroll-behavior:contain; scroll-padding:8px; }
 .canvas-insert-dock .insert-tools { flex:1; min-width:0; flex-wrap:wrap; justify-content:center; }
@@ -18,12 +30,12 @@
 .canvas-meta[hidden] { display:none; }
 /* Header height follows text reflow; the artwork remains below its controls. */
 .canvas-stage { --canvas-top-space:64px; }
-.canvas-stage:has(.canvas-version) { --canvas-top-space:80px; }
+.canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space:80px; }
 .canvas-focused .canvas-stage { --canvas-top-space:80px; }
-.canvas-focused .canvas-stage:has(.canvas-version) { --canvas-top-space:112px; }
+.canvas-focused .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space:112px; }
 .editor-app .canvas-stage { padding-top:max(var(--canvas-top-space),var(--canvas-header-height,0px)); }
 @media(max-width:760px) {
-  .canvas-stage:has(.canvas-version) { --canvas-top-space:104px; }
+  .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space:104px; }
   .canvas-focused .canvas-stage { --canvas-top-space:72px; }
 }
 
@@ -95,19 +107,18 @@
 }
 @media (max-width: 1100px) and (max-height: 520px) {
   .canvas-stage { padding-block: 24px; }
-  .canvas-stage:has(.canvas-version) { padding-top: 72px; }
+  .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space: 72px; }
 }
 .short-workspace .canvas-stage { padding-block:24px; }
-.short-workspace .canvas-stage:has(.canvas-version) { padding-top:72px; }
-.editor-app.short-workspace .canvas-stage:has([contenteditable='true']) { padding-top:24px; }
 .short-workspace .canvas-stage { --canvas-top-space:24px; }
-.short-workspace .canvas-stage:has(.canvas-version) { --canvas-top-space:72px; }
+.short-workspace .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space:72px; }
 .short-workspace .notes-panel { height:96px; }
 .short-workspace .stage-footer:has(.canvas-insert-dock) { min-height:0; }
 /* Reserve tools outside the artwork instead of letting a floating toolbar
    obscure a fitted phone slide. The action measures its actual wrapped height. */
 .editor-app.short-workspace .canvas-stage {
-  padding-top:max(var(--canvas-toolbar-space,102px),var(--canvas-header-height,0px));
+  --canvas-group-clearance:66px;
+  padding-top:max(var(--canvas-toolbar-space,var(--canvas-top-space,24px)),var(--canvas-header-height,0px));
 }
 .short-workspace.inline-text-active .canvas-dock-slot { display:none; }
 .short-workspace.inline-text-active .stage-footer:has(.canvas-insert-dock) { min-height:64px; padding-block:8px; }
@@ -146,4 +157,91 @@
   .topbar { flex-wrap: wrap; row-gap: 4px; }
   .topbar .topbar-left { flex: 1 1 140px; }
   .topbar .topbar-right { margin-left: auto; }
+}
+
+@media (max-width: 360px) {
+  /* Keep drawing controls on one row; Duplicate remains in More object actions. */
+  .selection-context:has(.drawing-object-tools) > button[aria-label='Duplicate selection'] { display: none; }
+}
+
+/* Workspace chrome belongs to the visible canvas, outside the artwork scrollport. */
+.canvas-viewport { position:relative; display:flex; flex:1; min-width:0; min-height:0; }
+.canvas-overlay { position:absolute; inset:0 auto auto 0; width:100%; height:100%; pointer-events:none; z-index:26; }
+.canvas-overlay[hidden] { display:none; }
+.canvas-overlay-top { position:absolute; top:12px; left:16px; right:16px; display:flex; flex-direction:column; align-items:stretch; gap:8px; }
+.canvas-overlay .canvas-meta { position:static; min-width:0; flex-wrap:wrap; gap:8px 16px; }
+.canvas-overlay .canvas-meta[hidden] { display:none; }
+.canvas-overlay .canvas-meta > .canvas-version { flex:0 1 auto; }
+.canvas-overlay .canvas-group-navigation { position:static; min-width:0; }
+.canvas-overlay .canvas-group-navigation > .group-edit-bar { position:relative; top:auto; left:auto; max-width:100%; width:fit-content; pointer-events:auto; }
+.canvas-overlay-bottom { position:absolute; bottom:12px; left:16px; right:16px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.canvas-overlay-bottom > :is(.canvas-hint,.source-caption,.task-preview-caption,.insertion-status,.stock-photo-credits) {
+  position:static; inset:auto; flex:none; width:fit-content; max-width:100%; margin:0; min-width:0;
+}
+.canvas-overlay-bottom > :is(.canvas-hint,.source-caption,.task-preview-caption) {
+  display:flex; flex-wrap:wrap; justify-content:center; white-space:normal; overflow:visible; text-wrap:pretty;
+}
+.canvas-overlay-bottom > .stock-photo-credits { flex-shrink:1; min-height:0; pointer-events:auto; }
+.canvas-overlay .insertion-status { pointer-events:auto; gap:12px; }
+.canvas-overlay .insertion-status > span { flex:1; flex-wrap:wrap; }
+.canvas-overlay .insertion-instructions { overflow-wrap:anywhere; }
+.canvas-overlay .source-caption button,.canvas-overlay .task-preview-caption button { pointer-events:auto; }
+.canvas-overlay .canvas-drop-feedback { position:static; inset:auto; min-width:0; }
+.canvas-touch-hint { display:none; }
+@media (max-width:760px), (pointer:coarse) {
+  .canvas-keyboard-hint { display:none; }
+  .canvas-touch-hint { display:inline; }
+}
+@media (max-width:760px) {
+  .canvas-overlay-top { left:12px; right:12px; }
+  .canvas-overlay-bottom { left:12px; right:12px; bottom:8px; }
+  .canvas-overlay .insertion-status { gap:8px; }
+  .canvas-overlay .insertion-status .text-btn { min-height:44px; }
+}
+@media (max-width:760px) and (max-height:520px) {
+  .canvas-overlay-bottom > .canvas-hint { display:none; }
+}
+
+/* Fitted artwork leaves room for wrapped status and attribution, including focus docks. */
+.canvas-stage { --canvas-bottom-space:64px; }
+.canvas-focused .canvas-stage { --canvas-bottom-space:128px; }
+@media (max-width:760px) {
+  .canvas-stage { --canvas-bottom-space:44px; }
+  .canvas-focused .canvas-stage { --canvas-bottom-space:176px; }
+}
+.short-workspace .canvas-stage { --canvas-bottom-space:24px; }
+.editor-app .canvas-viewport .canvas-stage { padding-bottom:max(var(--canvas-bottom-space),var(--canvas-status-height,0px)); }
+
+/* The starting workspace has no editing context. Pane preferences remain intact
+   and the regular editor composition returns as soon as a document is opened. */
+.welcome-workspace .topbar .brand-type { display: flex; }
+.welcome-workspace .topbar .brand-button { width: auto; min-width: max-content; }
+.welcome-workspace .topbar-left { max-width: none; }
+.welcome-workspace .topbar { padding-inline: 24px; }
+.welcome-workspace .workspace.left-hidden.right-hidden { grid-template-columns: 0px minmax(0, 1fr) 0px; grid-template-rows: minmax(0, 1fr); }
+.welcome-workspace .workspace .stage-column { grid-column: 2; grid-row: 1; background: var(--surface-chrome); }
+.welcome-workspace .workspace :is(.slide-rail, .property-panel) { display: none; }
+.editor-app.welcome-workspace .canvas-stage { padding: 48px 40px; --canvas-header-height: 0px; }
+.welcome-workspace :is(.canvas-meta, .stage-footer) { display: none; }
+@media (max-width: 760px) {
+  .welcome-workspace .topbar { padding-inline: 16px; }
+  .editor-app.welcome-workspace .canvas-stage { display: block; padding: 24px; }
+}
+@media (max-height: 600px) and (min-width: 761px) {
+  .editor-app.welcome-workspace .canvas-stage { padding-block: 24px; }
+}
+
+
+/* Dialog shells are ready before their optional contents and styles arrive. */
+.modal.document-library-dialog{width:1080px;height:min(850px,calc(var(--ui-viewport-height) - 48px))}
+.modal.font-library-dialog{width:720px;height:min(740px,calc(var(--ui-viewport-height) - 48px))}
+.modal.resource-modal{width:1180px;height:min(820px,calc(var(--ui-viewport-height) - 32px))}
+.resource-modal .modal-body{padding:0 24px;flex:1;overflow:hidden;display:flex;flex-direction:column}
+@media(max-width:760px){
+  .modal.font-library-dialog{width:calc(100vw - 24px);height:min(740px,calc(var(--ui-viewport-height) - 24px))}
+}
+@media(max-width:600px){
+  .modal.document-library-dialog{height:calc(var(--ui-viewport-height) - 24px)}
+  .modal.resource-modal{height:calc(var(--ui-viewport-height) - 16px)}
+  .resource-modal .modal-body{padding:0 16px}
 }

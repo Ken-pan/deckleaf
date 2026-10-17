@@ -1,9 +1,10 @@
 import type {Editor} from './editor.svelte';
-import {groupElements,createGroupLayout} from './group-commands';
+import {groupElements,createGroupLayout,canAddAutoLayout} from './group-commands';
 
 /** Container commands share the same deferred transaction implementation. */
 export function editContainer(editor:Editor,action:'group'|'auto',ungroup:boolean,wrap:boolean,target:string,ids:string):void {
   if(!editor.slide||editor.activeId!==target||editor.selected.join(',')!==ids)return;
+  if(action==='auto'&&!canAddAutoLayout(editor.selected.length,editor.selectedContainer))return;
   const scope=action==='auto'?editor.individualSelection?editor.selectionScope:editor.selectedContainer||editor.editingGroup:ungroup?editor.selectedContainer:editor.selectionScope;
   const ops=action==='auto'?createGroupLayout(editor.slide,editor.selected,scope):groupElements(editor.slide,editor.selected,ungroup,scope,wrap),revision=editor.deck!.revision;
   editor.commit(ops);if(editor.deck!.revision===revision)return;

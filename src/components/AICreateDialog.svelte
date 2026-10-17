@@ -1,4 +1,5 @@
 <script lang="ts">
+  import NumberField from './ui/NumberField.svelte';
  import {onDestroy,tick} from 'svelte';
  import {Button,DialogFooter} from './ui';
  import Notice from './ui/Notice.svelte';
@@ -15,6 +16,7 @@
  import type {Deck} from '../core/model';
  import type {Proposal} from '../core/operations';
  let {state:creation=$bindable(),settings,serverConfigured=false,onsettings,oncreate}:{state:AICreationState;settings:AISettings;serverConfigured?:boolean;onsettings:()=>void;oncreate:(base:Deck,proposal:Proposal,request:string)=>Promise<void>}=$props();
+ let numericValid=$state(true);
  let busy=$state(false),saving=$state(false),editing=$state(false),error=$state(''),status=$state(''),view=$state('slide');
  let controller:AbortController|undefined;
  let ready=$derived(Boolean(settings.model.trim())&&(settings.provider==='compatible'||serverConfigured||Boolean(settings.apiKey?.trim())));
@@ -29,7 +31,7 @@
  function cancel(){controller?.abort();controller=undefined;busy=false;status='Stopped. Your brief and previous draft are kept.';}
  onDestroy(()=>controller?.abort());
  async function generate(){
-  if(busy||!ready||!creation.brief.trim())return;
+  if(busy||!ready||!creation.brief.trim()||!numericValid)return;
   const run=new AbortController();controller=run;busy=true;error='';status='Planning the story…';
   try{
    const brief=briefInput(),base=await createAIBase(brief.collection);
@@ -71,7 +73,7 @@
    <label class="field-label">Document brief<textarea bind:this={briefField} aria-label="Document brief" bind:value={creation.brief} maxlength="10000" rows="4" readonly={busy} placeholder="What is the deck about? Describe the story, key points, and tone you want." onkeydown={event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();void generate();}}}></textarea></label>
    <div class="ai-create-purpose"><label class="field-label">Audience<input aria-label="Audience" bind:value={creation.audience} maxlength="300" disabled={busy} placeholder="Who will see this?"/></label><label class="field-label">Desired outcome<input aria-label="Desired outcome" bind:value={creation.goal} maxlength="500" disabled={busy} placeholder="What should they remember or decide?"/></label></div>
    <div class="ai-create-delivery"><span class="field-label">How will this deck be used?</span><PropertyChoice label="Deck use" value={creation.delivery??'presentation'} disabled={busy} options={[{value:'presentation',label:'Present live'},{value:'reading',label:'Read and share'}]} onchange={value=>creation.delivery=value as 'presentation'|'reading'}/><p class="hint">{creation.delivery==='reading'?'Self-contained pages with more explanation and source detail.':'Concise slides with supporting detail in speaker notes.'}</p></div>
-   <div class="ai-create-fields"><label class="field-label">Slides<input aria-label="Slides in the draft" type="number" min="2" max="12" bind:value={creation.slideCount} disabled={busy}/></label><label class="field-label">Visual style<select aria-label="Template family" value={creation.templateMode==='auto'?'auto':creation.collection} disabled={busy} onchange={event=>{const value=event.currentTarget.value;creation.templateMode=value==='auto'?'auto':'fixed';if(value!=='auto')creation.collection=value as typeof creation.collection;}}><option value="auto">Match my brief</option>{#each themes as theme}<option value={theme.id}>{theme.name}</option>{/each}</select></label></div>
+   <div class="ai-create-fields"><NumberField label="Slides in the draft" prefix="Slides" preset="count" min={2} max={12} value={creation.slideCount} disabled={busy} onvaliditychange={valid=>numericValid=valid} onchange={value=>creation.slideCount=value}/><label class="field-label">Visual style<select aria-label="Template family" value={creation.templateMode==='auto'?'auto':creation.collection} disabled={busy} onchange={event=>{const value=event.currentTarget.value;creation.templateMode=value==='auto'?'auto':'fixed';if(value!=='auto')creation.collection=value as typeof creation.collection;}}><option value="auto">Match my brief</option>{#each themes as theme}<option value={theme.id}>{theme.name}</option>{/each}</select></label></div>
    <details class="ai-create-materials"><summary>Source material</summary><label class="field-label"><span class="sr-only">Source material</span><textarea aria-label="Source material" bind:value={creation.materials} rows="5" maxlength="20000" readonly={busy} placeholder="Paste findings, source excerpts, or existing text. Include the facts behind any charts or quotes."></textarea></label><p class="hint">Paste source text alongside links; this step does not open linked pages.</p></details>
    <p class="hint">Your brief and sources go to your model provider.{preview?' Your previous draft is kept until a new one is ready.':''}</p>
    {#if !ready&&settings.model}<Notice tone="info" message="Add an API key in AI settings."/>{/if}
@@ -80,7 +82,7 @@
  {#if error}<Notice tone="error" title="Draft could not be completed" message={error}/>{/if}
  <DialogFooter>
   {#snippet info()}{#if busy||preview||status}<p class="hint" role="status">{busy?status:preview&&!editing?'Nothing is saved until you create the document.':status}</p>{/if}{/snippet}
-  {#snippet actions()}{#if preview&&!editing}<Button disabled={saving} onclick={revise}>Edit brief</Button><Button variant="primary" busy={saving} onclick={accept}>Create document</Button>{:else}{#if preview}<Button disabled={busy} onclick={returnToDraft}>Back to draft</Button>{:else}<Button disabled={busy} onclick={onsettings}><Settings2 size={16}/>{settings.model||'Choose model'}</Button>{/if}{#if busy}<Button onclick={cancel}>Stop</Button>{/if}<Button variant="primary" busy={busy} disabled={!ready||!creation.brief.trim()} onclick={generate}>{error?'Try again':preview?'Regenerate draft':'Generate draft'}</Button>{/if}{/snippet}
+  {#snippet actions()}{#if preview&&!editing}<Button disabled={saving} onclick={revise}>Edit brief</Button><Button variant="primary" busy={saving} onclick={accept}>Create document</Button>{:else}{#if preview}<Button disabled={busy} onclick={returnToDraft}>Back to draft</Button>{:else}<Button disabled={busy} onclick={onsettings}><Settings2 size={16}/>{settings.model||'Choose model'}</Button>{/if}{#if busy}<Button onclick={cancel}>Stop</Button>{/if}<Button variant="primary" busy={busy} disabled={!ready||!creation.brief.trim()||!numericValid} onclick={generate}>{error?'Try again':preview?'Regenerate draft':'Generate draft'}</Button>{/if}{/snippet}
  </DialogFooter>
 </div>
 <style>

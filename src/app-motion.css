@@ -110,7 +110,6 @@
   .slide-thumb { width: 116px; }
   .canvas-hint, .source-caption { display: none; }
   .selection-context { top: 0; }
-  .canvas-stage:has(.selection-context) .canvas-meta { visibility: hidden; }
 }
 
 /* Both the OS preference and the editor preference remove spatial motion. */

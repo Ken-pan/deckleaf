@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {SlideElement} from '../core/model';
-  import {imageStyle} from '../core/typography';
+  import {imageStyle} from '../core/image-style';
   import ResourceImage from './ResourceImage.svelte';
   let {image, onload, onerror}: {image: SlideElement; onload?: () => void; onerror?: () => void} = $props();
   const ratio = $derived(image.w / image.h);

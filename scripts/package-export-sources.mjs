@@ -1,0 +1,11 @@
+import {resolve} from 'node:path';
+import {writeFile} from 'node:fs/promises';
+import {projectRoot, distributionOutput, freshOutput, exportSources, archivePackage} from './distribution.mjs';
+const index = process.argv.indexOf('--output');
+if (index >= 0 && !process.argv[index + 1]) throw new Error('Missing output directory.');
+const output = distributionOutput(index >= 0 ? process.argv[index + 1] : resolve(projectRoot, 'output/export-sources', new Date().toISOString().replace(/[:.]/g, '-') + '-' + process.pid));
+await freshOutput(output);
+const report = await exportSources(projectRoot, resolve(output, 'export-sources'));
+const archive = await archivePackage(output, 'export-sources', 'decksprig-export-sources.tar.gz');
+await writeFile(resolve(output, 'release.json'), JSON.stringify({kind: report.kind, payloadBytes: report.payloadBytes, archive}, null, 2) + '\n');
+console.log(JSON.stringify({output, payloadBytes: report.payloadBytes, archive}));

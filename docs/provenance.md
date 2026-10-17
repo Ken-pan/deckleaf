@@ -6,4 +6,4 @@ Runtime templates use fictional placeholder content and project-generated artwor
 
 Third-party code, icons, illustrations and fonts retain their own licenses. Font notices live under `public/fonts/`; resource notices live under `public/resources/licenses/`; chart notices live under `public/licenses/charts/`. Package metadata alone is not a complete third-party license inventory.
 
-Project-wide licensing is under review. `docs/open-source/LICENSE-MIT-draft.txt` is a proposed license and has not been adopted as the repository license. Generated artwork currently carries generation/source metadata; its redistribution terms must be finalized before a public release.
+Code is licensed under the adopted root MIT LICENSE. Project-created decorative artwork is dedicated under CC0 to the extent of the rights held; brand marks, imported material and third-party assets retain the separate terms in ASSET_LICENSES.md. Original source hashes and generation records are preserved.

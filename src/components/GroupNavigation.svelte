@@ -20,7 +20,7 @@
 </nav>{/if}
 <style>
   .group-edit-bar{position:absolute;top:12px;left:12px;z-index:45;display:flex;align-items:center;max-width:calc(100% - 24px);padding:0 4px;border:1px solid var(--border-default);border-radius:var(--r-control);background:var(--surface-overlay);font-size:var(--ui-meta)}
-  .group-path{min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:thin}
+  .group-path{min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;}
   button{background:none;border:0;min-height:44px;min-width:44px;max-width:112px;padding:0 8px;font:inherit;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
   .group-path>span{min-width:40px;max-width:112px;padding:0 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text-secondary);flex:none}
   .group-path :global(svg){flex:none;color:var(--text-tertiary)}

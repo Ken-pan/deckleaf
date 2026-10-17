@@ -66,14 +66,14 @@
 
 <div class="ui-action-menu-trigger {className}" class:icon-only={iconOnly} bind:this={trigger}>
   <Button {disabled} kind={iconOnly ? 'icon' : 'text'} class={active ? 'active' : ''} aria-label={label} title={label} aria-haspopup="menu" aria-controls={id} aria-expanded={open} popovertarget={id} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) { event.preventDefault(); fromEnd = event.key === 'ArrowUp'; menu?.showPopover(); } }}>
-    {@render children?.()}{#if !iconOnly}<ChevronDown size={13} aria-hidden="true" />{/if}
+    {@render children?.()}{#if !iconOnly}<ChevronDown data-ui-marker size={14} aria-hidden="true" />{/if}
   </Button>
 </div>
 <div id={id} bind:this={menu} use:popoverFocus={{close:()=>menu?.hidePopover(),origin:()=>trigger?.querySelector('button')}} popover="auto" class="ui-action-menu" role="menu" tabindex="-1" aria-label={label} inert={!open} onbeforetoggle={beforeToggle} ontoggle={toggled} onkeydown={key}>
   {#each items as item}
     {#if item.divider}<div class="ui-menu-divider" role="separator"></div>{/if}
     <button type="button" role={item.checked === undefined ? 'menuitem' : 'menuitemradio'} aria-checked={item.checked} tabindex="-1" data-tone={item.tone} disabled={item.disabled} onclick={event => select(item,event)}>
-      {#if item.icon}<item.icon size={16} aria-hidden="true" />{/if}<span>{item.label}</span>{#if item.checked}<Check size={14} aria-hidden="true" />{/if}{#if item.shortcut}<kbd>{item.shortcut}</kbd>{/if}
+      {#if item.icon}<item.icon size={16} aria-hidden="true" />{/if}<span>{item.label}</span>{#if item.checked}<Check data-ui-marker size={14} aria-hidden="true" />{/if}{#if item.shortcut}<kbd>{item.shortcut}</kbd>{/if}
     </button>
   {/each}
 </div>

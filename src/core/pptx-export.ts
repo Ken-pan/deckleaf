@@ -11,6 +11,8 @@ import {prepareTextSizing} from './text-layout-fonts';
 import {prepareRegionFills} from './region-fill';
 import {resourceCredits} from './resources';
 import {yieldForInput} from './text-layout';
+import {nativeImageFrame} from './image-framing';
+import {lineLabelElement} from './line-label';
 export type ImageDimensions = (src: string, name: string, id?: string) => Promise<{w:number;h:number}>;
 const browserImageDimensions: ImageDimensions = (src,name) => new Promise((ok,no)=>{
   const image=new Image();image.onload=()=>ok({w:image.naturalWidth,h:image.naturalHeight});image.onerror=()=>no(new Error(`Cannot read image: ${name}`));image.src=src;
@@ -18,7 +20,28 @@ const browserImageDimensions: ImageDimensions = (src,name) => new Promise((ok,no
 export async function buildPptx(deck: Deck, original = false, imageDimensions: ImageDimensions = browserImageDimensions,template=false,fontLoader?:PptxFontLoader): Promise<Uint8Array> {
   if (!original) deck = await prepareTextSizing(deck);
   const authored=deck;
+  const lineLabelIds=new Set<string>();
+  if(!original)deck={...deck,slides:deck.slides.map(s=>({...s,elements:s.elements.flatMap(e=>{
+    if(e.type!=='line'||!e.text||e.hidden)return [e];
+    const id=e.id+':label';lineLabelIds.add(id);return [e,{...lineLabelElement(e),id,name:`${e.name} text`}];
+  })}))};
   if (!original) deck = prepareRegionFills(deck);
+  if(!original){
+    const sizes=new Map<string,Promise<{w:number;h:number}>>();
+    const slides=[];
+    for(const slide of deck.slides){
+      const elements=[];
+      for(const e of slide.elements){
+        if(e.type==='image'&&!e.hidden&&!e.sourceRegion&&e.src&&(e.fit==='crop'||e.imagePosition||e.imageZoom||e.imageSize)){
+          if(!e.imageSize&&!sizes.has(e.src))sizes.set(e.src,imageDimensions(e.src,e.name,`${slide.id}:${e.id}`));
+          const framed=nativeImageFrame(e,e.imageSize??await sizes.get(e.src)!);
+          if(framed.w>0&&framed.h>0)elements.push(framed);
+        }else elements.push(e);
+      }
+      slides.push({...slide,elements});
+    }
+    deck={...deck,slides};
+  }
   if(!original)deck={...deck,slides:deck.slides.map(s=>({...s,elements:s.elements.map(renderedPptxText)}))};
   deck = nativePptxUnits(deck);
   if(deck.slides.some(s=>s.elements.some(e=>e.sourceRegion&&!s.source?.render&&!e.src)))throw new Error('Attach a source PDF to complete complex shape references before exporting.');
@@ -42,7 +65,7 @@ export async function buildPptx(deck: Deck, original = false, imageDimensions: I
       const base = {x: e.x / 96, y: e.y / 96, w: e.w / 96, h: e.h / 96, rotate: e.rotation, objectName: e.id,altText:e.name, transparency: Math.round((1 - e.opacity) * 100)};
       if (e.type === 'text') {
         const text = e.runs?.length ? e.runs.map(r => ({text: r.text, options: {bold: r.bold, italic: r.italic, color: r.color ? c(r.color) : c(e.fill), fontSize: r.fontSize ? r.fontSize * .75 : e.fontSize * .75, fontFace: r.fontFamily || e.fontFamily}})) : e.text;
-        slide.addText(text, {...base, fontFace: e.fontFamily, fontSize: e.fontSize * .75, bold: e.fontWeight >= 600, italic: e.italic, underline: e.underline ? {style: 'sng'} : undefined, color: c(e.fill), align: e.align, margin: 0, breakLine: false, valign: 'top', charSpacing: e.letterSpacing * .75, lineSpacingMultiple: e.lineHeight});
+        slide.addText(text, {...base, fill:lineLabelIds.has(e.id)?{color:c(s.background)}:undefined, fontFace: e.fontFamily, fontSize: e.fontSize * .75, bold: e.fontWeight >= 600, italic: e.italic, underline: e.underline ? {style: 'sng'} : undefined, color: c(e.fill), align: e.align, margin: 0, breakLine: false, valign: 'top', charSpacing: e.letterSpacing * .75, lineSpacingMultiple: e.lineHeight});
       } else if (e.type === 'image' && e.src) {
         const data = e.src.startsWith('data:') ? {data: e.src} : {path: e.src};
         if (e.fit === 'contain' && !e.crop) {
@@ -52,8 +75,8 @@ export async function buildPptx(deck: Deck, original = false, imageDimensions: I
         } else if (e.fit === 'cover' && !e.crop) slide.addImage({...data, ...base, sizing:{type:'cover',w:base.w,h:base.h}});
         else slide.addImage({...data, ...base});
       } else if (e.type === 'rect' || e.type === 'ellipse' || e.type === 'diamond' || e.type === 'line') {
-        const geometry=e.type==='line'&&e.h===1?{y:base.y+.5/96,h:0}:{};
-        slide.addShape(e.type === 'ellipse' ? pptx.ShapeType.ellipse : e.type === 'diamond' ? pptx.ShapeType.diamond : e.type === 'line' ? pptx.ShapeType.line : e.radius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, {...base,...geometry, fill: e.fill === 'transparent' ? {color: 'FFFFFF', transparency: 100} : {color: c(e.fill), transparency: base.transparency}, line: e.stroke === 'transparent' ? {color: 'FFFFFF', transparency: 100} : {color: c(e.stroke), width: e.strokeWidth * .75}});
+        const geometry=e.type==='line'&&e.h===1&&!e.line?{y:base.y+.5/96,h:0}:{};
+        slide.addShape(e.type === 'ellipse' ? pptx.ShapeType.ellipse : e.type === 'diamond' ? pptx.ShapeType.diamond : e.type === 'line' ? pptx.ShapeType.line : e.radius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, {...base,...geometry, fill: e.type==='line'&&e.line ? {color:c(e.stroke==='transparent'?e.fill:e.stroke),transparency:base.transparency} : e.fill === 'transparent' ? {color: 'FFFFFF', transparency: 100} : {color: c(e.fill), transparency: base.transparency}, line: e.stroke === 'transparent' ? {color: 'FFFFFF', transparency: 100} : {color: c(e.stroke), width: e.strokeWidth * .75}});
       } else if (e.type === 'prototype' && e.prototype) {
         slide.addText(`${e.name}\n${e.prototype.url}`, {...base, fontFace: 'Arial', fontSize: 18, color: c(e.fill), hyperlink: {url: e.prototype.url}, margin: 12});
       } else if (e.type === 'table') {

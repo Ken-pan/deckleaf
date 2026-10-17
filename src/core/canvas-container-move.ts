@@ -24,15 +24,27 @@ export function createCanvasMoveScene(slide:Slide,ids:string[],context='') {
   const children=new Map<string,Item[]>();
   for(const layout of tree.layouts.values())children.set(layout.id,layout.order.filter(remaining).flatMap(id=>{const e=tree.elements.get(id),box=e&&!e.hidden?selectionBounds([e]):boxes.get(id);return box&&(!e||!e.hidden)?[{id,box}]:[];}));
   let key='',cached:CanvasDrop|undefined,plan:LayerMove|undefined;
+  let flowInteraction=parents.some(id=>id&&tree.layouts.has(id));
   function target(point:Point,dx:number,dy:number,exitTolerance=0):CanvasDrop {
-    const parent=keepMembership?commonParent:containers.find(g=>{const box=boxes.get(g.id)!;return contains(box,point)||roots.every(id=>parentOf(id)===g.id)&&contains({x:box.x-exitTolerance,y:box.y-exitTolerance,w:box.w+exitTolerance*2,h:box.h+exitTolerance*2},point);})?.id,layout=parent?tree.layouts.get(parent):undefined;
+    const retained=key?cached?.parent:commonParent;
+    const parent=keepMembership?commonParent:containers.find(g=>{const box=boxes.get(g.id)!;return contains(box,point)||g.id===retained&&contains({x:box.x-exitTolerance,y:box.y-exitTolerance,w:box.w+exitTolerance*2,h:box.h+exitTolerance*2},point);})?.id,layout=parent?tree.layouts.get(parent):undefined;
+    flowInteraction ||= Boolean(layout);
     const sameParent=roots.every(id=>parentOf(id)===parent),items=parent?children.get(parent)??[]:[];
     let drop:LayerDrop={target:parent??null,position:'inside'},line:CanvasDrop['line'];
     if(layout&&items.length&&bounds){
       const vertical=layout.direction==='vertical',main=vertical?'y':'x',cross=vertical?'x':'y',size=vertical?'h':'w',crossSize=vertical?'w':'h';
       const center={x:bounds.x+dx+bounds.w/2,y:bounds.y+dy+bounds.h/2};let band=items;
       if(layout.direction==='grid'||layout.wrap){const bands:Item[][]=[];for(const item of items){const row=bands.find(row=>row.some(v=>item.box[cross]<v.box[cross]+v.box[crossSize]-.001&&item.box[cross]+item.box[crossSize]>v.box[cross]+.001));if(row)row.push(item);else bands.push([item]);}band=bands.sort((a,b)=>Math.abs(center[cross]-(Math.min(...a.map(v=>v.box[cross]))+Math.max(...a.map(v=>v.box[cross]+v.box[crossSize])))/2)-Math.abs(center[cross]-(Math.min(...b.map(v=>v.box[cross]))+Math.max(...b.map(v=>v.box[cross]+v.box[crossSize])))/2))[0];}
-      const before=band.find(v=>center[main]<v.box[main]+v.box[size]/2),anchor=before??band.at(-1)!;drop={target:anchor.id,position:before?'before':'after'};
+      let index=band.findIndex(v=>center[main]<v.box[main]+v.box[size]/2);if(index<0)index=band.length;
+      // Require deliberate travel across a slot midpoint, using frozen geometry.
+      if(cached&&cached.parent===parent&&cached.drop.position!=='inside'){
+        const previousAnchor=band.findIndex(v=>v.id===cached!.drop.target);
+        if(previousAnchor>=0){const previous=previousAnchor+(cached.drop.position==='after'?1:0),edge=index>previous?band[previous]:band[previous-1];
+          // At low zoom, a touch-sized dead band must not swallow the whole item.
+          if(edge&&Math.abs(center[main]-(edge.box[main]+edge.box[size]/2))<Math.min(exitTolerance,edge.box[size]/4))index=previous;
+        }
+      }
+      const before=band[index],anchor=before??band.at(-1)!;drop={target:anchor.id,position:before?'before':'after'};
       const at=before?anchor.box[main]-layout.gap/2:anchor.box[main]+anchor.box[size]+layout.gap/2,start=Math.min(...band.map(v=>v.box[cross])),end=Math.max(...band.map(v=>v.box[cross]+v.box[crossSize]));
       line=vertical?{x1:start,y1:at,x2:end,y2:at}:{x1:at,y1:start,x2:at,y2:end};
     }else if(!sameParent&&!layout){const front=layerChildren(tree,parent).find(remaining);if(front)drop={target:front,position:'before'};}
@@ -60,6 +72,6 @@ export function createCanvasMoveScene(slide:Slide,ids:string[],context='') {
     }
     return ops;
   }
-  return {roots,members:members as SlideElement[],bounds,target,operations,parentOf};
+  return {roots,members:members as SlideElement[],bounds,target,operations,parentOf,get flowInteraction(){return flowInteraction;}};
 }
 export type CanvasMoveScene=ReturnType<typeof createCanvasMoveScene>;

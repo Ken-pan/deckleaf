@@ -10,7 +10,7 @@ const labels: Record<string, string> = {
   text: 'Text', fontFamily: 'Font', fontSize: 'Font size', fontWeight: 'Font weight',
   italic: 'Italic', underline: 'Underline', align: 'Alignment', lineHeight: 'Line height', letterSpacing: 'Letter spacing',
   fill: 'Fill', stroke: 'Border color', strokeWidth: 'Border width', radius: 'Corner radius',
-  src: 'Image', fit: 'Image fit', crop: 'Crop', padding: 'Padding', clipText: 'Clip text',
+  src: 'Image', fit: 'Image fit', crop: 'Crop', imagePosition:'Image position', imageZoom:'Image zoom', imageSize:'Original dimensions', padding: 'Padding', clipText: 'Clip text',
   paragraphSpacingAtEdges: 'Paragraph spacing at edges', maxLines: 'Maximum lines', sourceRegion: 'Source crop',
   verticalAlign: 'Vertical alignment', wrap: 'Wrap text', textSizing: 'Text sizing', runs: 'Styled text', paragraphs: 'Paragraphs',
   cells: 'Table content', values: 'Chart data', sourceId: 'Source reference', resource: 'Resource credit',

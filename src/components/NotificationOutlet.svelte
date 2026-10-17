@@ -4,7 +4,8 @@
   import { loadFeature } from '../features';
   import { restoreFocus } from '../ui-focus';
   let {kind, owner}: {kind: 'feedback' | 'toast'; owner?: HTMLDialogElement} = $props();
-  const active = $derived(owner ? notificationUI.dialog === owner : !notificationUI.dialog);
+  // Retain background feedback geometry while the dialog owns its accessible copy.
+  const active = $derived(owner ? notificationUI.dialog === owner : kind === 'feedback' || !notificationUI.dialog);
   const needed = $derived(kind === 'feedback' ? Boolean(editor.recovery || editor.error || notificationUI.error || editor.saveFailed && editor.dirty) : Boolean(notificationUI.busy || editor.notice));
   let attempt = $state(0);
   const request = $derived.by(() => { attempt; return active && needed ? loadFeature('notifications') : undefined; });
@@ -23,6 +24,6 @@
   {/await}
 {/if}
 <style>
-  .notification-fallback { position:relative;z-index:90;flex:none;max-height:35%;overflow:auto;padding:12px 16px;background:var(--surface-overlay);border:1px solid var(--border-default);font-size:var(--ui-text); }
+  .notification-fallback { position:relative;z-index:90;flex:none;max-height:35%;overflow:auto;padding:12px 16px;background:var(--surface-overlay);border:1px solid var(--border-default);font-size:var(--ui-text); ;scrollbar-gutter:stable;}
   .notification-fallback p { margin:0 0 8px;overflow-wrap:anywhere; }
 </style>

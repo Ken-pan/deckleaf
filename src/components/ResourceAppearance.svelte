@@ -5,6 +5,7 @@
   import {resourceColorOperations} from '../core/resource-color';
   import {validateResourceImport, type EmbeddedResource} from '../core/resources';
   import ColorField from './ui/ColorField.svelte';
+  import PropertyRow from './ui/PropertyRow.svelte';
   let busy = $state(false), error = $state(''), disposed = false;
   onDestroy(() => {disposed = true;});
   let items = $derived(editor.selection.filter(e => !e.locked));
@@ -26,12 +27,10 @@
   }
 </script>
 <fieldset class="resource-color-control" disabled={busy} aria-label="Resource color">
-  <div class="resource-color-row"><span>Color</span><ColorField label="Resource color" value={color} {mixed} allowClear={false} onchange={value => void recolor(value)} /></div>
+  <PropertyRow label="Color"><ColorField label="Resource color" value={color} {mixed} allowClear={false} onchange={value => void recolor(value)} /></PropertyRow>
   {#if busy}<p role="status">Applying color…</p>{/if}
   {#if error}<Notice tone="error" title="Color could not update" message={error}/>{/if}
 </fieldset>
 <style>
-  .resource-color-control{border:0;padding:0;margin:0;min-width:0}.resource-color-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:start;font-size:var(--ui-label);color:var(--text-secondary)}.resource-color-row>span{padding-block:8px;line-height:20px}p{font-size:var(--ui-meta);color:var(--text-secondary);margin-top:8px}
-  @media(max-width:760px),(pointer:coarse){.resource-color-row{grid-template-columns:32px minmax(0,1fr)}}
-  @container(max-width:13rem){.resource-color-row{grid-template-columns:1fr;gap:4px}.resource-color-row>span{padding:0}}
+  .resource-color-control{border:0;padding:0;margin:0;min-width:0}p{font-size:var(--ui-meta);color:var(--text-secondary);margin-top:8px}
 </style>

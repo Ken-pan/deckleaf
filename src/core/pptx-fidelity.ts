@@ -1,4 +1,5 @@
-import {customShapeXml, shadowXml} from './shape-pptx';
+import {isTextShape, shapeTextElement} from './shape-text';
+import {customShapeXml, shadowXml, lineStyleXml} from './shape-pptx';
 import JSZip from 'jszip';
 import type { Deck, SlideElement, TextRun } from './model';
 import {writePptxTextMetadata} from './pptx-text-metadata';
@@ -83,12 +84,16 @@ export async function preservePptxFidelity(data: Uint8Array, deck: Deck, authore
     const elements=new Map(deck.slides[i].elements.map(e=>[e.id,e]));
     source=source.replace(/<p:(sp|pic)>[\s\S]*?<\/p:\1>/g, (shape: string) => {
       const id=shape.match(/<p:cNvPr[^>]* name="([^"]+)"/)?.[1], e=id ? elements.get(id):undefined; if(!e)return shape;
-      if(e.type==='text')shape=shape.replace(/<p:txBody>[\s\S]*?<\/p:txBody>/, textBodyXml(e));
+      if(e.type==='text'||e.type!=='line'&&isTextShape(e)&&Boolean(e.text)){
+        const body=textBodyXml(isTextShape(e)?shapeTextElement(e):e);
+        shape=/<p:txBody>/.test(shape)?shape.replace(/<p:txBody>[\s\S]*?<\/p:txBody>/,body):shape.replace('</p:sp>',body+'</p:sp>');
+      }
       if(e.flipX||e.flipY)shape=shape.replace(/<a:xfrm([^>]*)>/, (_,attrs)=>`<a:xfrm${attrs} flipH="${e.flipX?1:0}" flipV="${e.flipY?1:0}">`);
       if(e.type==='image'&&e.crop){const c=e.crop,crop=`<a:srcRect l="${Math.round(c.left*100000)}" r="${Math.round(c.right*100000)}" t="${Math.round(c.top*100000)}" b="${Math.round(c.bottom*100000)}"/>`;shape=/<a:srcRect[^>]*\/>/.test(shape)?shape.replace(/<a:srcRect[^>]*\/>/,crop):shape.replace('<a:stretch>',crop+'<a:stretch>');}
       if(e.type==='rect'&&e.radius)shape=shape.replace(/<a:prstGeom prst="roundRect">[\s\S]*?<\/a:prstGeom>/,`<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val ${Math.min(50000,Math.round(e.radius/Math.min(e.w,e.h)*100000))}"/></a:avLst></a:prstGeom>`);
-      if(e.type==='rect'&&e.shape || e.type==='diamond'&&e.radius)shape=shape.replace(/<a:prstGeom\b[^>]*>[\s\S]*?<\/a:prstGeom>/,customShapeXml(e));
+      if(e.type==='line'&&e.line || e.type==='rect'&&e.shape || e.type==='diamond'&&e.radius)shape=shape.replace(/<a:prstGeom\b[^>]*>[\s\S]*?<\/a:prstGeom>/,customShapeXml(e));
       if(e.shadow)shape=shape.replace(/<p:spPr>([\s\S]*?)<\/p:spPr>/,(_,properties)=>`<p:spPr>${properties.replace(/<a:effectLst(?:\s[^>]*)?\/>|<a:effectLst\b[^>]*>[\s\S]*?<\/a:effectLst>/g,'')}${shadowXml(e)}</p:spPr>`);
+      if(e.type==='line'&&e.line)shape=shape.replace(/<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/,lineStyleXml(e));
       if(e.type==='line')shape=shape.replaceAll('p:sp>','p:cxnSp>').replaceAll('p:nvSpPr','p:nvCxnSpPr').replace(/<p:cNvSpPr[^>]*\/>/,'<p:cNvCxnSpPr/>').replace(/<p:txBody>[\s\S]*?<\/p:txBody>/,'');
       return shape;
     });

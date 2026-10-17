@@ -1,3 +1,8 @@
+<script module lang="ts">
+  import {loadFeature} from '../features';
+  // Finish loading picture framing before the print tree is mounted and decoded.
+  export const ready=()=>loadFeature('framed-image');
+</script>
 <script lang="ts">
   import type {Deck} from '../core/model';
   import {resourceCredits} from '../core/resource-credits';

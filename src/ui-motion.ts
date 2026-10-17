@@ -22,6 +22,11 @@ function animate(node: HTMLElement, frames: Keyframe[], duration: number) {
   return animation;
 }
 
+/** Editor-only geometry settling; authored transforms and playback stay independent. */
+export function uiLayoutGeometry(node: HTMLElement, from: Keyframe, to: Keyframe) {
+  return animate(node, [from, to], timing('reveal', 180));
+}
+
 export function setUIMotion(preference: UIMotionPreference) {
   document.documentElement.dataset.uiMotion = preference;
   if (reducedUI()) stopUIMotion();

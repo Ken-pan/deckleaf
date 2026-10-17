@@ -1,4 +1,8 @@
-import {createShapeGeometry} from './shapes';
+import {createShapeTextRendering,canEditText} from './shape-text';
+import {createLinePaths} from './line-path';
+import {createLineLabelRendering} from './line-label';
+import {createLineGeometry} from './lines';
+import {createShapeGeometry} from './shape-geometry';
 import {visibleDeliveryDeck} from './slide-visibility';
 import {slideLabel} from './slide-label';
 import {withoutSlideTitles} from './portable-document';
@@ -11,6 +15,7 @@ import { chartFromElement, chartDescription } from './charts';
 import { prepareTextSizing } from './text-layout-fonts';
 import { embeddedLibraryFonts } from './fonts';
 import { createTypography } from './typography';
+import {createImageRendering} from './image-style';
 import { embeddedOnlineFonts } from './online-fonts';
 import { usedResourceCredits, resourceCredits } from './resources';
 export { resourceCredits } from './resources';
@@ -45,7 +50,7 @@ export async function exportKeynote(deck: Deck, original = false) {
   return result.warning as string|undefined;
 }
 export function exportBroadser(deck: Deck, htmlUrl = '') {
-  const cards = deck.slides.map((s, i) => ({id: `deck-${s.id}`, type: 'note', title: slideLabel(i), text: [...s.elements.filter(e => e.type === 'text' && !e.hidden).map(e => e.text), s.notes, ...s.elements.filter(e => e.type === 'prototype').map(e => e.prototype?.url), resourceCredits({...deck, slides: [s]})].filter(Boolean).join('\n\n'), x: (i % 3) * 520, y: Math.floor(i / 3) * 350, w: 460, h: 290, z: i + 1, color: 'slate', ...(htmlUrl ? {url: htmlUrl} : {})}));
+  const cards = deck.slides.map((s, i) => ({id: `deck-${s.id}`, type: 'note', title: slideLabel(i), text: [...s.elements.filter(e => canEditText(e) && !e.hidden).map(e => e.text), s.notes, ...s.elements.filter(e => e.type === 'prototype').map(e => e.prototype?.url), resourceCredits({...deck, slides: [s]})].filter(Boolean).join('\n\n'), x: (i % 3) * 520, y: Math.floor(i / 3) * 350, w: 460, h: 290, z: i + 1, color: 'slate', ...(htmlUrl ? {url: htmlUrl} : {})}));
   return {board: {name: deck.title, zoom: 1, panX: 0, panY: 0}, cards, links: [], zCounter: cards.length + 20};
 }
 export async function buildHtml(deck: Deck, original = false): Promise<Blob> {
@@ -89,12 +94,17 @@ export async function buildHtml(deck: Deck, original = false): Promise<Blob> {
   const suffix = `</script><script>
 const charts=${JSON.stringify(chartImages).replace(/</g, '\\u003c')};\nconst deck=JSON.parse(document.getElementById('deck').textContent),original=${original},wrap=document.getElementById('wrap');let index=0;
 const fontStack=family=>'\"'+family.replace(/[\";{}<>\\\\]/g,'')+'\",sans-serif';
-const {runStyle,paragraphStyle,textBoxStyle,textFlowStyle,imageStyle}=(${createTypography.toString()})(fontStack);
+const {runStyle,paragraphStyle,textBoxStyle,textFlowStyle}=(${createTypography.toString()})(fontStack);
+const linePaths=(${createLinePaths.toString()})();
+const {lineLabelElement,lineLabelStyle}=(${createLineLabelRendering.toString()})(linePaths);
+const {isTextShape,shapeTextElement}=(${createShapeTextRendering.toString()})(lineLabelElement);
+const {imageStyle}=(${createImageRendering.toString()})();
 function node(tag,text){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el}
 const credits=${credits},creditPanel=document.getElementById('credits');for(const r of credits){const section=node('section');section.append(node('h3',r.title),node('p',r.attribution));for(const [label,url]of [['Photographer',r.creatorUrl],['Original source',r.sourceUrl],['License',r.licenseUrl]].filter(([label,url])=>url)){const a=node('a',label+' ');a.href=url;a.target='_blank';a.rel='noopener noreferrer';section.append(a)}if(r.licenseNotice)section.append(node('pre',r.licenseNotice));creditPanel.append(section)}document.getElementById('credits-toggle').hidden=!credits.length;document.getElementById('credits-toggle').onclick=()=>creditPanel.showModal();document.getElementById('credits-close').onclick=()=>creditPanel.close();creditPanel.onclose=()=>document.getElementById('credits-toggle').focus();
 const photoCaption=node('div');photoCaption.className='stock-photo-caption';Object.assign(photoCaption.style,{position:'fixed',bottom:'64px',left:'50%',transform:'translateX(-50%)',fontSize:'11px',lineHeight:'1.6',color:'#64736a',background:'#fffffff2',padding:'5px 10px',borderRadius:'4px',zIndex:8,maxWidth:'90vw',maxHeight:'64px',overflow:'auto'});document.body.append(photoCaption);
 function photoCredits(s){photoCaption.replaceChildren();const seen=new Set();for(const e of original?[]:s.elements){const r=e.resource;if(e.hidden||!r?.id.startsWith('unsplash:')||seen.has(r.id))continue;seen.add(r.id);const line=node('span','Photo by '),author=node('a',r.creator),provider=node('a','Unsplash');author.href=r.creatorUrl||r.sourceUrl;provider.href='https://unsplash.com/?utm_source=deck_studio&utm_medium=referral';for(const a of [author,provider]){a.target='_blank';a.rel='noopener noreferrer';a.style.color='inherit';}line.append(author,document.createTextNode(' on '),provider,document.createTextNode('  '));photoCaption.append(line)}photoCaption.hidden=!seen.size}
 const {tablePresentation,tableCellStyle,tableCellSpan}=(${tableRendering.toString()})();
+const {lineMarkup}=(${createLineGeometry.toString()})(linePaths);
 const {shapePath,shadowFilter}=(${createShapeGeometry.toString()})();
 function slide(s){photoCredits(s);const page=node('div');page.className='slide';Object.assign(page.style,{width:deck.width+'px',height:deck.height+'px',background:s.background});if(original&&s.source?.render){const image=node('img');image.src=s.source.render;Object.assign(image.style,{width:'100%',height:'100%',objectFit:'contain'});page.append(image);return page}
 for(const e of s.elements){if(e.hidden)continue;const el=node('div');el.className='e';el.dataset.id=e.id;Object.assign(el.style,{left:e.x+'px',top:e.y+'px',width:e.w+'px',height:e.h+'px',transform:'rotate('+e.rotation+'deg) scale('+(e.flipX?-1:1)+','+(e.flipY?-1:1)+')',opacity:e.opacity,fontFamily:fontStack(e.fontFamily),fontSize:e.fontSize+'px',fontWeight:e.fontWeight,fontStyle:e.italic?'italic':'normal',textDecoration:e.underline?'underline':'none',textAlign:e.align,lineHeight:e.lineHeight,letterSpacing:e.letterSpacing+'px',color:e.fill,filter:shadowFilter(e)});if(e.shadow)el.style.overflow='visible';
@@ -102,8 +112,8 @@ if(e.type==='prototype'){}else if(e.type==='text'){el.style.cssText+=textBoxStyl
 else if(e.type==='image'){const image=node('img');image.src=e.sourceRegion&&s.source?.render?s.source.render:e.src;image.alt=e.name;image.style.cssText=imageStyle(e.sourceRegion&&s.source?.render?{...e,crop:e.sourceRegion}:e);el.style.borderRadius=e.radius+'px';el.append(image)}
 else if(e.type==='table'){const p=tablePresentation(e,deck.designSystem),table=node('table');Object.assign(table.style,{color:p.text,background:p.background,tableLayout:'fixed',whiteSpace:'pre-wrap',fontVariantNumeric:'tabular-nums'});const cols=node('colgroup');for(const width of p.widths){const col=node('col');col.style.width=width*100+'%';cols.append(col);}table.append(cols);for(const [i,row] of (e.cells||[]).entries()){const tr=node('tr');if(p.heights)tr.style.height=p.heights[i]*100+'%';for(let j=0;j<p.widths.length;j++){const span=tableCellSpan(p,i,j);if(span.covered)continue;const header=p.headerRow&&i===0,td=node(header?'th':'td',row[j]||'');td.rowSpan=span.rowSpan;td.colSpan=span.columnSpan;if(header)td.setAttribute('scope','col');Object.assign(td.style,tableCellStyle(p,i,j),{overflowWrap:'anywhere'});tr.append(td);}table.append(tr)}el.append(table)}
 else if(e.type==='chart'){const chart=charts[s.id+':'+e.id];if(chart){el.innerHTML=chart.svg;el.setAttribute('role','img');el.setAttribute('aria-label',chart.description)}}
-else if(e.type==='diamond'||e.type==='rect'&&e.shape){el.style.overflow='visible';const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS(svg.namespaceURI,'path');svg.setAttribute('viewBox','0 0 '+e.w+' '+e.h);svg.style.overflow='visible';path.setAttribute('d',shapePath(e));path.setAttribute('fill',e.fill);path.setAttribute('stroke',e.stroke);path.setAttribute('stroke-width',e.strokeWidth);svg.append(path);el.append(svg)}\nelse if(e.type==='line'){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),line=document.createElementNS(svg.namespaceURI,'line');svg.setAttribute('viewBox','0 0 '+e.w+' '+e.h);svg.setAttribute('width','100%');svg.setAttribute('height','100%');for(const [k,v]of Object.entries({x1:0,y1:e.h===1?.5:0,x2:e.w,y2:e.h===1?.5:e.h,stroke:e.stroke==='transparent'?e.fill:e.stroke,'stroke-width':e.strokeWidth||2}))line.setAttribute(k,String(v));svg.append(line);el.append(svg)}
-else Object.assign(el.style,{background:e.fill,border:e.strokeWidth+'px solid '+e.stroke,borderRadius:e.type==='ellipse'?'50%':e.radius+'px'});page.append(el)}return page}
+else if(e.type==='diamond'||e.type==='rect'&&e.shape){el.style.overflow='visible';const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS(svg.namespaceURI,'path');svg.setAttribute('viewBox','0 0 '+e.w+' '+e.h);svg.style.overflow='visible';path.setAttribute('d',shapePath(e));path.setAttribute('fill',e.fill);path.setAttribute('stroke',e.stroke);path.setAttribute('stroke-width',e.strokeWidth);svg.append(path);el.append(svg)}\nelse if(e.type==='line'){el.style.overflow='visible';const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 '+e.w+' '+e.h);svg.style.overflow='visible';svg.innerHTML=lineMarkup(e);el.append(svg)}
+else Object.assign(el.style,{background:e.fill,border:e.strokeWidth+'px solid '+e.stroke,borderRadius:e.type==='ellipse'?'50%':e.radius+'px'});if(isTextShape(e)&&e.text){const t=shapeTextElement(e),label=node('div'),flow=node('div');label.className='shape-text';label.style.cssText='position:absolute;inset:0;width:100%;height:100%;overflow-wrap:break-word;'+textBoxStyle(t)+(e.type==='line'?lineLabelStyle(e,t)+'background:'+s.background+';':'');Object.assign(label.style,{fontFamily:fontStack(t.fontFamily),fontSize:t.fontSize+'px',fontWeight:t.fontWeight,fontStyle:t.italic?'italic':'normal',textDecoration:t.underline?'underline':'none',lineHeight:t.lineHeight,letterSpacing:t.letterSpacing+'px',textAlign:t.align,color:t.fill});flow.style.cssText=textFlowStyle(t);const appendRun=(host,r)=>{const span=node('span',r.text);span.style.cssText=runStyle(r);host.append(span)};if(t.paragraphs?.length){for(const p of t.paragraphs){const line=node('div');line.className='text-paragraph';line.style.cssText=paragraphStyle(p,t);if(p.bullet)line.append(node('span',p.bullet+' '));for(const r of p.runs)appendRun(line,r);flow.append(line)}}else if(t.runs?.length){for(const r of t.runs)appendRun(flow,r)}else flow.textContent=t.text;label.append(flow);el.append(label);if(e.type==='line')document.fonts?.ready.then(()=>{if(label.isConnected){const measured=lineLabelElement(e);label.style.cssText+=lineLabelStyle(e,measured);label.style.whiteSpace=measured.wrap?'pre-wrap':'pre';}})}page.append(el)}return page}
 ${htmlPlayerScript()}
 </script></html>`;
   return new Blob([prefix, json, suffix], {type:'text/html'});

@@ -18,4 +18,19 @@ export const BlockOptionsSchema=z.object({
 }).strict();
 export type BlockOptions=z.infer<typeof BlockOptionsSchema>;
 export type BlockInput=z.input<typeof BlockOptionsSchema>;
-export const BlockRecipeSchema=z.object({kind:z.enum(BLOCK_IDS),options:BlockOptionsSchema,fingerprint:z.string().max(64)}).strict();
+export const BlockRecipeSchema=z.object({kind:z.enum(BLOCK_IDS),options:BlockOptionsSchema,fingerprint:z.string().max(64),sizing:z.enum(['scaled','presentation']).optional()}).strict();
+
+/** Keep validation useful in the editor instead of exposing serialized schema errors. */
+export function blockErrorMessage(error:unknown):string {
+  if(!(error instanceof z.ZodError))return error instanceof Error?error.message:'Check the block content.';
+  const issue=error.issues[0],path=issue?.path??[];
+  if(path[0]==='items'&&typeof path[1]==='number'){
+    const field=path[2],name=field==='label'?'label':field==='detail'?'description':'date or value';
+    if(issue.code==='too_small')return `Enter a ${name} for item ${path[1]+1}.`;
+    if(issue.code==='too_big')return `Keep the ${name} for item ${path[1]+1} within ${issue.maximum} characters.`;
+  }
+  if(path[0]==='periodLabels')return typeof path[1]==='number'?`Keep period label ${path[1]+1} within 30 characters.`:'Use up to 12 period labels.';
+  if(path[0]==='periods')return 'Enter a whole number of periods from 2 to 12.';
+  if(path[0]==='title')return 'Keep the block title within 160 characters.';
+  return 'Check the block content and item limits.';
+}

@@ -1,3 +1,4 @@
+import {canEditText} from './shapes';
 import catalog from './font-catalog.json';
 import type { Deck, SlideElement, TextRun, OnlineFont } from './model';
 import type { Operation } from './operations';
@@ -70,7 +71,7 @@ export function fontOperations(deck: Deck, slideId: string, ids: string[], famil
   const weights = fontWeights(family, deck.fonts, deck.onlineFonts);
   const changeRun = (run: TextRun): TextRun => ({...run, fontFamily: family,
     ...(run.fontWeight !== undefined ? {fontWeight: nearestWeight(weights, run.fontWeight)} : {})});
-  return (slide?.elements ?? []).filter(e => ids.includes(e.id) && e.type === 'text' && !e.locked).map(e => ({
+  return (slide?.elements ?? []).filter(e => ids.includes(e.id) && canEditText(e) && !e.locked).map(e => ({
     op: 'update_element', slideId, elementId: e.id,
     patch: {fontFamily: family, fontWeight: nearestWeight(fontWeights(family, deck.fonts, deck.onlineFonts), e.fontWeight),
       ...(e.runs ? {runs: e.runs.map(changeRun)} : {}),

@@ -3,7 +3,7 @@
 .text-btn.primary { --feedback-rest: var(--action-solid-bg); }
 .text-btn.ghost { --feedback-rest: var(--field-surface); }
 .text-btn.danger { --feedback-rest: var(--action-danger-bg); }
-:is(.icon-btn.on, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']) { --feedback-rest: var(--state-selected); }
+:is(.icon-btn.on, .icon-btn.active, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']) { --feedback-rest: var(--state-selected); }
 .icon-btn[aria-pressed='mixed'] { --feedback-rest: var(--state-hover); }
 :root :is(.icon-btn, .text-btn, .ui-button):is(:disabled, [aria-disabled='true']):is(:hover, :active) {
   background: var(--feedback-rest); box-shadow: none; scale: 1;
@@ -13,7 +13,6 @@
 :root .text-btn.ghost:is(:disabled, [aria-disabled='true']):is(:hover, :active) { border-color: var(--field-border); }
 :root .text-btn.ghost:not(:disabled):not([aria-disabled='true']):active { background: var(--state-active); }
 :root :is(.ui-action-menu button, .ui-command-results > button, .canvas-layer-picker button):not(:disabled):not([aria-disabled='true']):active { background: var(--state-active); }
-:root .ui-action-menu button[data-tone='danger']:not(:disabled):active { background: var(--action-danger-bg-active); }
 /* The selected marker owns segmented fills, even when its button is hovered. */
 :root .editor-app .seg[data-ui-indicator] button[aria-pressed='true']:hover:not(:active) { background: transparent; }
 
@@ -38,7 +37,7 @@
 :root :is(.editor-app, .modal, [popover], .brand-guide) button[aria-busy='true'] { opacity: 1; }
 :root button[aria-disabled='true']:not([aria-busy='true']) { color: var(--text-disabled); }
 :root .text-btn:is(.primary, .danger):is(:disabled, [aria-disabled='true']):not([aria-busy='true']) { --feedback-rest: var(--field-surface); background: var(--field-surface); border-color: var(--field-border); color: var(--text-disabled); }
-:root :is(.icon-btn.on, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']):not(:disabled):not([aria-disabled='true']):active { background: var(--state-selected-active); }
+:root :is(.icon-btn.on, .icon-btn.active, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']):not(:disabled):not([aria-disabled='true']):active { background: var(--state-selected-active); }
 :root .import-drop:disabled:hover { background: var(--field-surface); }
 /* One indicator replaces an existing leading glyph; the action name stays visible. */
 .ui-button[aria-busy='true'] > .lucide-icon:first-of-type { display: none; }
@@ -57,6 +56,21 @@
 :root .font-row:has(.font-choice:not(:disabled):active) { background: var(--state-active); }
 :root .font-row.chosen:has(.font-choice:not(:disabled):active) { background: var(--state-selected-active); }
 :root .color-clear:not(:disabled):active { background: var(--state-active); }
+:root .color-clear:not(:disabled):is(:focus-visible,:active) { color: var(--text-primary); }
+:root .color-property button.color-clear:disabled { color: color-mix(in oklab,var(--text-secondary) 35%,var(--surface-chrome)); }
+
+/* Inline destructive utilities stay quiet until interaction; menus label danger. */
+:root .ui-action-menu button[data-tone='danger'] { color: var(--danger-text); }
+:root button[data-tone='danger'] > :is(svg, span) { color: inherit; }
+@media (hover: hover) and (pointer: fine) {
+  :root button[data-tone='danger']:not(:disabled):not([aria-disabled='true']):hover { color: var(--danger-text); background: var(--danger-soft); }
+}
+:root button[data-tone='danger']:not(:disabled):not([aria-disabled='true']):is(:focus-visible, :active) { color: var(--danger-text); background: var(--danger-soft); }
+:root button[data-tone='danger']:is(:disabled, [aria-disabled='true']):not([aria-busy='true']) { color: var(--text-disabled); }
+@media (max-width: 760px), (pointer: coarse) {
+  :root button[data-tone='danger'] { min-height: 44px; }
+  :root .icon-btn[data-tone='danger'] { min-width: 44px; }
+}
 
 /* Scrollable choices keep the complete keyboard outline inside their row. */
 :root :is(.ui-command-results > button, .font-dropdown-list > button, .resource-preview-button, .layout-suggestion, .ai-preview):focus-visible { outline: 2px solid var(--accent-line); outline-offset: -2px; }
@@ -90,10 +104,10 @@
 .canvas-drop-feedback > span { padding: 8px 12px; border: 1px solid var(--accent-line); border-radius: var(--r-control); background: var(--surface-overlay); color: var(--text-primary); box-shadow: var(--shadow-sm); font: var(--ui-label)/var(--ui-line-body) var(--font-ui); }
 
 @media (hover: hover) and (pointer: fine) {
-  :root :is(.icon-btn.on, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']):not(:disabled):not([aria-disabled='true']):not(:active):hover { background: var(--state-selected-hover); }
+  :root :is(.icon-btn.on, .icon-btn.active, .text-btn.active, .icon-btn[aria-pressed='true'], .text-btn[aria-pressed='true'], .ui-filter-chip[aria-pressed='true']):not(:disabled):not([aria-disabled='true']):not(:active):hover { background: var(--state-selected-hover); }
   :root :is(.appearance-options, .palette-options, .settings-layout nav) > button[aria-pressed='true']:not(:disabled):not([aria-disabled='true']):hover:not(:active) { background: var(--state-selected-hover); }
   :root :is(.number-field, .color-field):not(.has-error):not(:has(input:is(:disabled, [aria-disabled='true']))):hover { border-color: var(--border-strong); }
-  :root .color-clear:not(:disabled):hover:not(:active) { background: var(--state-hover); }
+  :root .color-clear:not(:disabled):hover:not(:active) { background: var(--state-hover); color: var(--text-primary); }
   :root :is(.transition-option, .layout-style-options > button)[aria-pressed='true']:not(:disabled):not(:active):hover { background: var(--state-selected-hover); }
   /* Preview targets are quieter than persistent resource selections. */
   .resource-tile:not(.selected):not(.picked) .resource-preview-button:not(:disabled):hover .resource-thumb { outline: 1px solid var(--border-strong); outline-offset: -1px; }
@@ -106,7 +120,7 @@
   :root :is(.icon-btn, .text-btn, .ui-button):hover:not(:active) { background: var(--feedback-rest); }
   :root .seg[data-ui-indicator] button:hover:not(:active) { background: transparent; }
   :root .seg:not([data-ui-indicator]) button:hover:not([aria-pressed='true']):not(:active) { background: transparent; }
-  :root :is(.ui-action-menu button, .ui-command-results > button, .canvas-layer-picker button):hover:not(:active):not(:focus-visible):not([aria-pressed='true']) { background: transparent; }
+  :root :is(.ui-action-menu button, .ui-command-results > button, .canvas-layer-picker button):hover:not(:active):not(:focus-visible):not([aria-pressed='true']):not([aria-checked='true']):not([aria-expanded='true']) { background: transparent; }
   :root .layer-row:not(.chosen):not(:has(:focus-visible)):not(:has(:active)) { background: transparent; }
   :root .font-row:not(.chosen):not(:has(:focus-visible)):not(:has(:active)) { background: transparent; }
   :root .font-dropdown-list > button:hover:not(.highlighted):not([aria-selected='true']):not(:active) { background: transparent; }
@@ -129,3 +143,6 @@
 .skip-link{position:fixed;top:12px;left:12px;z-index:2000;translate:0 -160%;padding:8px 12px;background:var(--surface-overlay);border:1px solid var(--border-default);border-radius:var(--r-control)}.skip-link:focus{translate:none;outline:2px solid var(--accent-line);outline-offset:2px}.property-panel:focus-visible{outline:2px solid var(--accent-line);outline-offset:-2px}
 
 :root .modal-body:focus-visible{outline:2px solid var(--accent-line);outline-offset:-2px}
+
+/* The dimension link uses glyph contrast and keyboard focus, without a button tile. */
+:root .ui-button.icon-btn.ratio-toggle[aria-pressed]:not(:disabled):not([aria-disabled='true']):is(:hover,:active) { background: transparent; color: var(--text-primary); }

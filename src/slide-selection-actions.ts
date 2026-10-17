@@ -12,7 +12,7 @@ export function selectedSlideActions(setHidden:(hidden:boolean)=>void){
   const atStart=slides.every((slide,index)=>slide.id===order[index]?.id),atEnd=slides.every((slide,index)=>slide.id===order[order.length-slides.length+index]?.id);
   return [
     {label:'Duplicate slides',icon:Copy,shortcut:'⌘D',disabled:!slides.length||order.length+slides.length>500,onselect:()=>{editor.duplicateSlides();focusCurrentSlide();}},
-    {label:'Copy slides',shortcut:'⌘C',disabled:!slides.length,onselect:()=>copySelection({slideIds:editor.selectedSlides})},
+    {label:'Copy slides',icon:Copy,shortcut:'⌘C',disabled:!slides.length,onselect:()=>copySelection({slideIds:editor.selectedSlides})},
     {label:'Paste slides',icon:ClipboardPaste,shortcut:'⌘V',onselect:()=>pasteFromClipboard({slidesOnly:true})},
     {label:'Hide slides',icon:EyeOff,divider:true,shortcut:slides.some(slide=>!slide.hidden)?'⇧⌘H':undefined,disabled:!slides.some(slide=>!slide.hidden),onselect:()=>setHidden(true)},
     {label:'Unhide slides',icon:Eye,shortcut:slides.length&&slides.every(slide=>slide.hidden)?'⇧⌘H':undefined,disabled:!slides.some(slide=>slide.hidden),onselect:()=>setHidden(false)},

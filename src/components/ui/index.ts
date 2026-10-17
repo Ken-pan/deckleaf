@@ -8,3 +8,4 @@ export { default as DialogHeader } from './DialogHeader.svelte';
 export { default as ActionMenu } from './ActionMenu.svelte';
 export { default as CommandSearch } from './CommandSearch.svelte';
 export { default as PopoverPanel } from './PopoverPanel.svelte';
+export { default as PropertyRow } from './PropertyRow.svelte';

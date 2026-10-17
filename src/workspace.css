@@ -40,27 +40,9 @@
 .insertion-asset-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 200px; }
 .insertion-asset-label small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--ui-meta); }
 @media (max-width: 760px) { .insertion-status > span { flex-wrap: wrap; } .insertion-status .insertion-asset-label { max-width: 160px; flex: 1; } .insertion-status .insertion-instructions { flex-basis: 100%; } .insertion-status.has-asset .insertion-thumbnail { width: 24px; height: 24px; } }
-.canvas-focused .insertion-status { bottom: 88px; }
 @media (max-width: 760px) { .insertion-status { gap: 8px; padding-left: 12px; bottom: 12px; font-size: var(--ui-meta); } .insertion-status > span { gap: 8px; } .insertion-status kbd { display: none; } .insertion-status .text-btn { min-height: 40px; } }
-.canvas-stage:has(.selection-context) .canvas-meta { visibility: hidden; }
-.canvas-stage > .stock-photo-credits { position: absolute; left: 24px; right: 24px; bottom: 44px; margin: 0; max-height: 32px; font-size: var(--ui-meta); }
 .layer-row .icon-btn { opacity: 0; }
 .layer-row:is(:hover,:focus-within,.chosen) .icon-btn, .layer-row .icon-btn.layer-state { opacity: 1; }
-/* Keep the scroll area geometry stable; only the thumb becomes visible. */
-:where(.editor-app *, .modal, .modal *, [popover], [popover] *) {
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-secondary) transparent;
-}
-@media (hover: hover) and (pointer: fine) {
-  :where(.editor-app *, .modal, .modal *, [popover], [popover] *) { scrollbar-color: transparent transparent; }
-  :where(.editor-app *, .modal, .modal *, [popover], [popover] *):is(:hover, :focus-visible, :focus-within) {
-    scrollbar-color: var(--text-secondary) transparent;
-  }
-}
-@media (forced-colors: active) {
-  :where(.editor-app *, .modal, .modal *, [popover], [popover] *) { scrollbar-color: auto; scrollbar-width: auto !important; }
-}
-
 /* This edge belongs to the workspace shell, never the document or its export. */
 .stage-canvas { box-shadow: 0 0 0 1px var(--canvas-edge), var(--slide-shadow); }
 
@@ -74,14 +56,11 @@
 .focus-page-controls { display: flex; align-items: center; }
 .focus-page-controls .slide-count { margin: 0; min-width: 48px; text-align: center; }
 .canvas-focused .focus-toggle { color: var(--text-link); }
-.canvas-focused .canvas-stage:has(.selection-context) .canvas-meta { visibility: visible; }
 @media (max-width: 1100px) { .canvas-focused .canvas-stage { padding-inline: 48px; } }
 @media (max-width: 760px) {
-  .canvas-stage:has(.selection-context) .canvas-meta { visibility: hidden; }
   .layer-row .icon-btn { opacity: 1; }
   .canvas-focused .canvas-stage { padding: 72px 16px 176px; }
   .canvas-focused .canvas-meta { left: 20px; right: 20px; top: 24px; }
-  .canvas-focused .canvas-stage:has(.selection-context) .canvas-meta { visibility: hidden; }
 }
 @media (hover: none) { .layer-row .icon-btn { opacity: 1; } }
 
@@ -138,21 +117,19 @@
 .canvas-utility-right { margin-left: auto; }
 .canvas-insert-dock {
   position: absolute; left: 50%; top: 50%; translate: -50% -50%; z-index: 35;
-  display: flex; align-items: center; width: max-content; max-width: calc(100% - 24px);
-  padding: 6px; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
-  background: var(--surface-chrome); box-shadow: var(--shadow-floating);
+  display: flex; align-items: center; width: max-content; max-width: calc(100% - 24px); padding: 8px;
 }
 .canvas-insert-dock .insert-tools { display: flex; flex: none; align-items: center; gap: 4px; overflow: visible; }
-.canvas-insert-dock .insert-tools > button,
-.canvas-insert-dock .ui-action-menu-trigger > button { width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; gap: 0; justify-content: center; }
-.canvas-insert-dock svg { width: 18px; height: 18px; flex: none; }
-.canvas-insert-dock .ui-action-menu-trigger > button > svg:last-child { display: none; }
+.canvas-insert-dock .insert-primary > button,
+.canvas-insert-dock .resource-tools > button,
+.canvas-insert-dock .ui-action-menu-trigger > button { width: 44px; min-height: 44px; padding: 0; gap: 0; justify-content: center; }
+.canvas-insert-dock :is(.dock-select, .text-entry, .draw-entry, .shape-entry, .line-entry, .resource-entry) > svg,
+.canvas-insert-dock .insert-secondary .icon-btn > svg { width: 20px; height: 20px; }
 .canvas-insert-dock .dock-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.canvas-insert-dock .dock-select[aria-pressed='true'] { background: var(--state-selected); color: var(--text-link); }
 .canvas-meta:has(.canvas-version) { flex-wrap: wrap; justify-content: flex-start; gap: 8px 16px; }
 .canvas-meta > .canvas-version { margin-left: auto; pointer-events: auto; }
 .canvas-meta .canvas-version button { white-space: nowrap; }
-.canvas-stage:has(.canvas-version) { padding-top: 80px; }
+.canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space: 80px; }
 .source-caption, .task-preview-caption { gap: 12px; pointer-events: none; }
 .source-caption > span, .task-preview-caption > span { min-width: 0; }
 .source-caption button, .task-preview-caption button { pointer-events: auto; flex: none; }
@@ -161,10 +138,7 @@
   left: 0; right: 0; bottom: 0; translate: none; margin: 0; width: auto; max-width: none;
   border: 0; border-radius: 0; box-shadow: none; background: transparent; padding: 16px 24px;
 }
-.canvas-focused .canvas-stage:has(.canvas-version) { padding-top: 112px; }
-.canvas-focused .canvas-hint, .canvas-focused .insertion-status,
-.canvas-focused .source-caption, .canvas-focused .task-preview-caption { bottom: 112px; }
-.canvas-focused .stock-photo-credits { bottom: 144px; }
+.canvas-focused .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space: 112px; }
 
 @container (max-width: 560px) {
   .stage-footer:has(.canvas-insert-dock) { min-height: 132px; align-items: flex-end; padding: 12px 16px; }
@@ -179,22 +153,21 @@
   .canvas-utility-right .icon-btn, .canvas-utility-right .zoom-controls .ui-action-menu-trigger > button { min-width: 44px; min-height: 44px; }
   .canvas-utility-right { gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
   .canvas-meta > .canvas-version { flex: 0 0 auto; margin-left: auto; }
-  .canvas-stage:has(.canvas-version) { padding-top: 104px; }
+  .canvas-viewport:has(.canvas-version) .canvas-stage { --canvas-top-space: 104px; }
   .source-caption, .task-preview-caption { align-items: center; gap: 8px; }
   .source-caption > svg, .task-preview-caption > svg { display: none; }
   .source-caption button, .task-preview-caption button { min-height: 44px; padding-inline: 8px; }
   .canvas-focused .stage-footer { padding-inline: 12px; }
-  .canvas-focused .insertion-status, .canvas-focused .canvas-hint { bottom: 164px; }
-  .canvas-focused .stock-photo-credits { bottom: 188px; }
 }
 @media (max-width: 760px), (pointer: coarse) {
   .stage-footer:has(.canvas-insert-dock) { min-height: 144px; align-items: flex-end; padding-bottom: 12px; }
   .canvas-insert-dock { top: 12px; translate: -50% 0; }
-  .canvas-insert-dock .insert-tools > button,
-  .canvas-insert-dock .ui-action-menu-trigger > button { width: auto; min-width: 44px; height: auto; min-height: 52px; padding: 4px 6px; flex-direction: column; gap: 4px; }
-  .canvas-insert-dock .insert-tools > .resource-entry { font-size: var(--ui-meta); gap: 4px; }
-  .canvas-insert-dock .dock-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; font-size: var(--ui-meta); line-height: var(--ui-line-body); }
-  .canvas-insert-dock .ui-action-menu-trigger > button > span { display: inline; }
+  .canvas-insert-dock .insert-primary > button,
+  .canvas-insert-dock .resource-tools > button,
+  .canvas-insert-dock .ui-action-menu-trigger > button { width: 100%; min-width: 44px; min-height: 44px; padding: 2px 4px; flex-direction: column; gap: 2px; }
+  .canvas-insert-dock .ui-action-menu-trigger { width: 100%; }
+  .canvas-insert-dock .dock-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; font-size: var(--ui-meta); line-height: var(--ui-line-control); }
+
 }
 
 .editor-app.canvas-focused .topbar { display: none; }
@@ -217,9 +190,9 @@
 
 /* Compact precision controls on desktop; touch retains its larger hit areas. */
 @media(min-width:761px) and (pointer:fine){
-  .property-panel{--property-control-height:32px;--property-choice-height:28px}
   .property-panel select{height:auto;min-height:var(--property-control-height);padding-block:4px;font-size:var(--ui-label);line-height:var(--ui-line-control)}
   .property-panel .panel-tabs{min-height:40px}
   .property-panel .panel-tabs>button{min-height:40px;padding-block:8px}
-  .property-panel .motion-controls select{min-height:32px;padding-block:4px}
+  .property-panel .motion-controls select{min-height:var(--property-control-height);padding-block:4px}
 }
+

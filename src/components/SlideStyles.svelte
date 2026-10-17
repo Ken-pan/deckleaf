@@ -6,7 +6,7 @@
   const system=$derived(deckDesignSystem(editor.deck??{}));
   const backgroundOptions=$derived([{value:'background',label:'Main'},{value:'dark',label:'Contrast'},{value:'',label:'Custom'},...(editor.slide?.backgroundStyle&&!['background','dark'].includes(editor.slide.backgroundStyle)?[{value:editor.slide.backgroundStyle,label:COLOR_LABELS[editor.slide.backgroundStyle]}]:[])]);
   function background(value:string){
-    if(!editor.slide||(editor.slide.backgroundStyle??'')===value)return;
+    if(!editor.slide||((editor.slide.backgroundStyle??'')===value&&(value!=='dark'||editor.slide.adaptiveColors)))return;
     editor.commit([{op:'update_slide',slideId:editor.slide.id,patch:value?{backgroundStyle:value as 'background'|'dark'}:{background:editor.slide.background}}]);
   }
   function pattern(value:string){
@@ -19,7 +19,7 @@
     <span class="field-label">Background</span>
     <PropertyChoice label="Slide background style" value={editor.slide.backgroundStyle??''} options={backgroundOptions} onchange={background}/>
     <ColorField label="Slide background" value={editor.slide.background} allowClear={false} onchange={value=>editor.slide&&editor.commit([{op:'update_slide',slideId:editor.slide.id,patch:{background:value}}],'background')}/>
-    <p class="hint">{editor.slide.backgroundStyle?'Follows document colors.':'Custom color for this slide.'} Text colors keep their own styles.</p>
+    <p class="hint">{editor.slide.backgroundStyle==='dark'?'Text, shapes, tables and charts adapt to the background.':editor.slide.backgroundStyle?'Follows document colors. Switching to Contrast adapts content colors.':'Custom color for this slide.'}</p>
     {#if editor.slide.backgroundStyle&&(system.pattern.kind!=='none'||editor.slide.patternStyle==='none')}
       <span class="field-label">Pattern</span>
       <PropertyChoice label="Slide background pattern" value={editor.slide.patternStyle??'document'} options={[{value:'document',label:'Use style'},{value:'none',label:'Plain'}]} onchange={pattern}/>

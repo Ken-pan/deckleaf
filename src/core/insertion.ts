@@ -1,3 +1,4 @@
+import type {LineStyle} from './line-schema';
 import {tablePresetStyle} from './table-appearance';
 import { element, type Deck, type Slide, type SlideElement } from './model';
 import type { Bounds, Point } from './interactions';
@@ -7,7 +8,8 @@ import {SHAPE_LABELS, isShapeTool, shapePreset, type ShapeInsertTool} from './sh
 
 export type PrimitiveInsertTool = 'text' | ShapeInsertTool | 'table' | 'chart';
 export type InsertTool = PrimitiveInsertTool | 'image' | 'block';
-export type InsertGeometry = Bounds & {flipY?: boolean; textSizing?: SlideElement['textSizing']};
+export type CanvasTool = InsertTool | 'draw';
+export type InsertGeometry = Bounds & {flipX?: boolean; flipY?: boolean; textSizing?: SlideElement['textSizing']};
 type Page = Pick<Deck, 'width' | 'height'> & Partial<Pick<Deck,'designSystem'>>;
 type ImagePlacement = Pick<SlideElement, 'w' | 'h'> & Partial<Pick<SlideElement, 'resource'>>;
 export type PlacementClick = {client: Point; time: number; slideId: string; revision: number};
@@ -60,13 +62,13 @@ export function insertionSizeLabel(type: InsertTool, page: Page, imageSize?: Ima
 }
 
 /** Screen-pixel drag thresholds are handled by the caller; this only uses page coordinates. */
-export function insertionGeometry(type: InsertTool, page: Page, start: Point, end?: Point, constrained = false, imageSize?: ImagePlacement): InsertGeometry {
+export function insertionGeometry(type: InsertTool, page: Page, start: Point, end?: Point, constrained = false, imageSize?: ImagePlacement, lineStyle?: LineStyle): InsertGeometry {
   if (type === 'image' || type === 'block') return type === 'image' && imageSize && isGraphicBackground(imageSize.resource?.id) && end ? insertionGeometry('rect', page, start, end, constrained) : imageInsertionGeometry(page, imageSize ?? {w: 480 * unit(page), h: 270 * unit(page)}, start, end);
   const a = {x: clamp(start.x, page.width - 1), y: clamp(start.y, page.height - 1)};
   if (!end) {
     const size = defaults[type], scale = unit(page);
     const w = Math.min(page.width, Math.max(1, size.w * scale));
-    const h = Math.min(page.height, Math.max(1, size.h * scale));
+    const h = Math.min(page.height, Math.max(1, (type==='line'&&lineStyle&&lineStyle.route!=='straight'?140:size.h) * scale));
     // A click starts text at the caret. Its live content determines the eventual width.
     if (type === 'text') return {x: a.x, y: Math.min(a.y, page.height - h), w: 1, h, textSizing: 'auto-width'};
     // Keep a click placement fully visible, including along the bottom/right edge.
@@ -86,7 +88,7 @@ export function insertionGeometry(type: InsertTool, page: Page, start: Point, en
   const minWidth = type === 'line' ? 1 : Math.min(24 * unit(page), page.width);
   const minHeight = type === 'line' ? 1 : type === 'text' ? Math.min(50 * unit(page), page.height) : Math.min(24 * unit(page), page.height);
   const w = Math.max(1, minWidth, Math.abs(dx)), h = Math.max(1, minHeight, Math.abs(dy));
-  return {x: Math.min(Math.max(0, a.x + Math.min(0, dx)), page.width - w), y: Math.min(Math.max(0, a.y + Math.min(0, dy)), page.height - h), w, h, ...(type === 'line' ? {flipY: dx * dy < 0} : {}), ...(type === 'text' ? {textSizing: 'auto-height' as const} : {})};
+  return {x: Math.min(Math.max(0, a.x + Math.min(0, dx)), page.width - w), y: Math.min(Math.max(0, a.y + Math.min(0, dy)), page.height - h), w, h, ...(type === 'line' ? lineStyle ? {flipX:dx<0,flipY:dy<0} : {flipY: dx * dy < 0} : {}), ...(type === 'text' ? {textSizing: 'auto-height' as const} : {})};
 }
 
 /** Assets keep their original proportions in every drag direction and at page edges. */
@@ -106,9 +108,9 @@ export function imageInsertionGeometry(page: Page, image: Pick<SlideElement, 'w'
   return {x: Math.max(0, Math.min(a.x - (dx < 0 ? w : 0), page.width - w)), y: Math.max(0, Math.min(a.y - (dy < 0 ? h : 0), page.height - h)), w, h};
 }
 
-export function insertedElement(type: PrimitiveInsertTool, page: Page, geometry: InsertGeometry, text = '', slide?: Pick<Slide,'backgroundStyle'>): SlideElement {
+export function insertedElement(type: PrimitiveInsertTool, page: Page, geometry: InsertGeometry, text = '', slide?: Pick<Slide,'backgroundStyle'|'adaptiveColors'>): SlideElement {
   const attrs = defaults[type];
-  const ink=slide?.backgroundStyle==='dark'?'onDark' as const:'ink' as const;
+  const ink=slide?.backgroundStyle==='dark'&&!slide.adaptiveColors?'onDark' as const:'ink' as const;
   const design=type==='text'?{text:'body' as const,fill:ink}:type==='line'?{stroke:ink}:type==='chart'?{text:'body' as const,textScale:.75,fill:'accent' as const}:type==='table'?{text:'body' as const,textScale:.75,fill:ink}:{fill:'surface' as const};
   const preset = isShapeTool(type) ? shapePreset(type) : {type};
   return styledElement(element(preset.type, {...attrs, ...geometry, design, ...preset, name: insertLabels[type], ...(type === 'roundrect' ? {radius: 24 * unit(page)} : {}), ...(type === 'text' ? {text} : {}), ...('strokeWidth' in attrs ? {strokeWidth: Math.max(.5, attrs.strokeWidth * unit(page))} : {}), fontSize: Math.max(4, ('fontSize' in attrs ? attrs.fontSize : 32) * unit(page))}),deckDesignSystem(page),page);

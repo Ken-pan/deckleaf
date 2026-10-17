@@ -3,7 +3,9 @@
   import { Copy, Ellipsis, FileText, Plus, Search, Upload, X, ChevronDown, HardDrive } from '@lucide/svelte';
   import { Button, ActionMenu, SegmentedControl , EmptyState} from './ui';
   import BrandLockup from './BrandLockup.svelte';
-  import SlideThumbnail from './SlideThumbnail.svelte';
+  import LibraryPreview from './LibraryPreview.svelte';
+  import {LibraryPreviewQueue} from '../core/library-preview-queue';
+  const previewQueue = new LibraryPreviewQueue();
   import { isBrowserEdition } from '../core/runtime';
   import { countLabel } from '../core/ui-copy';
   import { libraryDocuments, libraryDate, type LibraryDocument, type LibrarySort } from '../core/document-library-view';
@@ -55,13 +57,7 @@
       {#each visible as document (document.id)}
         <div class="doc-library-file" data-deck-id={document.id} data-current={currentId === document.id}>
           <button class="doc-library-open" title={document.title} onclick={() => onopen(document.id)}>
-            <span class="doc-library-cover" aria-hidden="true">
-              {#if document.firstSlide}
-                <div class="doc-library-preview" style:aspect-ratio={`${document.width} / ${document.height}`} style:width={`${Math.min(100, (document.width / document.height) / (16 / 9) * 100)}%`}>
-                  <SlideThumbnail deck={document} slide={document.firstSlide} original={Boolean(document.firstSlide.source?.render)} />
-                </div>
-              {:else}<FileText size={32} />{/if}
-            </span>
+            <LibraryPreview {document} queue={previewQueue} />
             <span class="sr-only">Open document: </span><span class="doc-library-info">
               <strong>{document.title}</strong>
               <span class="doc-library-meta"><span>{countLabel(document.count, 'slide')}{#if currentId === document.id}<span class="doc-library-current"> · Open</span>{/if}</span><time datetime={document.updatedAt} title={`Last edited ${new Date(document.updatedAt).toLocaleString('en-US')}`}>{libraryDate(document.updatedAt)}</time></span>

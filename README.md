@@ -2,11 +2,11 @@
 
 A local-first presentation editor. Make slides, review optional AI changes, and take your work with you.
 
-[**Try the editable sample**](https://decksprig.kens-toolbox.com/app?demo=1) · [Website & demo](https://decksprig.kens-toolbox.com/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.5)
+[**Try the editable sample**](https://decksprig.kens-toolbox.com/app?demo=1) · [Website & demo](https://decksprig.kens-toolbox.com/) · [Getting started](docs/open-source/getting-started.md) · [中文](README.zh-CN.md) · [Downloads](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.6)
 
 ![The actual Decksprig editor](public/website/assets/editor-light.jpg)
 
-An early **0.1.5** release by Ken Pan, developed with Codex. Code is [MIT licensed](LICENSE); commercial use and closed-source derivatives are welcome. Original decorative artwork is CC0 to the extent of the rights held; [fonts, icons, third-party assets and brand marks](ASSET_LICENSES.md) have separate terms.
+An early **0.1.6** release by Ken Pan, developed with Codex. Code is [MIT licensed](LICENSE); commercial use and closed-source derivatives are welcome. Original decorative artwork is CC0 to the extent of the rights held; [fonts, icons, third-party assets and brand marks](ASSET_LICENSES.md) have separate terms.
 
 ## Try it in five minutes
 
@@ -81,7 +81,7 @@ The browser website/editor is written to `output/website/dist`; optional resourc
 npm run package:source
 ```
 
-Creates a fresh directory under `output/open-source/<timestamp>/` containing `decksprig-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.5 release](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.5) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
+Creates a fresh directory under `output/open-source/<timestamp>/` containing `decksprig-source.tar.gz`, a file manifest and `SHA256SUMS`. Local documents, credentials, private evidence and historical builds are excluded. The [v0.1.6 release](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.6) contains a reviewed source archive, browser build, sample and demo video. `private:true` prevents accidental npm publication and does not restrict GitHub use.
 
 ## License, support and contributions
 
@@ -94,3 +94,18 @@ Decksprig retains legacy `deck-studio` schema identifiers, storage keys and envi
 ## Name and website change
 
 Decksprig was previously called Deckleaf. Version 0.1.1 keeps the same document format, `deck-studio-*` storage keys and resource IDs. Existing local `.data/` libraries continue to work. The old hosted editor remains available at [the previous address](https://deckleaf-kens-toolbox.netlify.app/app) for accessing documents saved there. Browser storage belongs to its exact origin: export Deck files at the old address, then import them at the new one. Nothing is automatically transferred between domains. Read [migration notes](docs/open-source/name-change.md).
+
+## Separate distribution packages
+
+```sh
+npm run package:distribution
+```
+
+This builds a fresh local release under `output/distribution/<release-id>/`: `app/`, `website/` and `export-sources/`, plus three tar.gz archives, SHA-256 manifests and per-package/aggregate byte counts in `release.json`. Existing releases are never merged or removed. To choose a fresh location, pass `-- --output output/my-release`.
+
+The app contains full editable PPTX/POTX font payloads, browser fonts and licenses, and original template media for offline export. Website assets and PPTX-builder source TTF files are kept in their separate packages; no export needs to download the source package. The source archive preserves the original font manifest, full TTF faces, generator and all hashed source inputs. Repository originals remain intact.
+
+These app archives contain the existing Vite frontend/runtime assets. Run them with the repository Node service using `DECK_STUDIO_DIST=/absolute/path/to/app npm start`; Node dependencies and native Keynote conversion tools remain separate requirements. Documents containing remote-only media, online fonts or interactive embeds still depend on their providers unless those resources have already been embedded.
+
+`npm run build` produces only the app resources. `npm run build:website` produces a standalone marketing site under `output/website-only/dist`; its `/app` link is a hosting integration point. `npm run package:export-sources` creates only the font source archive. The existing `build:web` command deliberately assembles the compatible combined browser-hosting layout; setting `DECK_STUDIO_WEB_OUTPUT=output/my-browser-build` stages that build separately without changing the default publication output.
+

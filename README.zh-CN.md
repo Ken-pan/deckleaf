@@ -2,11 +2,11 @@
 
 本地优先的演示文稿编辑器：编辑幻灯片、审阅可选的 AI 修改、导出自己的作品。
 
-[**直接试用可编辑示例**](https://decksprig.kens-toolbox.com/app?demo=1) · [演示与视频](https://decksprig.kens-toolbox.com/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.5](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.5)
+[**直接试用可编辑示例**](https://decksprig.kens-toolbox.com/app?demo=1) · [演示与视频](https://decksprig.kens-toolbox.com/demo.html) · [中文使用指南](docs/open-source/getting-started.zh-CN.md) · [English](README.md) · [下载 v0.1.6](https://github.com/Ken-pan/decksprig/releases/tag/v0.1.6)
 
 ![实际编辑器画面](public/website/assets/editor-light.jpg)
 
-Ken Pan 的个人项目，使用 Codex 开发。当前公开版本为 **0.1.5**；首个公开版本为 0.1.0。代码采用 [MIT](LICENSE)，允许商业使用及闭源二次开发；原创装饰插图在作者持有权利的范围内采用 CC0，字体、图标、第三方素材和品牌标志遵守[各自的许可](ASSET_LICENSES.md)。界面目前为英文。
+Ken Pan 的个人项目，使用 Codex 开发。当前公开版本为 **0.1.6**；首个公开版本为 0.1.0。代码采用 [MIT](LICENSE)，允许商业使用及闭源二次开发；原创装饰插图在作者持有权利的范围内采用 CC0，字体、图标、第三方素材和品牌标志遵守[各自的许可](ASSET_LICENSES.md)。界面目前为英文。
 
 ## 五分钟开始
 
@@ -67,3 +67,7 @@ npm run package:source
 ## 更名与迁移
 
 Decksprig 原名 Deckleaf。0.1.1 保留文档格式、`deck-studio-*` 存储标识、素材 ID 和本地 `.data/` 文档库。[旧地址的编辑器](https://deckleaf-kens-toolbox.netlify.app/app)继续用于读取旧地址保存的文档。浏览器存储属于具体域名：请在旧地址导出 Deck 文件，再到新地址导入；域名间不会自动转移文档。详见[迁移说明](docs/open-source/name-change.md)。
+
+## 分包发行
+
+运行 `npm run package:distribution`，会在新的 output 目录生成应用、网站和导出源资源三个独立目录、tar.gz、哈希清单与实际体积记录。应用保留完整可编辑 PPTX/POTX 字体、网页字体及模板原图，离线导出不需要下载源资源包。原始 TTF、源清单、许可证和字体制作输入保存在独立源包中，仓库原件保留。`npm run build:website` 单独构建网站，已有 `build:web` 保留组合托管布局。

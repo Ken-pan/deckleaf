@@ -443,9 +443,8 @@
     "license": "MIT",
     "dev": true,
     "optional": true,
-    "repository": "git+https://github.com/jridgewell/sourcemaps.git",
     "noticeFiles": [
-      "LICENSE"
+      "public/licenses/upstream/jridgewell-source-map-0.3.11.txt"
     ]
   },
   {
@@ -1101,9 +1100,8 @@
     "license": "MIT",
     "dev": true,
     "optional": true,
-    "repository": "LinusU/buffer-from",
     "noticeFiles": [
-      "LICENSE"
+      "public/licenses/upstream/buffer-from-1.1.2.txt"
     ]
   },
   {
@@ -1178,9 +1176,8 @@
     "license": "MIT",
     "dev": true,
     "optional": true,
-    "repository": "https://github.com/tj/commander.js.git",
     "noticeFiles": [
-      "LICENSE"
+      "public/licenses/upstream/commander-2.20.3.txt"
     ]
   },
   {
@@ -2785,9 +2782,8 @@
     "license": "BSD-3-Clause",
     "dev": true,
     "optional": true,
-    "repository": "http://github.com/mozilla/source-map.git",
     "noticeFiles": [
-      "LICENSE"
+      "public/licenses/upstream/source-map-0.6.1.txt"
     ]
   },
   {
@@ -2807,9 +2803,8 @@
     "license": "MIT",
     "dev": true,
     "optional": true,
-    "repository": "https://github.com/evanw/node-source-map-support",
     "noticeFiles": [
-      "LICENSE.md"
+      "public/licenses/upstream/source-map-support-0.5.21.txt"
     ]
   },
   {
@@ -2884,9 +2879,8 @@
     "license": "BSD-2-Clause",
     "dev": true,
     "optional": true,
-    "repository": "https://github.com/terser/terser",
     "noticeFiles": [
-      "LICENSE"
+      "public/licenses/upstream/terser-5.51.2.txt"
     ]
   },
   {

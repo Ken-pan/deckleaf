@@ -1,5 +1,4 @@
 /* A file browser: previews identify documents; controls stay secondary. */
-.modal.document-library-dialog { width: 1080px; height: min(850px, calc(var(--ui-viewport-height, 100dvh) - 48px)); }
 .document-library { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .doc-library-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .doc-library-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -46,7 +45,6 @@
 }
 @media (max-width: 900px) { .doc-library-files { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) {
-  .modal.document-library-dialog { height: calc(var(--ui-viewport-height, 100dvh) - 24px); }
   .document-library { gap: 16px; }
   .doc-library-heading { flex-wrap: wrap; gap: 16px; }
   .doc-library-actions { width: 100%; }

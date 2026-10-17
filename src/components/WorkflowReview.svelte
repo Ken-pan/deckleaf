@@ -20,7 +20,7 @@
 </section>
 <style>
  .workflow-review{display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden}
- .workflow-body{display:flex;flex:1;min-height:0;flex-direction:column;gap:12px;padding:12px 16px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+ .workflow-body{display:flex;flex:1;min-height:0;flex-direction:column;gap:12px;padding:12px 16px;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}
  .workflow-review h3{font-size:var(--ui-text);margin:0;overflow-wrap:anywhere}
  .workflow-source{overflow-wrap:anywhere;font-size:var(--ui-label)}
  .workflow-actions{display:flex;flex:none;flex-direction:column;gap:8px;padding:12px 16px;border-top:1px solid var(--border-subtle);background:var(--surface-chrome)}

@@ -12,7 +12,7 @@
 {#if options?.available}
   <div class="group-membership" class:standalone aria-label="Group membership">
     <p class="hint membership-parent">In <span title={name}>{name}</span></p>
-    <Button variant="quiet" size="sm" disabled={Boolean(options.parent?options.out.reason:options.slide.reason)} onclick={()=>moveOutOfGroup(!options!.parent)}><ExitGroupIcon size={14}/>{options.parent?'Move out of group':'Move to slide'}</Button>
+    <Button variant="quiet" size="sm" disabled={Boolean(options.parent?options.out.reason:options.slide.reason)} onclick={()=>moveOutOfGroup(!options!.parent)}><ExitGroupIcon size={16}/>{options.parent?'Move out of group':'Move to slide'}</Button>
     <p class="hint">{options.parent?options.out.reason??(flow?'Move up one level and follow the parent layout.':options.destination?'Move up one level; keep the current position.':'Keep the current position on the slide.'):options.slide.reason??'Keep the current position on the slide.'}</p>
   </div>
 {/if}

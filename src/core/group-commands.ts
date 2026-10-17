@@ -41,6 +41,10 @@ export function groupElements(slide:Slide,ids:string[],ungroup=false,context='',
   if(parent){const l=slide.autoLayouts?.find(l=>l.id===parent);if(l){let inserted=false;const order=l.order.flatMap(v=>{if(!roots.includes(v))return[v];if(inserted)return[];inserted=true;return[id];});if(!inserted)order.push(id);ops.push({op:'set_group_layout',slideId:slide.id,layout:{...l,order}});}}
   return ops;
 }
+/** Manual creation applies to a multi-selection or a selected container. */
+export function canAddAutoLayout(selectionCount:number,selectedContainer=''):boolean {
+  return selectionCount>1||Boolean(selectedContainer);
+}
 export function createGroupLayout(slide:Slide,ids:string[],context=''):Operation[] {
   const roots=selectionRoots(slide,ids,context),groups=slideGroups(slide);
   let existing=groups.some(g=>g.id===context)?context:roots.length===1&&groups.some(g=>g.id===roots[0])?roots[0]:undefined;

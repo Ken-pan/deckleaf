@@ -40,7 +40,7 @@ Creation plans now follow the audience, delivery mode and supplied material. Tem
 AI session helpers load when needed, keeping the native startup bundle within the existing 450 KB budget. Provider-independent tests use fixtures; no paid provider requests are part of the release check. Live provider behavior was exercised separately before this release and does not establish support for every model or integration.
 
 
-## Design system and interaction release 0.1.5
+## Design system and interaction release 0.1.6
 
 Application controls share neutral hover, press, selected, disabled and focus feedback. Dialogs and floating tools retain comfortable touch targets, shared typography and restrained motion. Short-screen editing reserves room for object tools and exposes clear completion actions.
 
@@ -51,3 +51,11 @@ The development audit exercised 17 primary dialog types on desktop and simulated
 Optional sample-file preparation and Markdown export formatting load when requested, preserving the existing startup budget without changing their document path or output content.
 
 The hosted publication preview uses an isolated, same-origin frame with an opaque sandbox and a source-checked parent handshake. Its player policy is scoped to that frame; the main app keeps its existing script policy. Playback, nested source-panel Escape and original HTML downloads are checked under the hosted policies.
+
+## Performance and distribution release 0.1.6
+
+This release integrates the current editor, drawing/line, table/block, crop, interaction and responsive-control updates. The document library lists scalar summaries separately from visible previews. Browser storage version 2 adds an atomic summary index and preserves original document records during migration. Font repaint and thumbnail lifetimes, icon metadata caching and generated starter covers reduce repeated work.
+
+Application, website and font-source packages can be built independently. Runtime export retains full editable native fonts, browser fonts/licenses and template originals; source TTFs and their original manifest/hashed inputs live in a separate development archive. The legacy combined browser-hosting build remains available.
+
+The frozen release candidate passed type checking with no diagnostics, 1,192 tests, the dependency audit, local/browser production builds and the source-package publication scan. Local startup stays within the existing 450 KB JS / 180 KB CSS budgets. Published-site acceptance, older-tab resource retention and same-origin stored-document continuity are recorded separately from source/build checks. Existing cloud-provider/native-conversion limitations remain.

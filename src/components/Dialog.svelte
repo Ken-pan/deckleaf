@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, type Snippet } from 'svelte';
+  import { onMount, getContext, setContext, type Snippet } from 'svelte';
   import { uiPresence, uiChange } from '../ui-motion';
   import DialogHeader from './ui/DialogHeader.svelte';
   import { restoreFocus } from '../ui-focus';
@@ -7,13 +7,16 @@
   import NotificationOutlet from './NotificationOutlet.svelte';
   import { registerNotificationDialog } from '../notification-ui.svelte';
   let {title, onclose, returnFocus, children, footer, subtitle, descriptionId, wide = false, resource = false, review = false, workspace = false, closeLabel = 'Close', element = $bindable(), class: className = ''}: {title: string; onclose: () => void; returnFocus?: () => HTMLElement | undefined; children: Snippet; footer?: Snippet; subtitle?: string; descriptionId?: string; wide?: boolean; resource?: boolean; review?: boolean; workspace?: boolean; closeLabel?: string; element?: HTMLDialogElement; class?: string} = $props();
+  const featureReturnFocus=getContext<(()=>HTMLElement|null)|undefined>('deck-studio-feature-focus');
+  setContext('deck-studio-feature-focus',undefined);
+  const returnTarget=()=>returnFocus?.()??featureReturnFocus?.()??undefined;
   const titleId = $props.id();
   let heading = $state<HTMLHeadingElement>();
   let body: HTMLDivElement;
   let scrollable=$state(false);
   let focusOrigin:HTMLElement|null=null;
   let releaseFeedback: (() => void) | undefined;
-  function releaseModal(){if(element?.open){releaseFeedback?.();releaseFeedback=undefined;element.close();restoreFocus(returnFocus?.(),focusOrigin);}}
+  function releaseModal(){if(element?.open){releaseFeedback?.();releaseFeedback=undefined;element.close();restoreFocus(returnTarget(),focusOrigin);}}
   function modalPresence(node:HTMLElement,params:Parameters<typeof uiPresence>[1],options:Parameters<typeof uiPresence>[2]) {
     const config=uiPresence(node,params,options);
     if(typeof config!=='function')return config;
@@ -54,13 +57,13 @@
       if(!wasOpen)return;
       queueMicrotask(() => {
         if (document.querySelector('dialog:modal')) return;
-        const requested = returnFocus?.();
+        const requested = returnTarget();
         restoreFocus(requested, origin);
       });
     };
   });
 </script>
-<dialog bind:this={element} use:modalFocus={returnFocus} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} onkeydown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 && event.target instanceof Element && event.target.closest('dialog') === element && !event.target.closest('[popover]:popover-open:not([role="tooltip"])')) { event.preventDefault(); event.stopPropagation(); onclose(); } }} oncancel={(e) => { e.preventDefault(); onclose(); }}>
+<dialog bind:this={element} use:modalFocus={returnTarget} aria-modal="true" transition:modalPresence={{y: 8, surface: true}} class="modal {className}" class:wide class:review class:resource-modal={resource} class:dialog-workspace={workspace} aria-labelledby={titleId} aria-describedby={descriptionId} onkeydown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 && event.target instanceof Element && event.target.closest('dialog') === element && !event.target.closest('[popover]:popover-open:not([role="tooltip"])')) { event.preventDefault(); event.stopPropagation(); onclose(); } }} oncancel={(e) => { e.preventDefault(); onclose(); }}>
   <DialogHeader {title} {subtitle} {titleId} {closeLabel} {onclose} bind:heading />
   <!-- Scrollable dialog prose has a keyboard reading position. -->
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->

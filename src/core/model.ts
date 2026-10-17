@@ -1,3 +1,4 @@
+import {LineStyleSchema} from './line-schema';
 import {ShapeVariantSchema, ElementShadowSchema} from './shape-schema';
 import { z } from 'zod';
 import { TRANSITION_IDS } from './transition-ids';
@@ -89,9 +90,17 @@ export const ElementSchema = z.object({
   lineHeight: z.number().min(0.5).max(4).default(1.25), letterSpacing: z.number().min(-30).max(50).default(0),
   fill: color.default('#252b29'), stroke: color.default('transparent'), strokeWidth: z.number().min(0).max(100).default(0),
   radius: z.number().min(0).max(500).default(0),
+  line: LineStyleSchema.optional(),
+  // Reversible materialized color adjustments; authored colors survive background changes.
+  contrastColors: z.record(z.string().regex(/^(fill|stroke|shapeText\.color|(?:runs\.\d+|paragraphs\.\d+\.(?:runs\.\d+|endStyle))\.color|chart\.(?:textColor|colors\.\d+|dataLabels\.color)|tableStyle\.(?:headerFill|headerText|bodyFill|stripeFill|lineColor|cellStyles\.\d+\.(?:fill|color)))$/), z.object({original:color.optional(),adapted:color}).strict()).optional(),
+  shapeText: z.object({color: color.optional(), align: z.enum(['left', 'center', 'right']).optional(), verticalAlign: z.enum(['top', 'middle', 'bottom']).optional()}).strict().optional(),
   shape: ShapeVariantSchema.optional(), shadow: ElementShadowSchema.optional(),
-  src: image.optional(), fit: z.enum(['contain', 'cover', 'fill']).default('contain'),
-  crop: z.object({left: z.number().min(0).max(.9999), top: z.number().min(0).max(.9999), right: z.number().min(0).max(.9999), bottom: z.number().min(0).max(.9999)}).strict().refine(c => c.left + c.right < 1 && c.top + c.bottom < 1, 'Invalid crop').optional(),
+  src: image.optional(), fit: z.enum(['contain', 'cover', 'crop', 'fill']).default('contain'),
+  imagePosition: z.object({x:z.number().min(0).max(1),y:z.number().min(0).max(1)}).strict().optional(),
+  imageZoom: z.number().min(.000001).max(20).optional(),
+  imageSize: z.object({w:z.number().positive().max(1000000),h:z.number().positive().max(1000000)}).strict().optional(),
+  // Signed crop edges retain blank space when the image is moved outside its frame.
+  crop: z.object({left: z.number().min(-20000).max(20000), top: z.number().min(-20000).max(20000), right: z.number().min(-20000).max(20000), bottom: z.number().min(-20000).max(20000)}).strict().refine(c => c.left + c.right < 1 && c.top + c.bottom < 1, 'Invalid crop').optional(),
   padding: z.object({left: z.number().min(0).max(2000), right: z.number().min(0).max(2000), top: z.number().min(0).max(2000), bottom: z.number().min(0).max(2000)}).strict().optional(),
   clipText: z.boolean().optional(),
   textFit: z.enum(['none','normal','shape']).optional(),
@@ -161,6 +170,7 @@ export const SlideSchema = z.object({
   hidden: z.boolean().optional(),
   transition: TransitionSchema.optional(),
   backgroundStyle: z.enum(COLOR_ROLES).optional(),
+  adaptiveColors: z.boolean().optional(),
   patternStyle: z.enum(['document','none']).optional(),
   layout: PageLayoutSchema.optional(),
   pageSection: z.string().max(300).optional(),

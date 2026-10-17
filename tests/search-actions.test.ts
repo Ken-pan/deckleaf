@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { documentSearchActions, findSearchActions, type SearchAction } from '../src/search-actions';
+import { documentSearchActions, blockSearchActions, findSearchActions, type SearchAction } from '../src/search-actions';
 import { templateDeck } from '../src/core/templates';
 const action = (id: string, label: string, extra: Partial<SearchAction> = {}): SearchAction => ({id, label, kind: 'command', disabled: false, run() {}, ...extra});
 
@@ -30,4 +30,15 @@ test('duplicate object labels retain distinct slide destinations and navigation 
   assert.equal(documentSearchActions(deck,()=>{},true).every(a=>a.disabled),true);
   assert.equal(findSearchActions(actions,'Second evidence').length,0);
   assert.equal(actions.find(a=>a.kind==='slide')!.label,'Slide 1');
+});
+
+test('deferred block search preserves aliases, availability and the selected destination', () => {
+  const opened: string[] = [], actions = blockSearchActions(id => opened.push(id));
+  assert.equal(actions.length, 12);
+  const [architecture] = findSearchActions(actions, '架构', 'command');
+  assert.equal(architecture.id, 'block:architecture');
+  architecture.run();
+  assert.deepEqual(opened, ['architecture']);
+  assert.equal(findSearchActions(actions, 'Gantt plan')[0].id, 'block:gantt');
+  assert.equal(blockSearchActions(() => {}, true).every(action => action.disabled), true);
 });

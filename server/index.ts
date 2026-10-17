@@ -4,7 +4,7 @@ import {sendDocumentJson} from './document-json-response';
 import { access } from 'node:fs/promises';
 import { serveStatic } from './static';
 import { resolve, extname } from 'node:path';
-import { initStore, listDecks, readDeck, saveDeck, proposals, resolveProposal, listHistory, readHistory } from './store';
+import { initStore, listDecks, readLibraryPreview, readDeck, saveDeck, proposals, resolveProposal, listHistory, readHistory } from './store';
 import { validateDeck, NativeSourceSchema } from '../src/core/model';
 import { ProposalSchema, applyOperations } from '../src/core/operations';
 import { runAI, availableModels } from './ai';
@@ -102,6 +102,8 @@ const server = createServer(async (req, res) => {
     if (path === '/api/health') return send(res, {ok: true, converters: await converters(), ai: {configured: Boolean(process.env.OPENAI_API_KEY || process.env.DECK_AI_KEY), model: process.env.DECK_AI_MODEL || ''}});
     if (path === '/api/decks' && req.method === 'GET') return send(res, await listDecks(requestUrl.searchParams.get('view') !== 'summary'));
     if (path === '/api/decks' && req.method === 'POST') return sendSaved(req,res,await saveDeck(validateDeck(await json(req)),null));
+    const preview = path.match(/^\/api\/decks\/([\w.:-]+)\/preview$/);
+    if (preview && req.method === 'GET') return send(res, await readLibraryPreview(preview[1], requestUrl.searchParams.has('revision') ? Number(requestUrl.searchParams.get('revision')) : undefined));
     const historyList = path.match(/^\/api\/decks\/([\w.:-]+)\/history$/);
     if (historyList && req.method === 'GET') return send(res, await listHistory(historyList[1]));
     const historyVersion = path.match(/^\/api\/decks\/([\w.:-]+)\/history\/(\d+)$/);

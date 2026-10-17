@@ -8,22 +8,23 @@
   import { countLabel, workspaceOpenError } from "./core/ui-copy";
   import {copyDeck, reorderedSlides, defaultPaneWidths, clampPaneWidth, fitScale} from './core/workspace-view';
   import {canvasViewport} from './canvas-viewport';
+  import {canvasOverlay} from './canvas-overlay';
   import { editorTask } from './editor-priority';
   import { editorToolbar } from './editor-toolbar';
   import { selectionToolbar } from './selection-toolbar';
   import { canvasTouch } from './canvas-touch';
   import type {TextFormatState,TextFormatPatch,TextRange} from './core/text-range-format';
   import type { DeckBlock, BlockId } from './core/deck-blocks';
-  import { insertedElement, insertLabels, insertionSizeLabel, placementHistoryMatch, type InsertTool, type PrimitiveInsertTool, type InsertGeometry } from './core/insertion';
+  import { insertedElement, insertLabels, insertionSizeLabel, placementHistoryMatch, type CanvasTool, type InsertTool, type PrimitiveInsertTool, type InsertGeometry } from './core/insertion';
   import {availableFocus,restoreFocus} from './ui-focus';
   import { focusCanvasSelection, focusSlideSelection, containerAction, objectAction } from './editor-focus';
   import {editorCommands} from './core/clipboard-queue';
   import {stamp} from './clipboard-context';
   import {clipboardScope,copySelection,pasteEvent,pasteFromClipboard} from './editor-clipboard';
   import { holdPointerCursor } from './pointer-cursor';
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, setContext } from 'svelte';
   import { installVisualViewport } from './ui-viewport';
-  import AsyncFeature from './components/AsyncFeature.svelte';
+  import AsyncFeature from './components/LazyFeature.svelte';
   import SlideVisibilityNotice from './components/SlideVisibilityNotice.svelte';
   import { releaseLibraryPreviews, type LibraryDocument } from './core/document-library-view';
   import { initializeWorkspace,workspaceEntryId,workspaceDocumentURL } from './core/workspace-startup';
@@ -37,7 +38,8 @@
   $effect(()=>{if(editor.deck&&!SlideRail)void import('./SlideRail.svelte').then(module=>SlideRail=module.default);});
   let SlideCanvas=$state<typeof import('./components/SlideCanvas.svelte')['default']>();
   $effect(()=>{if(editor.deck&&!SlideCanvas)void import('./components/SlideCanvas.svelte').then(m=>SlideCanvas=m.default);});
-  import PhotoCredits from './components/PhotoCredits.svelte';
+  let PhotoCredits=$state<typeof import('./components/PhotoCredits.svelte')['default']>();
+  $effect(()=>{if(editor.deck&&!PhotoCredits)void import('./components/PhotoCredits.svelte').then(module=>PhotoCredits=module.default);});
   import Dialog from './components/LazyDialog.svelte';
   import BrandLockup from './components/BrandLockup.svelte';
   import { BRAND, syncBrowserBrand, installBrowserBrand } from './branding';
@@ -45,7 +47,7 @@
   import DialogFooter from './components/ui/DialogFooter.svelte';
   import SegmentedControl from './components/ui/SegmentedControl.svelte';
   import ActionMenu from './components/ui/ActionMenu.svelte';
-  import PopoverPanel from './components/ui/PopoverPanel.svelte';
+  import PopoverPanel from './components/LazyPopoverPanel.svelte';
   import EmptyState from './components/ui/EmptyState.svelte';
   import CommandSearch from './components/LazyCommandSearch.svelte';
   import {publishEditorContext} from './core/editor-context-client';
@@ -56,6 +58,7 @@
   import { notificationUI } from './notification-ui.svelte';
   import {newAICreationState,saveAICreationBrief,clearAICreationBrief} from './core/ai-creation-state';
   import type {Proposal} from './core/operations';
+  import {canEditText} from './core/shapes';
   import { uid, blankSlide, newDeck, type Deck, type SlideElement, type Slide } from './core/model';
   import { applyOperations, moveElements, ProposalSchema } from './core/operations';
   import { download, deckFilename } from './core/download';
@@ -63,7 +66,12 @@
   import type { ResourceItem } from './core/resources';
   import type { ResourceReplacementPreview, ResourceLibraryView, ResourceQuickView } from './components/resource-library-view';
   import {GraphicRecipeSchema,type GraphicRecipe} from './core/graphic-recipe';
-  import { documentSearchActions, type SearchAction, type SearchScope } from './search-actions';
+  import type {SearchAction, SearchScope} from './search-actions';
+  let searchProviders = $state<typeof import('./search-actions')>();
+  let searchProviderRequest: Promise<void> | undefined;
+  function prepareSearchActions() {
+    return searchProviderRequest ??= import('./search-actions').then(module => {searchProviders = module;}).catch(error => {searchProviderRequest = undefined; throw error;});
+  }
   import type { AISettings } from '../server/ai';
 
   type Modal = 'ai-create' | '' | 'library' | 'templates' | 'layout' | 'auto-layout' | 'import' | 'export' | 'google-export' | 'publish' | 'fidelity' | 'help' | 'settings' | 'resources' | 'search' | 'fonts' | 'prototype' | 'rename' | 'history' | 'deck-styles' | 'page-elements' | 'chart' | 'notifications' | 'illustration-colors' | 'blocks';
@@ -133,6 +141,7 @@
   let shortWorkspace = $derived(viewportWidth <= 1100 && (viewportHeight <= 520 || viewportWidth <= 760 && viewportHeight <= 640));
   let leftOpen = $state(true), rightOpen = $state(typeof window === 'undefined' || (window.innerWidth > 760 && (window.innerWidth > 1100 || window.innerHeight > 520))), notesOpen = $state(false);
   let shortSlidesOpen = $state(false);
+  $effect(()=>{if(editor.croppingId&&viewportWidth<=760)rightOpen=false;});
   let slidesHidden = $derived(!leftOpen || (shortWorkspace && !shortSlidesOpen));
   function setPaneVisibility(side: 'left' | 'right', visible: boolean) {
     canvasFocus = false;
@@ -143,8 +152,10 @@
   let PrintDocument = $state<typeof import('./components/PrintDocument.svelte').default>();
   function measureStage() {
     if (!stage) return;
-    const header=stage.querySelector<HTMLElement>('.canvas-meta');
-    stage.style.setProperty('--canvas-header-height',`${header && !header.hidden ? header.offsetTop+header.offsetHeight+16 : 0}px`);
+    const header=stage.parentElement?.querySelector<HTMLElement>('.canvas-overlay-top');
+    stage.style.setProperty('--canvas-header-height',`${header && header.offsetHeight ? header.getBoundingClientRect().bottom-stage.getBoundingClientRect().top+16 : 0}px`);
+    const status=stage.parentElement?.querySelector<HTMLElement>('.canvas-overlay-bottom');
+    stage.style.setProperty('--canvas-status-height',`${status?.offsetHeight ? stage.getBoundingClientRect().bottom-status.getBoundingClientRect().top+16 : 0}px`);
     const style = getComputedStyle(stage);
     availableW = Math.round(stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight));
     availableH = Math.round(stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom));
@@ -259,14 +270,14 @@
   function changeZoom(delta:number){setZoom(Math.round(Math.max(.1,Math.min(4,currentScale+delta))*100)/100);}
 
   let canvasHandle=$state<{beginMarquee(event:PointerEvent):void; cancelPointer():void; finishTextDraft(cancel?:boolean):void;finishTextEditing(cancel?:boolean):void;getTextFormatState():TextFormatState|null;formatText(patch:TextFormatPatch,range?:TextRange):Promise<void>}>();
-  let insertTool = $state<InsertTool | null>(null), insertingText = $state(false), canvasCellsSelected = $state(false);
+  let insertTool = $state<CanvasTool | null>(null), insertingText = $state(false), canvasCellsSelected = $state(false);
   type QueuedImage = {image:SlideElement;item?:ResourceItem};
   let imageQueue = $state<QueuedImage[]>([]), imagePlaced = $state(0), imageTotal = $state(0);
   let imagePlacements: QueuedImage[] = [];
   let returnToResources = false, returnToResourceDialog = false, imageRequest = 0;
   let mediaPlacement: typeof import('./core/media-placement') | undefined;
   let insertImage = $derived(insertTool === 'image' ? imageQueue[0]?.image ?? null : null);
-  let insertSize = $derived(insertTool && editor.deck ? insertionSizeLabel(insertTool, editor.deck, insertBlock ?? insertImage ?? undefined) : '');
+  let insertSize = $derived(insertTool && insertTool !== 'draw' && editor.deck ? insertionSizeLabel(insertTool, editor.deck, insertBlock ?? insertImage ?? undefined) : '');
   let insertOrigin: {deckId:string;slideId:string;revision:number}|undefined;
   let fileInput: HTMLInputElement, imageInput: HTMLInputElement, sourceInput: HTMLInputElement;
   let renameTarget = $state<{id:string;title:string}|null>(null), renameValue = $state('');
@@ -278,7 +289,8 @@
   function enterFileDrop(event:DragEvent){if(!proposalDeck&&event.dataTransfer?.types.includes('Files')){fileDragDepth++;fileDropActive=true;editor.hovered='';}}
   function leaveFileDrop(){fileDragDepth=Math.max(0,fileDragDepth-1);if(!fileDragDepth)fileDropActive=false;}
   function resumeDropPointer(event:PointerEvent){if(!event.buttons&&!document.documentElement.hasAttribute('data-pointer-cursor'))clearDropFeedback();}
-  let library = $state<LibraryDocument[]>([]);
+  let library = $state.raw<LibraryDocument[]>([]);
+  let libraryRequest = 0;
   $effect(() => { if (modal !== 'library') library = releaseLibraryPreviews(library); });
   let exportView = $state<'editable'|'reference'>('editable'), printOriginal = $state(false);
   let referenceComplete = $derived(Boolean(editor.deck?.slides.every(s=>s.source?.render)));
@@ -290,11 +302,17 @@
   let initializing = $state(true), workspaceError = $state('');
   let workspaceRetry: () => void = () => {};
   let searchRequest = 0;
-  function closeModal() { searchRequest++; const returnToCreation=modal==='settings'&&aiCreationSettingsReturn;aiCreationSettingsReturn=false;modal=returnToCreation?'ai-create':''; layoutTarget = undefined; error = ''; cloudToken = ''; }
+  function closeModal() { libraryRequest++; searchRequest++; const returnToCreation=modal==='settings'&&aiCreationSettingsReturn;aiCreationSettingsReturn=false;modal=returnToCreation?'ai-create':''; layoutTarget = undefined; error = ''; cloudToken = ''; }
   $effect(() => { if (modal !== 'import') cloudToken = ''; if (modal) { resourcePanel?.close(); settingsMenu?.close(); commandSearch?.close(); focusCommandSearch?.close(); } });
   let commandSearch = $state<{toggle: () => void; close: () => void}>(), focusCommandSearch = $state<{toggle: () => void; close: () => void}>(), settingsMenu = $state<{toggle: () => void; show: () => void; close: () => void}>();
   let searchQuery = $state(''), searchScope = $state<SearchScope>('all');
-  function expandSearch(query: string) { searchRequest++; searchQuery = query; searchScope = query.trim() ? 'all' : 'command'; modal = 'search'; }
+  async function expandSearch(query: string) {
+    const request = ++searchRequest;
+    try { await prepareSearchActions(); }
+    catch { editor.notify('Search could not load. Try again.', 'warning'); return; }
+    if (request !== searchRequest) return;
+    searchQuery = query; searchScope = query.trim() ? 'all' : 'command'; modal = 'search';
+  }
   async function runSearchAction(action: SearchAction) {
     if (action.disabled || modal !== 'search') return;
     const frame = document.querySelector<HTMLDialogElement>('dialog:modal');
@@ -385,7 +403,7 @@
     try { return applyOperations(editor.operationDocument(), editor.pending.operations, editor.pending.baseRevision, 'ai'); } catch { return null; }
   });
   let task = $derived(editorTask({previewing: Boolean(proposalDeck), reference: editor.sourceMode, editing: Boolean(editor.editingId) || insertingText, selected: editor.selection.length, allLocked: editor.selection.every(element => element.locked)}));
-  $effect(() => { if (insertTool && (modal || presenting || proposalDeck || editor.sourceMode || insertOrigin?.deckId !== editor.deck?.id || insertOrigin?.slideId !== editor.slide?.id || insertOrigin?.revision !== editor.deck?.revision)) cancelInsertion(); });
+  $effect(() => { if (insertTool && (modal || presenting || proposalDeck || editor.sourceMode || insertOrigin?.deckId !== editor.deck?.id || insertOrigin?.slideId !== editor.slide?.id || insertTool !== 'draw' && insertOrigin?.revision !== editor.deck?.revision)) cancelInsertion(); });
   $effect(() => { if (insertTool !== 'image' && imageQueue.length) imageQueue = []; });
   $effect(() => { if (previewProposal && (!editor.pending || editor.pending.baseRevision !== editor.deck?.revision || !proposalDeck)){if(editor.deck?.id===previewDocumentId&&editor.deck.revision>previewRevision&&editor.deck.slides.some(s=>s.id===previewActiveId))editor.chooseSlide(previewActiveId);previewProposal = false;} });
   $effect(()=>{if(proposalDeck&&!proposalDeck.slides.some(s=>s.id===previewActiveId)){const oldIndex=editor.deck?.slides.findIndex(s=>s.id===editor.activeId)??0;previewActiveId=proposalDeck.slides[Math.max(0,Math.min(proposalDeck.slides.length-1,oldIndex))].id;}});
@@ -474,7 +492,14 @@
     event.preventDefault();if(proposalDeck||!editor.deck||!slideDragBase||slideDragBase.deckId!==editor.deck.id||!event.dataTransfer?.types.includes('application/x-deck-slide'))return;
     editor.dropSlides(draggedSlides,target,dropAfter,slideDragBase.revision);clearDropFeedback();
   }
-  async function openLibrary() { try { library = await api('/api/decks'); modal = 'library'; } catch (e: any) { error = e.message; } }
+  async function openLibrary() {
+    const request = ++libraryRequest, from = modal;
+    try {
+      const entries = await api<LibraryDocument[]>('/api/decks?view=summary');
+      if (request !== libraryRequest || modal !== from) return;
+      library = entries; modal = 'library';
+    } catch (e: any) { if (request === libraryRequest && modal === from) error = e.message; }
+  }
   function rememberDocument(id:string){rememberActiveDocument(id);history.replaceState(null,'',workspaceDocumentURL(location.href,id));}
   async function openDeck(id: string, dismiss = true) { try { await exportFinished;await editor.open(id); rememberDocument(id); if (dismiss) modal = ''; } catch (e: any) { if (!dismiss) throw e; error = e.message; } }
   async function create(d: Deck) { try { await editor.create(d); rememberDocument(d.id); modal = ''; } catch (e: any) { error = e.message; } }
@@ -511,6 +536,11 @@
       continueImagePlacement();
       return;
     }
+    if (insertTool === 'draw') {
+      canvasHandle?.cancelPointer();
+      direction === 'undo' ? editor.undo() : editor.redo();
+      return;
+    }
     cancelInsertion();
     const pageHistory=next&&editor.deck&&next.slides.map(slide=>slide.id).join(',')!==editor.deck.slides.map(slide=>slide.id).join(',');
     if(pageHistory||document.activeElement?.closest('.slide-rail,.focus-page-controls')){
@@ -539,14 +569,15 @@
     editor.sourceMode = false; editor.hovered = ''; editor.additiveSelection = false; modal = ''; resourcePanel?.close(); insertTool = 'image';
     void tick().then(() => stage?.focus({preventScroll:true}));
   }
-  function insert(type: PrimitiveInsertTool) {
+  function insert(type: PrimitiveInsertTool | 'draw', focus = true) {
     if (!editor.deck || !editor.slide || proposalDeck || editor.sourceMode) return;
+    if (editor.editingId || insertingText) finishInlineText();
     resourcePanel?.close();
     if (insertTool === type) { cancelInsertion(); return; }
     cancelInsertion();
     insertOrigin = {deckId: editor.deck.id, slideId: editor.slide.id, revision: editor.deck.revision};
     insertTool = type; editor.hovered = ''; editor.additiveSelection = false;
-    void tick().then(() => stage?.focus({preventScroll:true}));
+    if (focus) void tick().then(() => stage?.focus({preventScroll:true}));
   }
   function placeElement(type: InsertTool, geometry: InsertGeometry, revision: number, slideId: string, text = '', textStyle:Partial<SlideElement>={}) {
     if (!editor.deck || editor.slide?.id !== slideId || proposalDeck || editor.sourceMode) return;
@@ -661,17 +692,11 @@
     let finishExport!:()=>void;exportFinished=new Promise(resolve=>finishExport=resolve);
     try {
       const d = await editor.readDocument();
-      if (kind === 'json') {const {portableDeck}=await import('./core/portable-document');download(await (await import('./core/document-json')).documentJsonBlob(await portableDeck(d), {space:2}), `${deckFilename(d)}.deck.json`);}
-      if (kind === 'pptx') await (await import('./core/export')).exportPptx(d, original);
-      if (kind === 'potx') await (await import('./core/export')).exportPptx(d, false,true);
-      if (kind === 'keynote') exportMessage=await (await import('./core/export')).exportKeynote(d, original) || exportMessage;
-      if (kind === 'pptx-source') await (await import('./core/export')).exportPptx(d, true);
-      if (kind === 'html') await (await import('./core/export')).exportHtml(d, original);
-      if (kind === 'broadser') download(JSON.stringify((await import('./core/export')).exportBroadser(d), null, 2), `${deckFilename(d)}.broadser.json`);
-      if (kind === 'markdown') download((await import('./core/export-markdown')).markdownDocument(d), `${deckFilename(d)}.md`, 'text/markdown');
+      if (kind !== 'pdf') exportMessage = await (await import('./core/document-export-download')).downloadDocument(d, kind, original);
       if (kind === 'pdf') {
         const delivery=visibleDeliveryDeck(d);
-        PrintDocument ??= (await import('./components/PrintDocument.svelte')).default;
+        const print=await import('./components/PrintDocument.svelte');
+        PrintDocument ??= print.default; await print.ready();
         if (!original && d.slides.some(s => s.elements.some(e => e.type === 'chart'))) await import('./core/chart-render');
         modal = ''; printOriginal=original; printMode = true;
         try {
@@ -726,8 +751,8 @@
   const searchSuggestions = new Set(['Open document library','New slide','Insert text','Browse photos, icons, and illustrations']);
   let searchActions = $derived<SearchAction[]>([
     ...commands.filter(c => (c.label !== 'Exit AI preview' || Boolean(proposalDeck)) && (c.label !== 'Import report' || hasImportReport)).map(c => ({id:`command:${c.label}`, kind:'command' as const, label:c.label === 'Hide current slide' ? slideSelecting?(selectedSlidePages.every(slide=>slide.hidden)?'Unhide selected slides':'Hide selected slides'):editor.slide?.hidden?'Unhide current slide':'Hide current slide' : c.label === 'Browse photos, icons, and illustrations' ? 'Resource library' : c.label === 'Open document library' ? 'Document library' : c.label, searchText:c.label==='Hide current slide'?'Hide unhide skip unskip current slide 隐藏 跳过':c.label, key:c.key, suggested:searchSuggestions.has(c.label), disabled:commandBlocked(c), run:() => commandRun(c)})),
-    ...(['architecture','agenda','timeline','roadmap','gantt','process','organization','kanban','comparison','swot','metrics','funnel'] as BlockId[]).map((id,index)=>({id:`block:${id}`,kind:'command' as const,label:`Insert ${['architecture','agenda','timeline','roadmap','Gantt plan','process flow','org chart','Kanban board','comparison','SWOT matrix','key metrics','funnel'][index]}`,searchText:`${id} block diagram plan ${['架构 系统','日程 议程 规划','时间线 里程碑','路线图 计划','甘特 排期 日程规划','流程 步骤','组织架构 团队','看板 任务','对比 比较','分析 优势 劣势','指标 数据','漏斗 转化'][index]}`,disabled:!editor.deck||Boolean(proposalDeck)||editor.sourceMode,run:()=>openBlocks(id)})),
-    ...documentSearchActions(editor.deck, jumpToSearchResult, Boolean(proposalDeck)),
+    ...(searchProviders?.blockSearchActions(openBlocks, !editor.deck || Boolean(proposalDeck) || editor.sourceMode) ?? []),
+    ...(searchProviders?.documentSearchActions(editor.deck, jumpToSearchResult, Boolean(proposalDeck)) ?? []),
   ]);
   function jumpToSearchResult(slideId: string, objectId?: string) {
     const slide = editor.deck?.slides.find(slide => slide.id === slideId), object = objectId ? slide?.elements.find(object => object.id === objectId) : undefined;
@@ -755,9 +780,10 @@
   let contextBoot:Promise<typeof import('./context-menu-bootstrap')>|undefined;
   let contextBridge:typeof import('./context-menu-bootstrap')|undefined;
   let contextRequest=0;
+  setContext('numeric-editor',editor);
   onMount(()=>{
     let tooltipLoad:Promise<void>|undefined;
-    const tooltip=(event:Event)=>{if(EditorTooltip||!(event.target instanceof Element)||!event.target.closest('button[title],button.icon-btn[aria-label]'))return;tooltipLoad??=import('./components/EditorTooltip.svelte').then(module=>{EditorTooltip=module.default;}).catch(()=>{tooltipLoad=undefined;});};
+    const tooltip=(event:Event)=>{if(EditorTooltip||!(event.target instanceof Element)||!event.target.closest('button[title],button[aria-label]'))return;tooltipLoad??=import('./components/EditorTooltip.svelte').then(module=>{EditorTooltip=module.default;}).catch(()=>{tooltipLoad=undefined;});};
     const launch=async(event:MouseEvent|KeyboardEvent)=>{
       if(contextBridge?.ready()||!(event.target instanceof Element)||event.target.closest('.canvas-cell-grid'))return;
       const keyboard=event instanceof KeyboardEvent;
@@ -910,7 +936,7 @@
         editor.pending = ProposalSchema.parse(ps[0].proposal); editor.pendingId = ps[0].id; panel = 'ai'; rightOpen = true;
       }).catch(() => {}).finally(() => { polling = false; });
     }, 8000);
-    if (stage) {observer.observe(stage);const header=stage.querySelector('.canvas-meta');if(header)observer.observe(header);}
+    if (stage) {observer.observe(stage);for(const region of stage.parentElement?.querySelectorAll('.canvas-overlay-top,.canvas-overlay-bottom')??[])observer.observe(region);}
     const persist = () => { if (editor.dirty) { void editor.backup(); void editor.flush(); } };
     const visibility = () => { if (document.visibilityState === 'hidden') { cancelPane(); clearDropFeedback(); persist(); } };
     document.addEventListener('visibilitychange', visibility); window.addEventListener('pagehide', persist);
@@ -954,11 +980,11 @@
     <a class="skip-link" href="#workspace-canvas" onclick={event=>{event.preventDefault();if(footerObscured)rightOpen=false;void focusCanvasSelection();}}>Skip to canvas</a>
     {#if editor.deck}<a class="skip-link" href="#editing-panel" onclick={event=>{event.preventDefault();showPanel(panel,false);void focusEditingPanel();}}>Skip to editing panel</a>{/if}
     <header class="topbar" inert={canvasFocus}>
-      <div class="topbar-left"><button class="icon-btn brand-button" onclick={openLibrary} aria-label="Decksprig · Open document library"><BrandLockup /></button>{#if editor.deck}<div class="document-controls"><div class="document-title-field"><span class="document-title-size" aria-hidden="true">{documentTitleDraft || 'Document title'}</span><input class="document-name" aria-label="Document title" title={editor.deck?.title} bind:value={documentTitleDraft} placeholder="Document title" maxlength="300" disabled={!editor.deck||Boolean(proposalDeck)} onfocus={event=>event.currentTarget.select()} onchange={event=>{renameCurrent(event.currentTarget);documentTitleDraft=event.currentTarget.value;}} onkeydown={event=>{if(event.isComposing||event.keyCode===229)return;if(event.key==='Enter'||event.key==='Escape'){event.preventDefault();event.stopPropagation();if(event.key==='Escape'){documentTitleDraft=editor.deck?.title||'';event.currentTarget.value=documentTitleDraft;}event.currentTarget.blur();void focusCanvasSelection();}}}/></div><ActionMenu label="Document menu" disabled={!editor.deck||Boolean(proposalDeck)} items={[{label:'Open document library',icon:BookOpen,onselect:openLibrary},{label:'New document from template',icon:LayoutTemplate,onselect:()=>modal='templates'},{label:'Rename document',onselect:()=>document.querySelector<HTMLInputElement>('.document-name')?.focus()},{label:'Duplicate document',icon:Copy,onselect:()=>void duplicateDocument()},{label:'Import document',icon:Upload,divider:true,onselect:()=>modal='import'},{label:'Export document',icon:Download,onselect:openExport},{label:'Publish presentation website',icon:ExternalLink,onselect:()=>{hostingConnectOnly=false;publishIncludeNotes=false;modal='publish';}},...(hasImportReport?[{label:'Import report',icon:Info,onselect:()=>modal='fidelity'}]:[]),{label:'Undo',shortcut:'⌘Z',disabled:!editor.past.length,onselect:event=>historyAction('undo',event)},{label:'Redo',shortcut:'⇧⌘Z',disabled:!editor.future.length,onselect:event=>historyAction('redo',event)},{label:'Slide details',icon:FileText,divider:true,onselect:openPageElements},{label:'Document styles',icon:DocumentStylesIcon,onselect:()=>openDocumentStyles()},...(editor.deck?.slides.some(s=>s.elements.some(e=>isThemedIllustration(e.resource)))?[{label:'Illustration colors',onselect:()=>modal='illustration-colors'}]:[]),{label:'Document fonts',icon:Type,onselect:()=>{fontLibraryTab='document';modal='fonts';}},{label:'Version history',icon:History,onselect:()=>void openHistory()},{label:'Recent notifications',icon:History,onselect:()=>modal='notifications'},...(slidesHidden?[{label:'Open slides panel',icon:Layers,divider:true,onselect:()=>void openSlidesPanel()}]:[]),...(!rightOpen?[{label:'Open editing panel',icon:PanelRight,divider:!slidesHidden,onselect:()=>void openEditingPanel()}]:[]),{label:'Open AI editor',icon:Sparkles,divider:true,onselect:()=>showPanel('ai')}]} /></div>{/if}{#if editor.dirty}<span class="save-state" role="status" aria-atomic="true" data-saving={editor.dirty} data-save-error={editor.saveState.startsWith('Not saved')} use:uiChange={editor.saveState}>{editor.saveState}</span>{/if}</div>
+      <div class="topbar-left"><button class="icon-btn brand-button" onclick={openLibrary} aria-label="Decksprig · Open document library" data-tooltip="Open library"><BrandLockup /></button>{#if editor.deck}<div class="document-controls"><div class="document-title-field"><span class="document-title-size" aria-hidden="true">{documentTitleDraft || 'Document title'}</span><input class="document-name" aria-label="Document title" title={editor.deck?.title} bind:value={documentTitleDraft} placeholder="Document title" maxlength="300" disabled={!editor.deck||Boolean(proposalDeck)} onfocus={event=>event.currentTarget.select()} onchange={event=>{renameCurrent(event.currentTarget);documentTitleDraft=event.currentTarget.value;}} onkeydown={event=>{if(event.isComposing||event.keyCode===229)return;if(event.key==='Enter'||event.key==='Escape'){event.preventDefault();event.stopPropagation();if(event.key==='Escape'){documentTitleDraft=editor.deck?.title||'';event.currentTarget.value=documentTitleDraft;}event.currentTarget.blur();void focusCanvasSelection();}}}/></div><ActionMenu label="Document menu" disabled={!editor.deck||Boolean(proposalDeck)} items={[{label:'Open document library',icon:BookOpen,onselect:openLibrary},{label:'New document from template',icon:LayoutTemplate,onselect:()=>modal='templates'},{label:'Rename document',onselect:()=>document.querySelector<HTMLInputElement>('.document-name')?.focus()},{label:'Duplicate document',icon:Copy,onselect:()=>void duplicateDocument()},{label:'Import document',icon:Upload,divider:true,onselect:()=>modal='import'},{label:'Export document',icon:Download,onselect:openExport},{label:'Publish presentation website',icon:ExternalLink,onselect:()=>{hostingConnectOnly=false;publishIncludeNotes=false;modal='publish';}},...(hasImportReport?[{label:'Import report',icon:Info,onselect:()=>modal='fidelity'}]:[]),{label:'Undo',shortcut:'⌘Z',disabled:!editor.past.length,onselect:event=>historyAction('undo',event)},{label:'Redo',shortcut:'⇧⌘Z',disabled:!editor.future.length,onselect:event=>historyAction('redo',event)},{label:'Slide details',icon:FileText,divider:true,onselect:openPageElements},{label:'Document styles',icon:DocumentStylesIcon,onselect:()=>openDocumentStyles()},...(editor.deck?.slides.some(s=>s.elements.some(e=>isThemedIllustration(e.resource)))?[{label:'Illustration colors',onselect:()=>modal='illustration-colors'}]:[]),{label:'Document fonts',icon:Type,onselect:()=>{fontLibraryTab='document';modal='fonts';}},{label:'Version history',icon:History,onselect:()=>void openHistory()},{label:'Recent notifications',icon:History,onselect:()=>modal='notifications'},...(slidesHidden?[{label:'Open slides panel',icon:Layers,divider:true,onselect:()=>void openSlidesPanel()}]:[]),...(!rightOpen?[{label:'Open editing panel',icon:PanelRight,divider:!slidesHidden,onselect:()=>void openEditingPanel()}]:[]),{label:'Open AI editor',icon:Sparkles,divider:true,onselect:()=>showPanel('ai')}]} /></div>{/if}{#if editor.dirty}<span class="save-state" role="status" aria-atomic="true" data-saving={editor.dirty} data-save-error={editor.saveState.startsWith('Not saved')} use:uiChange={editor.saveState}>{editor.saveState}</span>{/if}</div>
       <div class="topbar-right">
         <div class="topbar-actions" role="group" aria-label="Workspace tools">
-          <CommandSearch bind:this={commandSearch} actions={searchActions} onexpand={expandSearch} />
-          <PopoverPanel bind:this={settingsMenu} title="Settings" iconOnly class="settings-popover" width={320} height={640} autoHeight>
+          <CommandSearch bind:this={commandSearch} actions={searchActions} onprepare={prepareSearchActions} onexpand={expandSearch} />
+          <PopoverPanel onerror={message=>editor.notify(message,'warning')} bind:this={settingsMenu} title="Settings" iconOnly class="settings-popover" width={320} height={640} autoHeight>
             {#snippet trigger()}<Settings2 size={16} aria-hidden="true" />{/snippet}
             {@render settingsContent(true)}
           </PopoverPanel>
@@ -968,7 +994,7 @@
         </div>{/if}
       </div>
     </header>
-    <NotificationOutlet kind="feedback"/>
+    <div class="workspace-feedback" class:feedback-in-dialog={Boolean(notificationUI.dialog)} inert={Boolean(notificationUI.dialog)} aria-hidden={Boolean(notificationUI.dialog)}><NotificationOutlet kind="feedback"/></div>
     <span id="slide-rail-help" hidden>Arrows/Home/End navigate slides. Shift extends selection; Command or Control click toggles slides; Space toggles the focused slide; Command or Control A selects all. Command or Control D duplicates; Delete removes selected slides. Alt and arrows move the selection; Alt Home or End moves it to either end. On touch, use Slide actions or drag the selection grip. Hidden slides stay editable and are skipped in presentation.</span>
     <span id="editor-toolbar-help" hidden>Tab enters/leaves; arrows navigate buttons; Home/End jump to ends.</span>
     <div class="workspace" class:selecting-slides={slideSelecting} class:left-hidden={!editor.deck || slidesHidden || canvasFocus} class:right-hidden={!editor.deck || !rightOpen || canvasFocus} class:is-resizing={resizing} style:--ui-rail-width={`${leftWidth}px`} style:--ui-panel-width={`${displayedRightWidth()}px`}>
@@ -979,10 +1005,9 @@
 <div class="pane-resizer left-resizer" class:gesture-pane={resizing&&paneGesture?.side==='left'} role="separator" tabindex="0" aria-label="Resize slides panel" aria-orientation="vertical" aria-valuemin="140" aria-valuemax="320" aria-valuenow={leftWidth} onpointerdown={event=>resizePane(event,'left')} onpointermove={movePane} onpointerup={finishPane} onpointercancel={cancelPane} onlostpointercapture={cancelPane} onkeydown={event=>paneKey(event,'left')}></div></aside>
       <main class="stage-column" inert={footerObscured}>
         <span id="canvas-keyboard-help" hidden>Canvas: T text, R rectangle. Tap/click places; drag sizes. Touch: pan empty space, pinch zooms. Ctrl/Command + plus/minus zooms; 0 fits. Scroll changes slides when the full page is visible; zoomed view scrolls within the slide. Shift + wheel pans horizontally. Ctrl/Command + wheel zooms at pointer. Arrows move preview. Enter previews, then places. Escape cancels.</span>
+        <div class="canvas-viewport">
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <div id="workspace-canvas" class="canvas-stage" data-clipboard-blocked={Boolean(proposalDeck||presenting||modal)} use:canvasViewport={{scale:currentScale,fit:zoomMode==='fit',key:editor.deck?.id??'',slideKey:editor.activeId,pageBlocked:Boolean(!editor.deck||editor.editingId||insertingText||insertTool||proposalDeck||presenting||modal),page:nextSlide,zoom:setZoom,cancel:()=>canvasHandle?.cancelPointer()}} use:canvasTouch={{scale:()=>currentScale,zoom:setZoom,cancel:()=>canvasHandle?.cancelPointer(),key:`${editor.deck?.id}:${editor.slide?.id}:${editor.sourceMode}:${Boolean(proposalDeck)}`,editing:Boolean(editor.editingId||insertingText)}} class:manual-zoom={zoomMode==='scale'} class:is-file-drop={fileDropActive} bind:this={stage} tabindex="0" onpointerdown={e => { if (e.target === e.currentTarget) { if(!insertTool&&!editor.sourceMode&&!proposalDeck&&canvasHandle)canvasHandle.beginMarquee(e);else if(!insertTool&&!proposalDeck)editor.selected=[];editor.hovered='';e.currentTarget.focus({preventScroll:true}); } }} ondragenter={enterFileDrop} ondragleave={leaveFileDrop} ondragover={canvasDragOver} ondrop={(e) => { e.preventDefault(); fileDropActive=false;fileDragDepth=0; if (proposalDeck || !e.dataTransfer?.files.length) return; insertTool=null; if (e.dataTransfer.files.length) { const f = e.dataTransfer.files[0]; f.type.startsWith('image/') ? void imageFiles(Array.from(e.dataTransfer.files)) : void imported(e.dataTransfer.files); } }} role="region" aria-label="Slide canvas" aria-describedby="canvas-keyboard-help">
-          {#if fileDropActive}<div class="canvas-drop-feedback" aria-hidden="true"><span>Drop files here</span></div>{/if}
-          <div class="canvas-meta" class:has-hidden-slide={displayedSlide?.hidden} hidden={!displayedSlide?.hidden && !canvasFocus && (!source?.render || Boolean(proposalDeck))}>{#if displayedSlide?.hidden}<SlideVisibilityNotice allHidden={Boolean(displayedDeck?.slides.every(s=>s.hidden))} preview={Boolean(proposalDeck)} onunhide={()=>toggleSlideHidden()}/>{/if}{#if canvasFocus}<span class="focus-document">{editor.deck?.title}<span class="focus-separator">/</span>{slideLabel(activeIndex)}</span>{/if}{#if source?.render && !proposalDeck}<div use:uiIndicator class="seg canvas-version" aria-label="Document version"><button disabled={Boolean(proposalDeck)} aria-pressed={editor.sourceMode} onclick={() => { editor.sourceMode = true; editor.selected = []; editor.additiveSelection=false;editor.layerPickerId=''; }}>Source reference</button><button disabled={Boolean(proposalDeck)} aria-pressed={!editor.sourceMode} onclick={() => editor.sourceMode = false}>Editable version</button></div>{/if}</div>
           {#if editor.deck && editor.slide}
             <div class="stage-canvas" use:uiChange={`${editor.deck.id}:${editor.slide.id}:${editor.sourceMode}:${Boolean(proposalDeck)}`} style:width="{stageWidth}px" data-shadow-owner="slide-canvas">{#if SlideCanvas}<SlideCanvas bind:this={canvasHandle} deck={editor.deck} slide={displayedSlide!} interactive={!editor.sourceMode && !proposalDeck && !resourcePreviewSlide} original={editor.sourceMode && !proposalDeck} {insertTool} {insertImage} {insertBlock} onplace={placeElement} oninsertcancel={cancelInsertion} oncellselection={active=>canvasCellsSelected=active} ontextdraft={active => {insertingText=active; if(active)insertTool=null;}} onprototype={openPrototype} />{:else}<div role="status">Loading canvas…</div>{/if}</div>
           {:else if initializing}
@@ -992,32 +1017,40 @@
           {:else}
             <AsyncFeature feature="welcome" props={{ontemplates:collection=>{templateStart=collection;modal='templates';},onblank:()=>create(newDeck('Untitled document',[blankSlide()])),onimport:()=>modal='import',onlibrary:openLibrary,onai:()=>modal='ai-create',ondemo:openDemo,demoLoading}} />
           {/if}
-          {#if editor.editingGroup&&!editor.sourceMode&&!proposalDeck&&!insertTool}<AsyncFeature feature="group-navigation" props={{}}/>{/if}
-          {#if !editor.sourceMode}<PhotoCredits slide={editor.slide} />{/if}
-          {#if !canvasCellsSelected && !editor.sourceMode && !proposalDeck && !insertTool && (insertingText || editor.selection.length || editor.additiveSelection)}
-            <div class="selection-context" use:editorToolbar use:selectionToolbar={{ids: editor.selected, editingId: editor.editingId, revision: editor.deck?.revision, scale: currentScale, draft: insertingText, docked: shortWorkspace}} role="toolbar" aria-label="Selected object actions">
-              <span title={editor.selection.length===1?editor.selection[0].name:undefined}>{insertingText ? 'Text' : editor.selection.length === 1 ? elementLabel(editor.selection[0]) : editor.selection.length ? countLabel(editor.selection.length, "object") : 'Select objects'}</span>
+          {#if !editor.croppingId && !canvasCellsSelected && !editor.sourceMode && !proposalDeck && !insertTool && (insertingText || editor.selection.length || editor.additiveSelection)}
+            <div class="selection-context ui-floating-toolbar" use:editorToolbar use:selectionToolbar={{ids: editor.selected, editingId: editor.editingId, revision: editor.deck?.revision, scale: currentScale, draft: insertingText, docked: shortWorkspace}} role="toolbar" aria-label="Selected object actions">
+              {#if !(editor.selection.length===1&&editor.selection[0].type==='line'&&!editor.selection[0].locked)}<span title={editor.selection.length===1?editor.selection[0].name:undefined}>{insertingText ? 'Text' : editor.selection.length === 1 ? elementLabel(editor.selection[0]) : editor.selection.length ? countLabel(editor.selection.length, "object") : 'Select objects'}</span>{/if}
               {#if !editor.editingId && !insertingText && editor.selection.length>1}<AsyncFeature feature="selection-actions" props={{onproperties:()=>showPanel('design'),mode:'primary'}}/>{/if}
               {#if editor.editingId || insertingText || (editor.selection.length && editor.selection.every(e=>e.type==='text') && !editor.selection.every(e=>e.locked))}
                 <AsyncFeature feature="text-formatting" props={{inline:Boolean(editor.editingId||insertingText),readInline:()=>canvasHandle?.getTextFormatState()??null,onformat:(patch,range)=>canvasHandle?.formatText(patch,range)}}/>
               {/if}
-              {#if !editor.editingId && !insertingText && editor.selection.some(e=>e.type!=='text'&&!e.locked)}
+              {#if !editor.croppingId && !editor.editingId && !insertingText && editor.selection.some(e=>e.type!=='text'&&!e.locked)}
                 {#key editor.selected.join(':')+editor.selection.map(e=>e.locked).join(':')}
-                  <AsyncFeature feature="element-formatting" props={{onresources:(id,anchor)=>openResources(id,undefined,anchor),onprototype:openPrototype}}/>
+                  <AsyncFeature feature="element-formatting" props={{ondraw:()=>insert('draw'),onresources:(id,anchor)=>openResources(id,undefined,anchor),onprototype:openPrototype}}/>
                 {/key}
               {/if}
               {#if editor.editingId || insertingText}
                 <div class="selection-completion-actions"><button class="text-btn" aria-label="Done editing text" title="Done editing text" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText()}><Check size={16} /><span class="selection-completion-label">Done</span></button><button class="text-btn" aria-label="Cancel text editing" title="Cancel text editing" onpointerdown={event => event.preventDefault()} onclick={() => finishInlineText(true)}><X size={16}/><span class="selection-completion-label">Cancel</span></button></div>
               {:else}
-                {#if editor.selection.length === 1 && editor.selection[0].type === 'text' && !editor.selection[0].locked}<button class="text-btn" aria-label="Edit text" onclick={() => {editor.additiveSelection=false;editor.editingId = editor.selection[0].id;}} title="Edit text · Enter"><Type size={16} /><span class="selection-secondary-label">Edit text</span></button>{/if}
+                {#if editor.selection.length === 1 && canEditText(editor.selection[0]) && !editor.selection[0].locked}<button class="text-btn" aria-label={editor.selection[0].type==='line'&&!editor.selection[0].text?'Add text':'Edit text'} onclick={() => {editor.additiveSelection=false;editor.editingId = editor.selection[0].id;}} title="Edit text · Enter"><Type size={16} /><span class="selection-secondary-label">{editor.selection[0].type==='line'&&!editor.selection[0].text?'Add text':'Edit text'}</span></button>{/if}
                 {#if editor.selection.length && editor.selection.every(e => e.locked)}<button class="text-btn" aria-label="Unlock" title="Unlock selection" onclick={() => editor.patch({locked: false})}><Unlock size={16}/><span class="selection-secondary-label">Unlock</span></button>{/if}
                 <AsyncFeature feature="selection-actions" props={{onproperties:()=>showPanel('design'),mode:editor.selection.length>1?'more':'all'}}/>
               {/if}
             </div>
           {/if}
-          {#if proposalDeck}<div class="task-preview-caption" role="status"><Sparkles size={14} /><span>AI change preview · Not applied</span><Button variant="secondary" aria-label="Exit preview and return to the current version" onclick={returnCurrentVersion}>Exit preview</Button></div>{:else if editor.sourceMode}<div class="source-caption"><BookOpen size={14} /><span>Viewing the source reference</span><Button variant="secondary" onclick={enterEditable}>Edit slide</Button></div>{:else if insertTool}<div class="insertion-status" class:has-asset={Boolean(insertImage)} role="status"><span>{#if insertImage}<img class="insertion-thumbnail" src={insertImage.src} alt="" /><span class="insertion-asset-label"><b>{isGraphicBackground(insertImage.resource?.id) ? 'Area fill' : insertImage.resource?.kind === 'icon' ? 'Icon' : insertImage.resource?.kind === 'illustration' ? 'Illustration' : 'Image'} <span class="insertion-default-size" title="Default size in page pixels">{insertSize}</span></b><small title={insertImage.name}>{imageTotal > 1 ? `${imagePlaced + 1} of ${imageTotal} · ` : ''}{insertImage.name}</small></span>{:else}<span class="insertion-asset-label"><b>{insertBlock?.name ?? insertLabels[insertTool]}</b><small>{insertSize}</small></span>{/if}<span class="insertion-instructions" title="Arrow keys position the preview · Shift + Arrow moves 10 px · Enter places · Esc cancels">{insertImage && isGraphicBackground(insertImage.resource?.id) ? 'Drag to fill an area · Click for default size' : insertTool === 'text' ? 'Click to type · Drag a text box' : 'Click to place · Drag to size'}</span></span><button class="text-btn" onclick={() => {cancelInsertion();void focusCanvasSelection();}} aria-label="Cancel insertion"><X size={14} /><span>Cancel</span><kbd>Esc</kbd></button></div>{:else if editor.additiveSelection || editor.editingId || insertingText || editor.selected.length > 1 || (editor.selection.length && editor.selection.every(e => e.locked))}<div class="canvas-hint"><span class="canvas-keyboard-hint">{editor.additiveSelection ? 'Multiple selection · Click to add or remove objects · Esc to exit' : editor.editingId || insertingText ? 'Editing text · Esc to cancel · ⌘Enter to finish' : editor.selection.every(e => e.locked) && editor.selection.length ? 'Object locked · Unlock to edit' : editor.selectedContainer ? `${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Layout":"Group"} · ${countLabel(editor.selected.length, "object")} · ${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Handles resize the frame":"Handles scale contents"}` : editor.selected.length ? `${countLabel(editor.selected.length, "object")} · Drag to move · Arrow keys to nudge · ${editor.editingGroup ? "Esc to exit group" : "Esc to deselect"}` : 'Click to select · Drag on empty space to select multiple objects · Right-click for overlapping objects'}</span><span class="canvas-touch-hint">{editor.editingId || insertingText ? 'Editing text · Done saves · Cancel discards' : editor.additiveSelection ? 'Multiple selection · Tap objects to add or remove' : editor.selection.every(e=>e.locked) ? 'Object locked · Unlock to edit' : `${countLabel(editor.selected.length, "object")} · Drag to move`}</span></div>{/if}
         </div>
-        {#if notesOpen && !canvasFocus && !proposalDeck && editor.slide}<div class="notes-panel" transition:uiCollapse><label for="slide-notes">Speaker notes</label><textarea id="slide-notes" aria-label="Speaker notes" value={editor.slide.notes} oninput={(e) => editor.commit([{op: 'update_slide', slideId: editor.slide!.id, patch: {notes: e.currentTarget.value}}], 'notes')} placeholder="Add talking points, sources, or questions to resolve…"></textarea></div>{/if}
+        <div class="canvas-overlay" use:canvasOverlay>
+          <div class="canvas-overlay-top">
+          <div class="canvas-meta" class:has-hidden-slide={displayedSlide?.hidden} hidden={!displayedSlide?.hidden && !canvasFocus && (!source?.render || Boolean(proposalDeck))}>{#if displayedSlide?.hidden}<SlideVisibilityNotice allHidden={Boolean(displayedDeck?.slides.every(s=>s.hidden))} preview={Boolean(proposalDeck)} onunhide={()=>toggleSlideHidden()}/>{/if}{#if canvasFocus}<span class="focus-document">{editor.deck?.title}<span class="focus-separator">/</span>{slideLabel(activeIndex)}</span>{/if}{#if source?.render && !proposalDeck}<div use:uiIndicator class="seg canvas-version" aria-label="Document version"><button disabled={Boolean(proposalDeck)} aria-pressed={editor.sourceMode} onclick={() => { editor.sourceMode = true; editor.selected = []; editor.additiveSelection=false;editor.layerPickerId=''; }}>Source reference</button><button disabled={Boolean(proposalDeck)} aria-pressed={!editor.sourceMode} onclick={() => editor.sourceMode = false}>Editable version</button></div>{/if}</div>
+          {#if editor.editingGroup&&!editor.sourceMode&&!proposalDeck&&!insertTool}<div class="canvas-group-navigation"><AsyncFeature feature="group-navigation" props={{}}/></div>{/if}
+          {#if fileDropActive}<div class="canvas-drop-feedback" aria-hidden="true"><span>Drop files here</span></div>{/if}
+          </div>
+          <div class="canvas-overlay-bottom">
+          {#if !editor.sourceMode&&PhotoCredits}<PhotoCredits slide={editor.slide} />{/if}
+          {#if proposalDeck}<div class="task-preview-caption" role="status"><Sparkles size={14} /><span>AI change preview · Not applied</span><Button variant="secondary" aria-label="Exit preview and return to the current version" onclick={returnCurrentVersion}>Exit preview</Button></div>{:else if editor.sourceMode}<div class="source-caption"><BookOpen size={14} /><span>Viewing the source reference</span><Button variant="secondary" onclick={enterEditable}>Edit slide</Button></div>{:else if insertTool && insertTool !== 'draw'}<div class="insertion-status" class:has-asset={Boolean(insertImage)} role="status"><span>{#if insertImage}<img class="insertion-thumbnail" src={insertImage.src} alt="" /><span class="insertion-asset-label"><b>{isGraphicBackground(insertImage.resource?.id) ? 'Area fill' : insertImage.resource?.kind === 'icon' ? 'Icon' : insertImage.resource?.kind === 'illustration' ? 'Illustration' : 'Image'} <span class="insertion-default-size" title="Default size in page pixels">{insertSize}</span></b><small title={insertImage.name}>{imageTotal > 1 ? `${imagePlaced + 1} of ${imageTotal} · ` : ''}{insertImage.name}</small></span>{:else}<span class="insertion-asset-label"><b>{insertBlock?.name ?? insertLabels[insertTool]}</b><small>{insertSize}</small></span>{/if}<span class="insertion-instructions" title="Arrow keys position the preview · Shift + Arrow moves 10 px · Enter places · Esc cancels">{insertImage && isGraphicBackground(insertImage.resource?.id) ? 'Drag to fill an area · Click for default size' : insertTool === 'text' ? 'Click to type · Drag a text box' : 'Click to place · Drag to size'}</span></span><button class="text-btn" onclick={() => {cancelInsertion();void focusCanvasSelection();}} aria-label="Cancel insertion"><X size={14} /><span>Cancel</span><kbd>Esc</kbd></button></div>{:else if editor.additiveSelection || editor.editingId || insertingText || editor.selected.length > 1 || (editor.selection.length && editor.selection.every(e => e.locked))}<div class="canvas-hint"><span class="canvas-keyboard-hint">{editor.additiveSelection ? 'Multiple selection · Click to add or remove objects · Esc to exit' : editor.editingId || insertingText ? 'Editing text · Esc to cancel · ⌘Enter to finish' : editor.selection.every(e => e.locked) && editor.selection.length ? 'Object locked · Unlock to edit' : editor.selectedContainer ? `${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Layout":"Group"} · ${countLabel(editor.selected.length, "object")} · ${editor.slide?.autoLayouts?.some(l=>l.id===editor.selectedContainer)?"Handles resize the frame":"Handles scale contents"}` : editor.selected.length ? `${countLabel(editor.selected.length, "object")} · Drag to move · Arrow keys to nudge · ${editor.editingGroup ? "Esc to exit group" : "Esc to deselect"}` : 'Click to select · Drag on empty space to select multiple objects · Right-click for overlapping objects'}</span><span class="canvas-touch-hint">{editor.editingId || insertingText ? 'Editing text · Done saves · Cancel discards' : editor.additiveSelection ? 'Multiple selection · Tap objects to add or remove' : editor.selection.every(e=>e.locked) ? 'Object locked · Unlock to edit' : `${countLabel(editor.selected.length, "object")} · Drag to move`}</span></div>{/if}
+          </div>
+        </div>
+        </div>
         {#if editor.deck}
         <footer class="stage-footer" class:compact-panel-layout={compactPanelOpen && !footerObscured} class:panel-obscured={footerObscured} inert={footerObscured} style:--compact-canvas-width={`${Math.max(0,compactCanvasWidth)}px`} aria-label="Canvas view tools">
           <div class="canvas-utility-left">
@@ -1026,8 +1059,8 @@
 
           </div>
           {#if editor.deck && !editor.sourceMode && !proposalDeck}
-          <div class="canvas-dock-slot"><div class="canvas-insert-dock" use:editorToolbar role="toolbar" aria-label="Insert tools" aria-describedby="editor-toolbar-help">
-      <AsyncFeature feature="insert-tools" props={{insertTool, compact:shortWorkspace, resourceOpen, resourceActiveView, resourceBusy: Boolean(resourceOpen && resourceExpandControl?.disabled), disabled: !editor.deck, onselect: () => { finishInlineText(); cancelInsertion(); resourcePanel?.close(); void focusCanvasSelection(); }, oninsert: insert, onresource: openResourceTool, onchart: () => { cancelInsertion(); modal = 'chart'; }, onprototype: () => openPrototype(), onpageelements: openPageElements, onblocks: () => openBlocks()}} />
+          <div class="canvas-dock-slot"><div class="canvas-insert-dock ui-floating-toolbar" use:editorToolbar role="toolbar" aria-label="Insert tools" aria-describedby="editor-toolbar-help">
+      <AsyncFeature feature="insert-tools" props={{insertTool, compact:shortWorkspace, resourceOpen, resourceActiveView, resourceBusy: Boolean(resourceOpen && resourceExpandControl?.disabled), disabled: !editor.deck, onselect: () => { finishInlineText(); cancelInsertion(); resourcePanel?.close(); void focusCanvasSelection(); }, oninsert: insert, onresource: openResourceTool, onchart: () => { cancelInsertion(); modal = 'chart'; }, onprototype: () => openPrototype(), onblocks: () => openBlocks()}} />
           </div>
           </div>
           {/if}
@@ -1039,15 +1072,16 @@
             {label:'Zoom in',icon:Plus,disabled:currentScale>=4,onselect:()=>changeZoom(.1)}
           ]}><span class="zoom-value">{Math.round(currentScale*100)}%</span></ActionMenu></div>
           <button class="icon-btn focus-toggle" aria-label={canvasFocus ? 'Exit focus view' : 'Focus view'} aria-pressed={canvasFocus} title={canvasFocus ? 'Exit focus view · Esc' : 'Focus view'} disabled={!editor.deck} onclick={() => void setCanvasFocus(!canvasFocus)}>{#if canvasFocus}<Minimize2 />{:else}<Scan />{/if}</button>
-          {#if canvasFocus}<CommandSearch bind:this={focusCommandSearch} class="focus-commands" actions={searchActions} onexpand={expandSearch} />{/if}
+          {#if canvasFocus}<CommandSearch bind:this={focusCommandSearch} class="focus-commands" actions={searchActions} onprepare={prepareSearchActions} onexpand={expandSearch} />{/if}
           {#if proposalDeck && (canvasFocus || !rightOpen)}<Button variant="primary" onclick={() => showPanel('ai')}>Review changes</Button>{/if}
           </div>
         </footer>
         {/if}
+        {#if notesOpen && !canvasFocus && !proposalDeck && editor.slide}<div class="notes-panel" transition:uiCollapse><label for="slide-notes">Speaker notes</label><textarea id="slide-notes" aria-label="Speaker notes" value={editor.slide.notes} oninput={(e) => editor.commit([{op: 'update_slide', slideId: editor.slide!.id, patch: {notes: e.currentTarget.value}}], 'notes')} placeholder="Add talking points, sources, or questions to resolve…"></textarea></div>{/if}
       </main>
       <aside id="editing-panel" class="property-panel" tabindex="-1" data-panel={panel} aria-label="Editing panel" inert={!editor.deck || !rightOpen || canvasFocus}><div class="property-content"><div class="editing-panel-header"><div class="panel-tabs" role="tablist" tabindex="-1" aria-label="Editing panels" aria-orientation="horizontal">
         {#each panelTabs as tab}<button id="editor-tab-{tab.id}" role="tab" class:active={panel === tab.id} aria-selected={panel === tab.id} aria-controls="editor-panel-{tab.id}" aria-label={tab.id === 'ai' ? 'AI editor' : tab.label} tabindex={panel === tab.id ? 0 : -1} onkeydown={panelTabKey} onclick={() => choosePanelTab(tab.id)}>{tab.label}</button>{/each}
-      </div>{#if viewportWidth<=760}<Button class="editing-panel-close" kind="icon" aria-label="Close editing panel" title="Return to canvas" onclick={closeEditingPanel}><X size={18}/></Button>{/if}</div>{#each panelTabs as tab (tab.id)}{@const panelView = tab.id}<div id="editor-panel-{panelView}" class="panel-swap" role="tabpanel" aria-labelledby="editor-tab-{panelView}" tabindex="0" hidden={panel !== panelView} inert={panel !== panelView} in:uiPresence={{x: 4, y: 0}}>{#if visitedPanels.includes(panelView)}{#if panelView === 'design'}<AsyncFeature feature="inspector" props={{active:panel==='design'&&rightOpen&&!canvasFocus&&!presenting,view:inspectorView,onviewchange:(value:'properties'|'layers')=>inspectorView=value,ondeckstyles:openDocumentStyles,onpageelements:openPageElements,onreference:()=>modal='fidelity',onlayout:()=>modal='auto-layout',layoutDisabled:Boolean(proposalDeck),onresources:openResources,onfonts:()=>openFonts(),onprototype:openPrototype}} />{:else if panelView === 'motion'}<AsyncFeature feature="motion" props={{disabled:Boolean(proposalDeck),onexitpreview:returnCurrentVersion,active: panel === 'motion' && rightOpen && !canvasFocus && !presenting && !modal, onpreview: (fromId?: string) => { presentationStartId = fromId; editor.sourceMode = false; presenting = true; }}} />{:else}<AsyncFeature feature="ai" props={{workflow:workflowRequest,onworkflow:receiveWorkflow,onrunworkflow:()=>void runWorkflow(),ondismissworkflow:()=>void dismissWorkflow(),active:panel==='ai'&&rightOpen&&!canvasFocus&&!presenting&&!modal,settings: aiSettings, sessionVersion:aiSessionVersion, serverConfigured: Boolean(health?.ai?.configured), onpreview: toggleProposalPreview, preview: previewProposal, onsettings: () => void openSettingsTab('ai')}} />{/if}{/if}</div>{/each}</div><!-- Keyboard adjustable split-pane separator. -->
+      </div>{#if viewportWidth<=760}<Button class="editing-panel-close" kind="icon" aria-label="Close editing panel" title="Return to canvas" onclick={closeEditingPanel}><X size={18}/></Button>{/if}</div>{#each panelTabs as tab (tab.id)}{@const panelView = tab.id}<div id="editor-panel-{panelView}" class="panel-swap" role="tabpanel" aria-labelledby="editor-tab-{panelView}" tabindex="0" hidden={panel !== panelView} inert={panel !== panelView} in:uiPresence={{x: 4, y: 0}}>{#if visitedPanels.includes(panelView)}{#if panelView === 'design'}<AsyncFeature feature="inspector" props={{ondraw:()=>{if(viewportWidth<=760)closeEditingPanel();if(insertTool!=='draw')insert('draw');},active:panel==='design'&&rightOpen&&!canvasFocus&&!presenting,view:inspectorView,onviewchange:(value:'properties'|'layers')=>inspectorView=value,ondeckstyles:openDocumentStyles,onpageelements:openPageElements,onreference:()=>modal='fidelity',onlayout:()=>modal='auto-layout',layoutDisabled:Boolean(proposalDeck),onresources:openResources,onfonts:()=>openFonts(),onprototype:openPrototype}} />{:else if panelView === 'motion'}<AsyncFeature feature="motion" props={{disabled:Boolean(proposalDeck),onexitpreview:returnCurrentVersion,active: panel === 'motion' && rightOpen && !canvasFocus && !presenting && !modal, onpreview: (fromId?: string) => { presentationStartId = fromId; editor.sourceMode = false; presenting = true; }}} />{:else}<AsyncFeature feature="ai" props={{workflow:workflowRequest,onworkflow:receiveWorkflow,onrunworkflow:()=>void runWorkflow(),ondismissworkflow:()=>void dismissWorkflow(),active:panel==='ai'&&rightOpen&&!canvasFocus&&!presenting&&!modal,settings: aiSettings, sessionVersion:aiSessionVersion, serverConfigured: Boolean(health?.ai?.configured), onpreview: toggleProposalPreview, preview: previewProposal, onsettings: () => void openSettingsTab('ai')}} />{/if}{/if}</div>{/each}</div><!-- Keyboard adjustable split-pane separator. -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 <div class="pane-resizer right-resizer" class:gesture-pane={resizing&&paneGesture?.side==='right'} role="separator" tabindex="0" aria-label="Resize editing panel" aria-orientation="vertical" aria-valuemin="260" aria-valuemax={viewportWidth<=760?Math.min(304,Math.max(0,viewportWidth-24)):viewportWidth<=1100?320:440} aria-valuenow={displayedRightWidth()} onpointerdown={event=>resizePane(event,'right')} onpointermove={movePane} onpointerup={finishPane} onpointercancel={cancelPane} onlostpointercapture={cancelPane} onkeydown={event=>paneKey(event,'right')}></div></aside>
     </div>
@@ -1061,7 +1095,7 @@
 
 
 {#if !printMode && !presenting}
-  <PopoverPanel bind:this={resourcePanel} bind:open={resourceOpen} anchor={resourceContextAnchor??resourceTrigger} avoid={() => resourceReplaceId ? stage?.querySelector<HTMLElement>(`[data-element-id="${CSS.escape(resourceReplaceId)}"]`) : undefined} returnFocus={() => resourceReplaceId ? document.querySelector<HTMLElement>('.selection-context [aria-label="Replace image"]') ?? stage : resourceContextAnchor ?? resourceTrigger} id="workspace-resource-popover" title={resourceReplaceId ? 'Replace image' : resourceTitle} class="resource-popover" width={400} height={800} minHeight={240} mobileSheet={Boolean(resourceReplaceId)} autoHeight>
+  <PopoverPanel onerror={message=>editor.notify(message,'warning')} bind:this={resourcePanel} bind:open={resourceOpen} anchor={resourceContextAnchor??resourceTrigger} avoid={() => resourceReplaceId ? stage?.querySelector<HTMLElement>(`[data-element-id="${CSS.escape(resourceReplaceId)}"]`) : undefined} returnFocus={() => resourceReplaceId ? document.querySelector<HTMLElement>('.selection-context [aria-label="Replace image"]') ?? stage : resourceContextAnchor ?? resourceTrigger} id="workspace-resource-popover" title={resourceReplaceId ? 'Replace image' : resourceTitle} class="resource-popover" width={400} height={800} minHeight={240} mobileSheet={Boolean(resourceReplaceId)} autoHeight>
     {#snippet headerActions()}<Button kind="icon" size="sm" aria-label="Full library" title="Open full resource library" disabled={!resourceExpandControl || resourceExpandControl.disabled} onclick={() => resourceExpandControl?.run()}><Maximize2 size={16} /></Button>{/snippet}
     {@render resourceContent(true)}
   </PopoverPanel>
@@ -1082,7 +1116,7 @@
 {:else if modal === 'google-export'}
   <AsyncFeature feature="google-export" props={{readDocument:()=>editor.readDocument(),onclose:closeModal,oncomplete:(result:{url:string})=>{if(workflowRequest?.action.kind==='export'&&workflowRequest.action.format==='google'||workflowRequest?.action.kind==='publish'&&workflowRequest.action.target==='google')void workflowResult('completed',{message:'Google Slides copy created',url:result.url,provider:'google',state:'created'});},onconnection:(connected:boolean)=>{if(workflowRequest?.action.kind==='account'&&workflowRequest.action.provider==='google')void workflowResult('completed',{message:connected?'Google connected':'Google disconnected',provider:'google',state:connected?'connected':'disconnected'});}}} onclose={closeModal} modalTitle="Export to Google Slides" />
 {:else if modal && modal !== 'auto-layout' && modal !== 'deck-styles' && modal !== 'page-elements' && modal !== 'chart' && modal !== 'blocks'}
-  <Dialog title={{library: 'Document library', templates: 'Start with a template', layout: 'Add slide', 'ai-create':'Create with AI', import: 'Import document', export: 'Export document', fidelity: 'Import report', help: 'Keyboard shortcuts', settings: 'Settings', resources: resourceReplaceId ? 'Replace image' : 'Resource library', search: 'Search and commands', prototype: prototypeTarget ? 'Prototype preview' : 'Embed interactive prototype', fonts: 'Font library', rename:'Rename document', history:'Version history', notifications:'Recent notifications', 'illustration-colors':'Illustration colors'}[modal]} wide={['library', 'templates', 'layout', 'fonts', 'prototype', 'fidelity','history','settings','search','ai-create'].includes(modal)} class={modal === 'library' ? 'document-library-dialog' : ''} review={modal === 'fidelity'} resource={modal === 'resources'} onclose={closeModal} returnFocus={() => insertTool ? stage : undefined}>
+  <Dialog title={{library: 'Document library', templates: 'Start with a template', layout: 'Add slide', 'ai-create':'Create with AI', import: 'Import document', export: 'Export document', fidelity: 'Import report', help: 'Keyboard shortcuts', settings: 'Settings', resources: resourceReplaceId ? 'Replace image' : 'Resource library', search: 'Search and commands', prototype: prototypeTarget ? 'Prototype preview' : 'Embed interactive prototype', fonts: 'Font library', rename:'Rename document', history:'Version history', notifications:'Recent notifications', 'illustration-colors':'Illustration colors'}[modal]} wide={['library', 'templates', 'layout', 'fonts', 'prototype', 'fidelity','history','settings','search','ai-create'].includes(modal)} class={modal === 'library' ? 'document-library-dialog' : modal === 'fonts' ? 'font-library-dialog' : ''} review={modal === 'fidelity'} resource={modal === 'resources'} onclose={closeModal} returnFocus={() => insertTool ? stage : undefined}>
     {#if modal === 'ai-create'}
       <AsyncFeature feature="ai-create" props={{state:aiCreation,settings:aiSettings,serverConfigured:Boolean(health?.ai?.configured),onsettings:()=>{aiCreationSettingsReturn=true;void openSettingsTab('ai');},oncreate:acceptAICreation}} />
     {:else if modal === 'prototype'}

@@ -1,5 +1,6 @@
 import { intersectRect, positionSelectionToolbar, unionRects, type ScreenRect } from './selection-toolbar-position';
 import './selection-toolbar.css';
+import {canvasOverlayBounds} from './canvas-overlay-layout';
 
 export interface SelectionToolbarOptions { ids: string[]; editingId: string; revision?: number; scale: number; draft?: boolean; docked?: boolean }
 
@@ -18,19 +19,17 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
     frame = 0;
     const render = stage!.querySelector<HTMLElement>('.slide-render.editable');
     if (!render || render.classList.contains('gesturing')) { hide(); return; }
-    const viewport = window.visualViewport;
-    const screen = {left: viewport?.offsetLeft ?? 0, top: viewport?.offsetTop ?? 0, right: (viewport?.offsetLeft ?? 0) + (viewport?.width ?? innerWidth), bottom: (viewport?.offsetTop ?? 0) + (viewport?.height ?? innerHeight)};
-    let boundary = intersectRect(stage!.getBoundingClientRect(), screen);
+    let boundary = canvasOverlayBounds(stage!);
     if (!boundary) { hide(); return; }
-    const groupBar=stage!.querySelector<HTMLElement>('.group-edit-bar');if(groupBar)boundary={...boundary,top:Math.max(boundary.top,groupBar.getBoundingClientRect().bottom+8)};
-    // The mobile inspector overlays the canvas; it must never cover the tools.
-    const panel = stage!.closest('.workspace')?.querySelector<HTMLElement>('.property-panel:not([inert])');
-    if (panel && getComputedStyle(panel).position === 'absolute') {
-      const p = panel.getBoundingClientRect();
-      if (intersectRect(p, boundary)) boundary = {...boundary, right: Math.min(boundary.right, p.left - 8)};
+    const surface = stage!.parentElement!;
+    const header = surface.querySelector<HTMLElement>('.canvas-overlay-top');
+    if (header?.offsetHeight) boundary.top = Math.max(boundary.top, header.getBoundingClientRect().bottom + 8);
+    if (options.docked) {
+      const clearance = parseFloat(getComputedStyle(stage!).getPropertyValue('--canvas-group-clearance')) || 66;
+      boundary.top = Math.max(boundary.top, stage!.getBoundingClientRect().top + clearance);
     }
-    const dock = stage!.parentElement?.querySelector<HTMLElement>('.stage-footer');
-    if (dock && getComputedStyle(dock).position === 'absolute') boundary.bottom = Math.min(boundary.bottom, dock.getBoundingClientRect().top - 8);
+    const status = surface.querySelector<HTMLElement>('.canvas-overlay-bottom');
+    if (status?.offsetHeight) boundary.bottom = Math.min(boundary.bottom, status.getBoundingClientRect().top - 8);
     if (boundary.right - boundary.left < 120 || boundary.bottom - boundary.top < 40) { hide(); return; }
     const elements = Array.from(render.querySelectorAll<HTMLElement>('[data-element-id]')).filter(el => options.ids.includes(el.dataset.elementId!));
     const draft = options.draft ? render.querySelector<HTMLElement>('.insertion-text-draft') : null;
@@ -77,12 +76,13 @@ export function selectionToolbar(node: HTMLElement, initial: SelectionToolbarOpt
   hide();
   const resize = new ResizeObserver(schedule);
   resize.observe(stage); resize.observe(node);
+  for (const region of stage.parentElement!.querySelectorAll('.canvas-overlay,.canvas-overlay-top,.canvas-overlay-bottom')) resize.observe(region);
   const canvas = stage.querySelector<HTMLElement>('.stage-canvas');
   if (canvas) resize.observe(canvas);
   const mutations = new MutationObserver(records => {
     if (records.some(record => !node.contains(record.target))) schedule();
   });
-  mutations.observe(stage, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'class', 'contenteditable']});
+  mutations.observe(stage.parentElement!, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'class', 'contenteditable']});
   const workspace = stage.closest('.workspace');
   if (workspace) mutations.observe(workspace, {attributes: true, attributeFilter: ['class', 'style']});
   document.addEventListener('selectionchange', schedule);

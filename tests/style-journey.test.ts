@@ -1,5 +1,5 @@
 import {TEMPLATE_PAGES} from '../src/core/template-blueprints';
-import {hitElements} from '../src/core/interactions';
+import {hitElements} from '../src/core/hit-testing';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {COLLECTIONS,templateDeck,deckTemplateCollection} from '../src/core/templates';

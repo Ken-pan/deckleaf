@@ -12,7 +12,7 @@ export function resizeTableColumns(element:SlideElement,boundary:number,delta:nu
 }
 export function resizeColumnWidths(widths:number[],boundary:number,delta:number,minimum:number):number[]{
   if(!Number.isInteger(boundary)||boundary<0||boundary>=widths.length-1||!Number.isFinite(delta))throw new Error('Choose an existing column boundary.');
-  const next=[...widths],total=next[boundary]+next[boundary+1],limit=Math.min(total/2,minimum),left=Math.max(limit,Math.min(total-limit,next[boundary]+delta));
+  const next=[...widths],total=next[boundary]+next[boundary+1],limit=Math.min(total/2,minimum),minLeft=Math.min(next[boundary],limit),minRight=Math.min(next[boundary+1],limit),left=Math.max(minLeft,Math.min(total-minRight,next[boundary]+delta));
   next[boundary]=left;next[boundary+1]=total-left;return next;
 }
 

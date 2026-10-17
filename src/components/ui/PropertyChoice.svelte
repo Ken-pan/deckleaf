@@ -2,6 +2,7 @@
   import type { Component } from 'svelte';
   type Option = {value:string;label:string;icon?:Component<any>;description?:string;disabled?:boolean};
   let {label,options,value='',disabled=false,icons=false,onchange}: {label:string;options:readonly Option[];value?:string;disabled?:boolean;icons?:boolean;onchange:(value:string)=>void}=$props();
+  const id=$props.id();
   const first=$derived(options.find(option=>!option.disabled)?.value);
   function choose(next:string){if(!disabled&&next!==value)onchange(next);}
   function key(event:KeyboardEvent,index:number){
@@ -15,9 +16,9 @@
   }
 </script>
 <div class="property-choice" class:icon-choices={icons} role="radiogroup" aria-label={label} aria-disabled={disabled}>
-  {#each options as option,index}<button type="button" role="radio" aria-checked={value===option.value} aria-label={option.label} title={option.description?`${option.label} · ${option.description}`:option.label} disabled={disabled||option.disabled} tabindex={(options.some(o=>o.value===value&&!o.disabled)?value===option.value:option.value===first)?0:-1} onclick={()=>choose(option.value)} onkeydown={event=>key(event,index)}>
+  {#each options as option,index}<button type="button" role="radio" aria-checked={value===option.value} aria-label={option.label} aria-describedby={option.description?`${id}-${index}-help`:undefined} disabled={disabled||option.disabled} tabindex={(options.some(o=>o.value===value&&!o.disabled)?value===option.value:option.value===first)?0:-1} onclick={()=>choose(option.value)} onkeydown={event=>key(event,index)}>
     {#if option.icon}<option.icon size={16} aria-hidden="true" />{/if}<span>{option.label}</span>
-  </button>{/each}
+  </button>{#if option.description}<span id={`${id}-${index}-help`} class="sr-only">{option.description}</span>{/if}{/each}
 </div>
 <style>
   .property-choice{display:flex;align-items:stretch;flex-wrap:wrap;gap:2px;padding:2px;border-radius:var(--r-control);background:var(--field-surface);min-width:0}
@@ -34,6 +35,6 @@
   button[aria-checked='true']:not(:disabled):active{background:var(--state-selected-active)}
   .icon-choices button{flex:1;min-width:32px;padding:6px}
   .icon-choices button>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  @media(max-width:760px),(pointer:coarse){button{min-height:44px}.icon-choices button{flex-direction:column;min-width:44px;gap:2px;padding:4px}.icon-choices button>span{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:var(--ui-meta)}}
+  @media(max-width:760px),(pointer:coarse){button{min-height:44px}.icon-choices button{flex-direction:column;min-width:44px;gap:2px;padding:4px}.icon-choices button>span{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:var(--ui-meta);line-height:var(--ui-line-control)}}
   @media(forced-colors:active){button[aria-checked='true']{outline:1px solid Highlight;outline-offset:-2px}}
 </style>

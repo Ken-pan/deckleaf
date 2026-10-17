@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {floatingPlacement,workspaceViewport} from '../src/ui-viewport';
-import {contextMenuPlacement} from '../src/context-menu-viewport';
+import {contextMenuPlacement,contextSubmenuPlacement} from '../src/context-menu-viewport';
 
 test('keyboard viewport shrinks and offsets the workspace without exceeding layout height',()=>{
   assert.deepEqual(workspaceViewport(844,{left:0,top:30,width:390,height:420}),{height:420,top:30});
@@ -74,4 +74,20 @@ test('cursor menu bounds cover short screens, keyboard offsets and native magnif
       assert(p.top+Math.min(507,p.maxHeight)<=viewport.top+viewport.height-12);
     }
   }
+});
+
+
+test('submenus remain beside their parent and flip without covering it',()=>{
+  const viewport={left:0,top:0,width:1280,height:800};
+  const right=contextSubmenuPlacement({left:100,right:364,top:180},{width:264,height:360},viewport)!;
+  assert.equal(right.side,'right');assert.equal(right.left,368);assert.equal(right.top,176);
+  const left=contextSubmenuPlacement({left:950,right:1214,top:700},{width:264,height:360},viewport)!;
+  assert.equal(left.side,'left');assert.equal(left.left,682);assert.equal(left.top,428);
+  assert(left.left+264<950);assert(left.top+360<=788);
+  assert.equal(contextSubmenuPlacement({left:12,right:276,top:180},{width:264,height:360},{left:0,top:0,width:390,height:844}),undefined);
+});
+test('nested submenus retain opening direction and respect shifted visual viewports',()=>{
+  const viewport={left:90,top:120,width:1000,height:500};
+  const p=contextSubmenuPlacement({left:450,right:714,top:140},{width:264,height:700},viewport,'left')!;
+  assert.equal(p.side,'left');assert.equal(p.left,182);assert.equal(p.top,132);assert.equal(p.maxHeight,476);
 });

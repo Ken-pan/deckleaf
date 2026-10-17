@@ -6,7 +6,7 @@
   import { Button, ActionMenu} from './ui';
   import Notice from './ui/Notice.svelte';
   import PropertyChoice from './ui/PropertyChoice.svelte';
-  import { CornerDownLeft, Check, X, Settings2, Ellipsis, ChevronLeft, ChevronRight, ChevronDown, Sparkles } from '@lucide/svelte';
+  import { CornerDownLeft, Check, Trash2, X, Settings2, Ellipsis, ChevronLeft, ChevronRight, ChevronDown, Sparkles } from '@lucide/svelte';
   import { editor } from '../core/editor.svelte';
   import WorkflowReview from './WorkflowReview.svelte';
   import type {WorkflowOutcome,WorkflowRequest,AIInformation} from '../core/workflows';
@@ -125,7 +125,7 @@
         <p class="hint ai-scope-context" aria-live="polite">{context}</p></div>
         <label class="field-label">Request<textarea bind:this={requestInput} aria-label="AI edit request" placeholder="Shorten this slide, adjust the layout, or add notes…" bind:value={prompt} readonly={busy} aria-disabled={busy} maxlength="10000" rows="5" onkeydown={(e) => { if(busy&&e.key==='Escape'){e.preventDefault();e.stopPropagation();cancel();} if (!e.isComposing && e.keyCode !== 229 && !e.repeat && (e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); void generate(); } }}></textarea></label>
       </div>
-      {#if history.length}<details class="ai-request-help" use:uiDisclosure><summary><span>Recent requests · {history.length}</span><ChevronDown size={14} aria-hidden="true"/></summary><ol class="ai-history">{#each history.slice().reverse() as turn}<li><span class="hint">{turn.status==='applied'?'Applied':turn.status==='queued'?'Action requested':turn.status==='discarded'?'Discarded':'Answered'}</span><p>{turn.summary}</p><button class="text-btn" disabled={busy} onclick={()=>useSuggestion(turn.prompt)}>Use request</button></li>{/each}</ol><Button disabled={busy} onclick={()=>history=[]}>Clear AI history</Button><p class="hint">Saved in this browser.</p></details>{/if}
+      {#if history.length}<details class="ai-request-help" use:uiDisclosure><summary><span>Recent requests · {history.length}</span><ChevronDown size={14} aria-hidden="true"/></summary><ol class="ai-history">{#each history.slice().reverse() as turn}<li><span class="hint">{turn.status==='applied'?'Applied':turn.status==='queued'?'Action requested':turn.status==='discarded'?'Discarded':'Answered'}</span><p>{turn.summary}</p><button class="text-btn" disabled={busy} onclick={()=>useSuggestion(turn.prompt)}>Use request</button></li>{/each}</ol><Button tone="danger" disabled={busy} onclick={()=>history=[]}><Trash2 size={16}/>Clear AI history</Button><p class="hint">Saved in this browser.</p></details>{/if}
       {#if !modelReady&&settings.model}<p class="hint">Add an API key in AI settings.</p>{/if}
       <details class="ai-request-help" use:uiDisclosure><summary><span>Examples</span><ChevronDown size={14} aria-hidden="true"/></summary>
         <div class="ai-suggestions">{#each suggestions as suggestion}<button disabled={busy} title={suggestion.prompt} onclick={() => useSuggestion(suggestion.prompt,suggestion.scope)}>{suggestion.label}<CornerDownLeft size={14} /></button>{/each}</div>
@@ -145,8 +145,8 @@
 <style>
   .ai-panel{overflow:hidden}
   .ai-history{list-style:none;padding:0;margin:8px 0}.ai-history li{padding:12px 0;border-bottom:1px solid var(--border-subtle)}.ai-history p{font-size:var(--ui-label);margin:6px 0;overflow-wrap:anywhere}
-  .ai-information{padding:16px 12px;display:flex;flex-direction:column;gap:16px;overflow:auto}.ai-information p{white-space:pre-wrap;overflow-wrap:anywhere}
-  .ai-request-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px;scrollbar-width:thin}
+  .ai-information{padding:16px 12px;display:flex;flex-direction:column;gap:16px;overflow:auto;scrollbar-gutter:stable;}.ai-information p{white-space:pre-wrap;overflow-wrap:anywhere}
+  .ai-request-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px;scrollbar-gutter:stable;}
   .ai-request-heading h3{display:flex;align-items:center;gap:8px;font-size:var(--ui-label);font-weight:var(--ui-weight-semibold);margin:0 0 4px}.ai-request-heading h3 :global(svg){flex:none;color:var(--text-secondary)}
   .ai-request-heading{margin-bottom:16px}
   .ai-compose{display:flex;flex-direction:column;gap:16px;padding:0;border:0;margin:0}
@@ -171,7 +171,7 @@
   .ai-review-pages span{flex:1;min-width:0;text-align:center;overflow-wrap:anywhere}
   .ai-review-secondary{display:flex;justify-content:space-between;gap:8px;align-items:center}
   .ai-review-actions{padding:12px;gap:8px}
-  .ai-preview{padding:12px}
+  .ai-preview{padding:12px;scrollbar-gutter:stable}
   @media(max-height:520px){.ai-panel{overflow:auto;overscroll-behavior:contain}.ai-request-body,.ai-preview{flex:none;overflow:visible}.ai-compose textarea{height:min(3lh,30dvh);min-height:2lh;max-height:45dvh}}
   @media(max-width:760px),(pointer:coarse){.ai-request-help summary,.ai-suggestions button,.ai-request-actions :global(button),.ai-review-actions :global(button),.ai-review-pages :global(button){min-height:44px}.ai-review-pages :global(button){min-width:44px}}
 </style>

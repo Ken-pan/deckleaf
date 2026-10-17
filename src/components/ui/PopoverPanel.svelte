@@ -5,9 +5,9 @@
   import { positionFloating, visualBounds } from '../../ui-viewport';
   import { availableFocus, restoreFocus, popoverFocus } from '../../ui-focus';
   const generatedId = $props.id();
-  let {title, children, headerActions, trigger, anchor, avoid, returnFocus, id = generatedId, open = $bindable(false), width = 420, height = 580, minHeight = 160, autoHeight = false, mobileSheet = false, iconOnly = false, disabled = false, onopen, onkeydown, class: className = ''}: {
-    title: string; children: Snippet; headerActions?: Snippet; trigger?: Snippet; anchor?: HTMLElement; avoid?: () => HTMLElement | null | undefined; returnFocus?: () => HTMLElement | undefined; id?: string;
-    open?: boolean; width?: number; height?: number; minHeight?: number; autoHeight?: boolean; mobileSheet?: boolean; iconOnly?: boolean; disabled?: boolean; onopen?: () => void; onkeydown?: (event: KeyboardEvent) => void; class?: string;
+  let {title, triggerLabel, children, headerActions, trigger, anchor, avoid, returnFocus, id = generatedId, open = $bindable(false), width = 420, height = 580, minHeight = 160, autoHeight = false, mobileSheet = false, viewportOnly = false, iconOnly = false, disabled = false, onopen, onkeydown, class: className = ''}: {
+    title: string; triggerLabel?: string; children: Snippet; headerActions?: Snippet; trigger?: Snippet; anchor?: HTMLElement; avoid?: () => HTMLElement | null | undefined; returnFocus?: () => HTMLElement | undefined; id?: string;
+    open?: boolean; width?: number; height?: number; minHeight?: number; autoHeight?: boolean; mobileSheet?: boolean; viewportOnly?:boolean; iconOnly?: boolean; disabled?: boolean; onopen?: () => void; onkeydown?: (event: KeyboardEvent) => void; class?: string;
   } = $props();
   let panel = $state<HTMLDivElement>(), origin = $state<HTMLDivElement>(), heading = $state<HTMLHeadingElement>();
   let frame = 0;
@@ -23,9 +23,9 @@
     panel.style.height = sheet ? `${height}px` : autoHeight ? 'auto' : `${height}px`;
     const body = panel.querySelector<HTMLElement>('.ui-popover-body'), head = panel.querySelector<HTMLElement>('.ui-popover-head');
     const preferredHeight = autoHeight ? Math.min(height, (head?.offsetHeight ?? 0) + (body?.scrollHeight ?? 0) + 2) : height;
-    const toolbar = document.querySelector<HTMLElement>('.topbar');
+    const toolbar = viewportOnly ? null : document.querySelector<HTMLElement>('.topbar');
     const topBoundary = toolbar && !toolbar.inert && toolbar.getClientRects().length ? toolbar.getBoundingClientRect().bottom + 8 : undefined;
-    const dock = document.querySelector<HTMLElement>('.canvas-insert-dock'), dockBounds = dock?.getBoundingClientRect();
+    const dock = viewportOnly ? null : document.querySelector<HTMLElement>('.canvas-insert-dock'), dockBounds = dock?.getBoundingClientRect();
     const bottomBoundary = dock && dock.getClientRects().length && dockBounds && dockBounds.top > (topBoundary ?? 0) + minHeight + 8 ? dockBounds.top - 8 : undefined;
     positionFloating(panel, bounds, {maxHeight: height, preferredHeight, minHeight, topBoundary, bottomBoundary: sheet ? undefined : bottomBoundary, avoid: sheet ? undefined : avoid?.()?.getBoundingClientRect(), overlay: sheet});
   }
@@ -73,8 +73,8 @@
 </script>
 
 {#if trigger}<div class="ui-panel-trigger" bind:this={origin}>
-  <Button {disabled} kind={iconOnly ? 'icon' : 'text'} aria-label={title} title={title} aria-haspopup="dialog" aria-controls={id} aria-expanded={open} popovertarget={id} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && event.key === 'ArrowDown') { event.preventDefault(); show(); } }}>
-    {@render trigger()}{#if !iconOnly}<ChevronDown size={13} aria-hidden="true" />{/if}
+  <Button {disabled} kind={iconOnly ? 'icon' : 'text'} aria-label={triggerLabel ?? title} title={title} aria-haspopup="dialog" aria-controls={id} aria-expanded={open} popovertarget={id} onkeydown={event => { if (!event.isComposing && event.keyCode !== 229 && !event.altKey && !event.ctrlKey && !event.metaKey && event.key === 'ArrowDown') { event.preventDefault(); show(); } }}>
+    {@render trigger()}{#if !iconOnly}<ChevronDown data-ui-marker size={14} aria-hidden="true" />{/if}
   </Button>
 </div>{/if}
 <div {id} bind:this={panel} use:popoverFocus={{close, origin:()=>returnFocus?.()??invoker}} popover="auto" class="ui-popover-panel {className}" role="dialog" tabindex="-1" aria-labelledby="{id}-title" style:--popover-width={`${width}px`} style:--popover-height={autoHeight ? 'auto' : `${height}px`} inert={!open} onbeforetoggle={beforeToggle} ontoggle={toggled} onkeydown={key}>

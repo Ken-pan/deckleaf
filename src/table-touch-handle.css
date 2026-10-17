@@ -1,0 +1,2 @@
+.floating-table-handle::before,.floating-table-handle::after{display:none!important}
+.floating-table-handle .boundary-label{display:flex!important;position:absolute;inset:0;align-items:center;justify-content:center;border:1px solid var(--canvas-selection);border-radius:8px;background:var(--surface-overlay);color:var(--text-primary);font:11px/1.4 var(--font-ui);white-space:nowrap;pointer-events:none}

@@ -6,14 +6,14 @@ import { publicOrigin } from './public-origin.mjs';
 const root = resolve(import.meta.dirname, '..');
 const source = resolve(root, 'public/website');
 const origin = publicOrigin();
-for (const [from,to] of [
+const sharedAssets = [
   ['public/brand/logo.svg','logo.svg'],['public/favicon.svg','favicon.svg'],
   ['public/brand/apple-touch-icon.png','apple-touch-icon.png'],
   ['public/fonts/inter.ttf','inter.ttf'],['public/fonts/manrope.ttf','manrope.ttf'],
   ['public/fonts/bodoni-moda.ttf','bodoni-moda.ttf'],
   ['public/fonts/Inter-OFL.txt','Inter-OFL.txt'],['public/fonts/Manrope-OFL.txt','Manrope-OFL.txt'],
   ['public/fonts/Bodoni-Moda-OFL.txt','Bodoni-Moda-OFL.txt'],
-]) await cp(resolve(root,from),resolve(source,'assets',to));
+];
 // Every published media revision gets a fresh URL, including dynamically
 // selected starter downloads. Keep the version stable for identical inputs.
 const revision = createHash('sha256');
@@ -25,11 +25,13 @@ async function fingerprint(dir, prefix = '') {
   }
 }
 await fingerprint(source);
+for(const [from] of sharedAssets)revision.update(from).update(await readFile(resolve(root,from)));
 const assetRevision = revision.digest('hex').slice(0, 12);
 // Public marketing assets only; the browser build adds its separate editor entry.
-const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/website/dist');
+const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/website-only/dist');
 await mkdir(out, { recursive: true });
 await cp(source, out, { recursive: true });
+for(const [from,to] of sharedAssets)await cp(resolve(root,from),resolve(out,'assets',to));
 // Apply the deployment origin to every website document, including downloadable
 // templates, attribution in the presentation, and crawler metadata.
 async function updateOrigin(dir) {
@@ -67,5 +69,5 @@ async function inspect(dir,prefix='') {
   }
 }
 await inspect(out);
-await writeFile(resolve(root,'output/website/build-manifest.json'),JSON.stringify({origin,files:manifest},null,2));
+await writeFile(resolve(out,'..','build-manifest.json'),JSON.stringify({origin,files:manifest},null,2));
 console.log(`Website ready: ${out} (${Object.keys(manifest).length} files).`);

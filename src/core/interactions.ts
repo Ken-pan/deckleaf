@@ -1,5 +1,4 @@
 import type { SlideElement,SlideGroup } from './model';
-import {shapeContains} from './shapes';
 
 export type Corner = 'nw' | 'ne' | 'sw' | 'se';
 export type ResizeHandle = Corner | 'n' | 'e' | 's' | 'w';
@@ -64,21 +63,6 @@ export function marqueeSelection(elements: SlideElement[], box: Bounds, base: st
   });
   const existing=new Set(elements.map(e=>e.id));
   return [...new Set([...base.filter(id=>existing.has(id)),...picked])];
-}
-export function hitElements(elements: SlideElement[], point: Point, tolerance = 0): SlideElement[] {
-  return [...elements].reverse().filter(e=>{
-    if (e.hidden||e.designPattern) return false;
-    const a=-e.rotation*Math.PI/180,c=Math.cos(a),s=Math.sin(a),dx=point.x-e.x-e.w/2,dy=point.y-e.y-e.h/2;
-    const x=(c*dx-s*dy)*(e.flipX?-1:1)+e.w/2,y=(s*dx+c*dy)*(e.flipY?-1:1)+e.h/2;
-    if (e.type==='line') {
-      const startY=e.h===1?.5:0,height=e.h===1?0:e.h,l2=e.w*e.w+height*height,t=Math.max(0,Math.min(1,(x*e.w+(y-startY)*height)/l2));
-      return Math.hypot(x-t*e.w,y-startY-t*height)<=Math.max((e.strokeWidth||2)/2,tolerance);
-    }
-    if(e.type==='ellipse')return ((x-e.w/2)/(e.w/2+tolerance))**2+((y-e.h/2)/(e.h/2+tolerance))**2<=1;
-    if(e.shape || (e.type==='rect'||e.type==='diamond')&&e.radius)return shapeContains(e,{x,y},Math.max(tolerance,e.strokeWidth/2));
-    if(e.type==='diamond')return Math.abs(x-e.w/2)/(e.w/2+tolerance)+Math.abs(y-e.h/2)/(e.h/2+tolerance)<=1;
-    return x>=-tolerance&&x<=e.w+tolerance&&y>=-tolerance&&y<=e.h+tolerance;
-  });
 }
 
 /** Images keep their existing frame proportions; Shift temporarily inverts the lock. */

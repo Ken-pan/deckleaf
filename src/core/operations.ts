@@ -1,3 +1,5 @@
+import {isBlockSizingFrame} from './block-frame';
+import {adaptSlideColors} from './slide-colors';
 import {selectionMembers} from './selection-transform';
 import { z } from 'zod';
 import { cloneDocumentData } from './document-data';
@@ -8,7 +10,7 @@ import { resolveGroupLayouts, dragLayoutMember, manualLayoutSizing } from './obj
 import {slideGroups,descendants,directMembers,selectionRoots,ancestorIds,groupBox} from './container-tree';
 import { manualTextSizing, resolveTextElement, browserTextSize, type TextSizeMeasure } from './text-layout';
 import { DesignSystemSchema } from './design-system-schema';
-import { applyDeckDesignSystem, styleOverrides, styleSlide } from './deck-design-system';
+import { applyDeckDesignSystem, deckDesignSystem, styleOverrides, styleSlide } from './deck-design-system';
 import {continueTable} from './table-fit';
 import {adaptTemplateText,adaptTemplateTable} from './template-edit-adaptation';
 import {continueChart} from './chart-continuation';
@@ -126,6 +128,9 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
         slide.groups=[...(slide.groups??[]).filter(g=>g.id!==id),group];
       } else {
         if(!old)throw new Error('Group no longer exists.');
+        // A native block's invisible sizing frame is chrome, not standalone artwork.
+        // Keep frames that the author has turned into visible or interactive content.
+        if(old.block)slide.elements=slide.elements.filter(e=>!(e.group===id&&isBlockSizingFrame(e)));
         const direct=directMembers(slide,id),order=slide.autoLayouts?.find(l=>l.id===id)?.order??direct.map(e=>e.id);
         slide.elements=slide.elements.map(e=>{if(e.group!==id)return e;const v={...e,group:old.parent};delete v.layoutItem;if(!v.group)delete v.group;return v;});
         slide.groups=(slide.groups??[]).filter(g=>g.id!==id).map(g=>{if(g.parent!==id)return g;const v={...g,parent:old.parent};delete v.layoutItem;if(!v.parent)delete v.parent;return v;});
@@ -155,7 +160,12 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
     if (op.op === 'update_slide') {
       if(op.patch.background!==undefined&&op.patch.backgroundStyle===undefined){delete slide.backgroundStyle;slide.elements=slide.elements.filter(e=>!e.designPattern);}
       Object.assign(slide, op.patch);
-      if((op.patch.backgroundStyle||op.patch.patternStyle!==undefined)&&next.designSystem)Object.assign(slide,styleSlide(slide,next,next.designSystem));
+      if(op.patch.backgroundStyle==='dark')slide.adaptiveColors=true;
+      if(op.patch.background!==undefined&&op.patch.backgroundStyle===undefined){
+        slide.adaptiveColors=false;
+        slide.elements=slide.elements.map(e=>{if(!e.contrastColors)return e;const v={...e};delete v.contrastColors;return v;});
+      }
+      if(op.patch.backgroundStyle||op.patch.patternStyle!==undefined)Object.assign(slide,styleSlide(slide,next,deckDesignSystem(next)));
       continue;
     }
     if (op.op === 'reorder_elements') { slide.elements = reorder(slide.elements, op.ids); continue; }
@@ -184,6 +194,8 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
         for (const p of e.paragraphs ?? []) if (p.lineSpacing) p.lineSpacing *= ratio;
       }
       if (op.patch.fontFamily !== undefined) for (const r of [...(e.runs ?? []), ...(e.paragraphs?.flatMap(p => p.runs) ?? [])]) r.fontFamily = op.patch.fontFamily;
+      // Source dimensions belong to the old pixels, never to the frame.
+      if(op.patch.src&&op.patch.src!==e.src)e.imageSize=op.patch.imageSize;
       Object.assign(e, op.patch);
       for(const field of op.unset??[])e[field]=undefined;
       // A direct text edit becomes the field's new value, so numbering refresh
@@ -248,6 +260,8 @@ function executeOperations(deck: Deck, operations: Operation[], baseRevision: nu
     next.slides=next.slides.flatMap(s=>{let slides=[s];for(const e of s.elements.filter(e=>e.chart?.adaptive&&chartEdits.has(e.id)))slides=slides.flatMap(v=>continueChart(v,e.id));return slides;});
   }
   next.slides=refreshPageElements(next).slides;
+  const previousSlides=new Set(deck.slides),system=deckDesignSystem(next);
+  next.slides=next.slides.map(s=>!previousSlides.has(s)&&s.adaptiveColors&&s.backgroundStyle==='dark'?adaptSlideColors(s,system):s);
   next.updatedAt = new Date().toISOString();
   return validate(next);
 }

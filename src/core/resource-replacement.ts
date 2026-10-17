@@ -10,5 +10,5 @@ export function resourceReplacementPatch(image: Pick<SlideElement, 'src' | 'reso
   // Legacy edge crops stretch a new source independently on each axis.
   // Reset them with the source and normalize Stretch, while preserving the frame.
   const region=options.fit==='fill'&&isGraphicBackground(image.resource?.id);
-  return {src: image.src, resource: image.resource, name: image.name, sourceRegion: undefined, crop: undefined, fit: region?'fill':resourceReplacementFit(options.fit),...(region?{aspectRatioLocked:false}:{})};
+  return {src: image.src, resource: image.resource, name: image.name, sourceRegion: undefined, crop: undefined, imagePosition:undefined, imageZoom:undefined, imageSize:undefined, fit: region?'fill':resourceReplacementFit(options.fit),...(region?{aspectRatioLocked:false}:{})};
 }

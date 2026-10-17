@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { element } from '../src/core/model';
-import { keepsAspectRatio, resizedDimensions, passedDragThreshold, resizeCursor, resizeFromCorner, chooseSelection, marqueeSelection, hitElements, selectionBounds, type Corner, type ResizeHandle } from '../src/core/interactions';
+import {keepsAspectRatio, resizedDimensions, passedDragThreshold, resizeCursor, resizeFromCorner, chooseSelection, marqueeSelection, selectionBounds, type Corner, type ResizeHandle} from '../src/core/interactions';
+import {hitElements} from '../src/core/hit-testing';
 
 test('resize cursors follow screen axes under rotation and flips', () => {
   const box = element('rect', {w: 600, h: 40});

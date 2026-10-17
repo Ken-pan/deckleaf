@@ -39,6 +39,7 @@ export class Editor {
   editingGroupId=$state('');
   hovered = $state('');
   editingId = $state('');
+  croppingId = $state('');
   additiveSelection = $state(false);
   layerPickerId = $state('');
   snapping = $state(true);
@@ -76,6 +77,7 @@ export class Editor {
   timer: ReturnType<typeof setTimeout> | undefined;
   private flushPromise: Promise<void> | undefined;
   lastMerge = ''; lastMergeTime = 0;
+  propertyGesture = '';
   private measuredView?:{onlineFonts:Deck['onlineFonts'];source:Slide;elements:Slide['elements'];groups:Slide['groups'];layouts:Slide['autoLayouts'];epoch:number;value:Slide};
   private containerView?:{slide:Slide;tree:ContainerTree};
   get slide(): Slide | undefined {
@@ -269,8 +271,9 @@ export class Editor {
       // exports/clipboard still receive independently mutable snapshots.
       const before = this.operationDocument();
       const after = applyImmutableOperations(before, operations, revision ?? before.revision, actor);
-      const scopeKey=mergeKey?`${this.activeId}:${this.selected.join(',')}:${mergeKey}`:'';
-      if (!(scopeKey && this.lastMerge === scopeKey && Date.now() - this.lastMergeTime < 700)) {
+      const merge = actor === 'manual' && this.propertyGesture ? this.propertyGesture : mergeKey;
+      const scopeKey=merge?`${this.activeId}:${this.selected.join(',')}:${merge}`:'';
+      if (!(scopeKey && this.lastMerge === scopeKey && (this.propertyGesture === merge || Date.now() - this.lastMergeTime < 700))) {
         this.past = [...this.past.slice(-49), before];this.pastContext=[...this.pastContext.slice(-49),this.context()];
       }
       this.lastMerge = scopeKey; this.lastMergeTime = Date.now();

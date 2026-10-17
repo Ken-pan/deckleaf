@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import {element,blankSlide,newDeck,validateDeck} from '../src/core/model';
 import {applyOperations} from '../src/core/operations';
-import {mergeTableRange,styleTableRange,changeTableAxis,expandMergedRange,cellOwner} from '../src/core/table-structure';
+import {mergeTableRange,styleTableRange,changeTableAxis,expandMergedRange,cellOwner,pasteTableRange} from '../src/core/table-structure';
 import {tablePresentation,tableCellStyle,tableCellSpan,tablePresetStyle,tablePresetForElement} from '../src/core/table-appearance';
 import {tableRowHeights,continueTable} from '../src/core/table-fit';
 import {sampleChart} from '../src/core/charts';
@@ -68,4 +68,26 @@ test('interactive SVG text identities survive repeated/truncated categories, leg
     assert.ok(!/<path[^>]*ecmeta_ssr_type="legend"[^>]*data-chart-point/.test(svg));
   }
   const c={...sampleChart(),type:'pie' as const,legend:false,showValues:true},svg=renderChartSvg(element('chart',{chart:c,w:800,h:480}),true);for(let index=0;index<c.labels.length;index++)assert.ok(svg.includes(`data-chart-text="category" data-chart-text-index="${index}"`));
+});
+
+test('range paste splits intersecting merges, preserves outside merges and commits data atomically',()=>{
+  const original={...table(),...mergeTableRange(table(),range)},before=JSON.stringify(original);
+  const result=pasteTableRange(original,'New\t10\nOther\t20',{anchor:{row:1,column:0},head:{row:1,column:0}});
+  assert.equal(result.tableStyle?.merges,undefined);
+  assert.deepEqual(result.cells.slice(1).map(row=>row.slice(0,2)),[['New','10'],['Other','20']]);
+  assert.deepEqual(result.tableStyle?.columnWidths,original.tableStyle?.columnWidths);
+  const outside=pasteTableRange(original,'Header',{anchor:{row:0,column:0},head:{row:0,column:0}});
+  assert.deepEqual(outside.tableStyle?.merges,original.tableStyle?.merges);
+  const slide={...blankSlide(),elements:[original]},deck=newDeck('Paste',[slide]);
+  const after=applyOperations(deck,[{op:'update_element',slideId:slide.id,elementId:original.id,patch:{cells:result.cells,tableStyle:result.tableStyle}}]);
+  assert.equal(after.revision,deck.revision+1);validateDeck(after);
+  assert.throws(()=>pasteTableRange(original,'a\tb\nc',{anchor:{row:1,column:0},head:{row:1,column:0}}),/rectangular/);
+  assert.equal(JSON.stringify(original),before);
+});
+test('range paste extends dimensions and repeats into a selected rectangle without losing local styling',()=>{
+  const original=table();const result=pasteTableRange(original,'x',{anchor:{row:1,column:0},head:{row:2,column:1}});
+  assert.deepEqual(result.cells.slice(1).map(row=>row.slice(0,2)),[['x','x'],['x','x']]);
+  const extended=pasteTableRange(original,'a\tb\nc\td',{anchor:{row:2,column:2},head:{row:2,column:2}});
+  assert.equal(extended.cells.length,4);assert.equal(extended.cells[0].length,4);assert.equal(extended.cells[3][3],'d');
+  assert.deepEqual(extended.tableStyle,original.tableStyle);
 });
