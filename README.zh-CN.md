@@ -8,6 +8,12 @@
 
 Ken Pan 的个人项目，使用 Codex 开发。当前公开版本为 **0.1.6**；首个公开版本为 0.1.0。代码采用 [MIT](LICENSE)，允许商业使用及闭源二次开发；原创装饰插图在作者持有权利的范围内采用 CC0，字体、图标、第三方素材和品牌标志遵守[各自的许可](ASSET_LICENSES.md)。界面目前为英文。
 
+## 使用指导
+
+- [简明使用指南](docs/open-source/getting-started.zh-CN.md)：从第一次编辑到备份、分享和常见问题。
+- [AI 提问示例](docs/open-source/prompt-examples.zh-CN.md)：可直接复制并替换材料。
+- [给 AI 的接入指南](docs/open-source/agent-guide.md)：MCP 配置、工具选择、修改约束与结果核验；[AI 阅读入口](llms.txt)。
+
 ## 五分钟开始
 
 1. 打开可编辑示例，会在当前浏览器新建一份三页文稿；阅读并关闭导入报告。

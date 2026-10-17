@@ -8,6 +8,11 @@ A local-first presentation editor. Make slides, review optional AI changes, and 
 
 An early **0.1.6** release by Ken Pan, developed with Codex. Code is [MIT licensed](LICENSE); commercial use and closed-source derivatives are welcome. Original decorative artwork is CC0 to the extent of the rights held; [fonts, icons, third-party assets and brand marks](ASSET_LICENSES.md) have separate terms.
 
+## Guides
+
+- [User guide](docs/open-source/getting-started.md) · [中文指南](docs/open-source/getting-started.zh-CN.md)
+- [AI / MCP guide](docs/open-source/agent-guide.md) · [AI prompt examples (中文)](docs/open-source/prompt-examples.zh-CN.md) · [AI reading index](llms.txt)
+
 ## Try it in five minutes
 
 1. [Open the sample](https://decksprig.kens-toolbox.com/app?demo=1). It creates a new three-slide document in this browser. Close the import report after reading it.

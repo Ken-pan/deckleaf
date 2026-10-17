@@ -28,6 +28,8 @@ Online font requests, remote images and embedded prototypes contact their source
 
 ## MCP and hosting
 
+See the [AI agent guide](agent-guide.md) for a copyable client configuration, task routes and review rules.
+
 `npm run mcp` starts the optional local MCP server for compatible agents. It uses the same document operations and revision-bound proposal review as the editor; the browser demo does not offer a public MCP endpoint. Keep it scoped to your local installation and documents.
 
 The local hosting connection is optional and uses a session Netlify token. Review the prepared HTML before publishing. In the browser edition, export Web page and upload it with your hosting provider. Hosting or sharing can expose notes, source links and content; review the export first.

@@ -32,13 +32,23 @@ const out = process.argv[2] ? resolve(process.argv[2]) : resolve(root, 'output/w
 await mkdir(out, { recursive: true });
 await cp(source, out, { recursive: true });
 for(const [from,to] of sharedAssets)await cp(resolve(root,from),resolve(out,'assets',to));
+await mkdir(resolve(out,'docs'),{recursive:true});
+const publicDocs = ['getting-started.md','getting-started.zh-CN.md','agent-guide.md','prompt-examples.zh-CN.md'];
+for(const name of publicDocs) {
+  const text = await readFile(resolve(root,'docs/open-source',name),'utf8');
+  // These guides move from docs/open-source to /docs. Keep sibling reading
+  // links local; resolve other repository links against their canonical source.
+  const published = text.replace(/\]\((?!https?:|#)([^)\s]+)\)/g, (match, href) => publicDocs.includes(href.split('#')[0]) ? match : `](${new URL(href, 'https://github.com/Ken-pan/decksprig/blob/main/docs/open-source/' + name).href})`);
+  await writeFile(resolve(out,'docs',name),published);
+}
+await cp(resolve(root,'llms.txt'),resolve(out,'llms.txt'));
 // Apply the deployment origin to every website document, including downloadable
 // templates, attribution in the presentation, and crawler metadata.
 async function updateOrigin(dir) {
   for (const entry of await readdir(dir, {withFileTypes: true})) {
     const path = resolve(dir, entry.name);
     if (entry.isDirectory()) await updateOrigin(path);
-    else if (/\.(?:html|json|xml|txt|js|css)$/.test(entry.name)) {
+    else if (/\.(?:html|json|xml|txt|js|css|md)$/.test(entry.name)) {
       const source = await readFile(path, 'utf8');
       const updated = source.replaceAll('https://decksprig.kens-toolbox.com', origin)
         .replace(/([?&])v=\d{8}-[\w-]+/g, `$1v=${assetRevision}`)
@@ -53,7 +63,7 @@ await mkdir(resolve(out,'fonts'),{recursive:true});
 for (const name of ['inter.ttf','Inter-OFL.txt']) await cp(resolve(root,'public/fonts',name),resolve(out,'fonts',name));
 await mkdir(resolve(out,'brand'),{recursive:true});
 await cp(resolve(root,'public/brand/logo.svg'),resolve(out,'brand/logo.svg'));
-const required = ['index.html','site.css','site.js','demo.html','presentation.html','guide.html','guide.zh-CN.html','guide.css','assets/decksprig-demo.mp4','assets/editor-light.jpg','assets/editor-dark.jpg','assets/portfolio.jpg','assets/review.jpg','assets/proposal.jpg','assets/minimal.jpg','assets/pitch.jpg','assets/report.jpg','assets/social.jpg','assets/editorial.deck.json','assets/studio.deck.json','assets/monograph.deck.json','assets/minimalist.deck.json','assets/signal.deck.json','assets/ledger.deck.json','assets/logo.svg','assets/favicon.svg','assets/inter.ttf','assets/manrope.ttf','assets/bodoni-moda.ttf'];
+const required = ['llms.txt','docs/agent-guide.md','docs/prompt-examples.zh-CN.md','index.html','site.css','site.js','demo.html','presentation.html','guide.html','guide.zh-CN.html','guide.css','assets/decksprig-demo.mp4','assets/editor-light.jpg','assets/editor-dark.jpg','assets/portfolio.jpg','assets/review.jpg','assets/proposal.jpg','assets/minimal.jpg','assets/pitch.jpg','assets/report.jpg','assets/social.jpg','assets/editorial.deck.json','assets/studio.deck.json','assets/monograph.deck.json','assets/minimalist.deck.json','assets/signal.deck.json','assets/ledger.deck.json','assets/logo.svg','assets/favicon.svg','assets/inter.ttf','assets/manrope.ttf','assets/bodoni-moda.ttf'];
 for (const name of required) await stat(resolve(out,name));
 const html = await readFile(resolve(out,'index.html'),'utf8');
 for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
